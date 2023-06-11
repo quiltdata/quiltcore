@@ -14,6 +14,7 @@ tzlocal = "^5.0.1"
 un-yaml = ">=0.3.1"
 # un-yaml = {git = "https://github.com/data-yaml/un-yaml.git", rev = "main"}
 pyarrow = "^12.0.0"
+pandas = "^2.0.2"
 
 
 [tool.poetry.group.dev.dependencies]
