@@ -26,7 +26,6 @@ def test_arrow_pandas():
     with TemporaryDirectory() as tmpdirname:
         f = Path(tmpdirname) / "test.parquet"
         fn = str(f)
-        assert "/tmp" in fn
         pq.write_table(table, fn)
         table2 = pq.read_table(fn)
         assert table.equals(table2)
