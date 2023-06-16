@@ -1,5 +1,6 @@
 import sys
-from tempfile import NamedTemporaryFile
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import numpy as np
 import pandas as pd
@@ -22,11 +23,13 @@ def test_arrow_pandas():
     )
     table = pa.Table.from_pandas(df)
     assert table
-    with NamedTemporaryFile() as f:
-        pq.write_table(table, f.name)
-        table2 = pq.read_table(f.name)
-        if not sys.platform.startswith("win"):
-            assert table.equals(table2)
+    with TemporaryDirectory() as tmpdirname:
+        f = Path(tmpdirname) / "test.parquet"
+        fn = str(f)
+        assert "/tmp" in fn
+        pq.write_table(table, fn)
+        table2 = pq.read_table(fn)
+        assert table.equals(table2)
 
 
 def test_arrow_s3():
