@@ -1,0 +1,12 @@
+---
+_yaml:
+  _version: 0.3.1
+  app: registry
+  app_version: 0.1.0
+  doc: quiltcore
+  doc_version: 0.1.0
+manifest: packages
+namespace: named_packages
+root: .quilt
+schema: quiltcore/schema.yaml
+type: application/ld+json
