@@ -5,11 +5,13 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.json as pj
 import pyarrow.parquet as pq
+import pytest
+import sys
 from pyarrow import fs
 
 test_file = "tests/test.parquet"
 
-
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="does not run on windows")
 def test_arrow_pandas():
     df = pd.DataFrame(
         {
