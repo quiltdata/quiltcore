@@ -3,11 +3,10 @@ from tempfile import NamedTemporaryFile
 
 import numpy as np
 import pandas as pd
-import pyarrow as pa
-import pyarrow.json as pj
-import pyarrow.parquet as pq
+import pyarrow as pa  # type: ignore
+import pyarrow.json as pj  # type: ignore
+import pyarrow.parquet as pq  # type: ignore
 import pytest
-from pyarrow import fs
 
 test_file = "tests/test.parquet"
 
@@ -34,7 +33,7 @@ def test_arrow_s3():
         "s3://quilt-example/.quilt/packages/"
         + "00004ceff627cc6679fec2c9d55e16614dc055695fc2e4c85f02c0845bfda12f"
     )
-    s3, path = fs.FileSystem.from_uri(S3_URI)
+    s3, path = pa.fs.FileSystem.from_uri(S3_URI)
     assert s3
     assert path
     assert "packages" in str(path)
