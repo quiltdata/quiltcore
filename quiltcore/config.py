@@ -1,5 +1,6 @@
 from un_yaml import UnYaml  # type: ignore
 
+
 class CoreConfig(UnYaml):
     CONFIG_FILE = "config.yaml"
 
