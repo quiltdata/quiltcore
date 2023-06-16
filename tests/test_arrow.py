@@ -1,10 +1,11 @@
+from tempfile import NamedTemporaryFile
+
 import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.json as pj
 import pyarrow.parquet as pq
 from pyarrow import fs
-from tempfile import NamedTemporaryFile
 
 test_file = "tests/test.parquet"
 
@@ -24,8 +25,10 @@ def test_arrow_pandas():
         table2 = pq.read_table(f.name)
         assert table.equals(table2)
 
+
 def test_arrow_s3():
-    S3_URI = "s3://quilt-example/.quilt/packages/00004ceff627cc6679fec2c9d55e16614dc055695fc2e4c85f02c0845bfda12f"
+    S3_URI = "s3://quilt-example/.quilt/packages/" +\
+    "00004ceff627cc6679fec2c9d55e16614dc055695fc2e4c85f02c0845bfda12f"
     s3, path = fs.FileSystem.from_uri(S3_URI)
     assert s3
     assert path
