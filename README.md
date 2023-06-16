@@ -9,7 +9,7 @@ This initial implementation is in Python.
 ## Key Technologies
 
 - Apache [Arrow](https://arrow.apache.org/) for reading, writing, and representing manifests
-    - [PyArrow](https://arrow.apache.org/docs/python/) for Python bindings to Arrow
+  - [PyArrow](https://arrow.apache.org/docs/python/) for Python bindings to Arrow
 - fsspec [filesystems](https://filesystem-spec.readthedocs.io/en/latest/)
   for reading and writing files from various sources
 - [PyYAML](https://pyyaml.org/) for reading and writing YAML configuration files
