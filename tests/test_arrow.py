@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -7,7 +6,6 @@ import pandas as pd
 import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
-import pytest
 
 test_file = "tests/test.parquet"
 
