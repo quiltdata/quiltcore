@@ -11,6 +11,10 @@ permissions: read-all
 
 jobs:
   build:
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
 
     strategy:
       fail-fast: false
@@ -49,6 +53,6 @@ jobs:
           coverageFile: coverage.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           thresholdAll: 0.8
-          # thresholdNew: 0.8
-          # thresholdModified: 0.8 
+          thresholdNew: 0.8
+          thresholdModified: 0.8 
       if: github.event_name == 'pull_request'
