@@ -16,26 +16,39 @@ This initial implementation is in Python.
 
 ## Example
 
+```bash
+poetry install
+```
+
 ```python
 import quiltcore as qc
 
 BKT="s3://quilt-example"
 PKG="example/wellcharts"
 dest="."
+```
 
-# Get Manifest
+### Get Manifest
 
+<!--pytest-codeblocks:cont-->
+```python
 reg = qc.CoreRegistry(BKT)
-versions = reg.namespace(PKG)
-manifest = versions.latest()
+# versions = reg.namespace(PKG)
+# manifest = versions.latest()
+```
 
-# Get Object
+### Get Object
 
+<!--pytest.mark.skip-->
+```python
 remote_object = manifest[-1]
 print(remote_object.uri())
 local = remote_object.put(dest)
+```
 
-# Verify Object
+### Verify Object
 
+<!--pytest.mark.skip-->
+```python
 assert local_object.verify(remote_object.hash())
 ```

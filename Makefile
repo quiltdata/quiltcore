@@ -24,11 +24,8 @@ update:
 test:
 	poetry run pytest $(TEST_README) --cov --cov-report xml:coverage.xml
 
-test-short:
-	make test "SKIP_LONG_TESTS=True"
-
-test-long:
-	make test "SKIP_LONG_TESTS=False"
+test-readme:
+	poetry run pytest $(TEST_README) 
 
 typecheck:
 	poetry run mypy $(PROJECT) tests
