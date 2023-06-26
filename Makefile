@@ -1,6 +1,7 @@
 sinclude .env # create from example.env
 PROJECT=quiltcore
 .PHONY: install test watch all clean
+TEST_README=--codeblocks
 
 ifeq ($(TEST_OS),windows-latest)
 	TEST_README=''
@@ -21,7 +22,7 @@ update:
 	poetry update
 
 test:
-	poetry run pytest --cov --cov-report xml:coverage.xml
+	poetry run pytest $(TEST_README) --cov --cov-report xml:coverage.xml
 
 test-short:
 	make test "SKIP_LONG_TESTS=True"

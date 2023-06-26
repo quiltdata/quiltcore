@@ -596,6 +596,20 @@ tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
+name = "pytest-codeblocks"
+version = "0.16.1"
+description = "Test code blocks in your READMEs"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pytest_codeblocks-0.16.1-py3-none-any.whl", hash = "sha256:a99f5336774241e7879a68cc86602b651154d726d3ae26efa288a805a7ad7795"},
+    {file = "pytest_codeblocks-0.16.1.tar.gz", hash = "sha256:14cc14a78e578f30f505602eb7a6fb8a22d9c4664dfa9aca6429b93da6eaea2a"},
+]
+
+[package.dependencies]
+pytest = ">=7.0.0"
+
+[[package]]
 name = "pytest-cov"
 version = "4.1.0"
 description = "Pytest plugin for measuring coverage."
@@ -919,4 +933,4 @@ watchmedo = ["PyYAML (>=3.10)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2bcf1055b7199124aea78730d826d5b5af13ebd10281a0b889c5d97f488b216f"
+content-hash = "a40eebcd02946c346ca8e0cf1887b07d2292bb5ac8c10fa842b00de836dce531"
