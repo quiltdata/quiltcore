@@ -14,3 +14,10 @@ class CoreRegistry:
         """List all packages in the registry."""
         gen = self.names.glob('*/*')
         return list(gen)
+    
+    async def get(self, name: str, tag: str = "latest") -> object:
+        pass
+
+    async def get_hash(self, name: str, tag: str = "latest") -> str:
+        hash_file = self.names / name / tag
+        return hash_file.read_text()
