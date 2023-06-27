@@ -1,6 +1,6 @@
 from pathlib import Path
 from pytest import fixture, mark
-from quiltcore import CoreRegistry
+from quiltcore import CoreRegistry, CoreManifest
 from upath import UPath
 
 from .conftest import TEST_BKT, TEST_PKG, TEST_TAG, TEST_HASH
@@ -27,12 +27,14 @@ async def test_registry_list(reg):
     assert len(result) > 0
     assert TEST_PKG in str(result[0])
 
-async def test_registry_get(reg):
-    pass
-
 async def test_registry_get_hash(reg):
     hash = await reg.get_hash(TEST_PKG, TEST_TAG)
     assert hash == TEST_HASH
 
     latest = await reg.get_hash(TEST_PKG, "latest")
     assert len(latest) == 64
+
+async def test_registry_get(reg):
+    hash = await reg.get_hash(TEST_PKG, TEST_TAG)
+    manifest = await reg.get(hash)
+    assert isinstance(manifest, CoreManifest)
