@@ -5,8 +5,8 @@ _yaml:
   app_version: 0.1.0
   doc: quiltcore
   doc_version: 0.1.0
-config_dir: .quilt
-names_dir: named_packages
-versions_dir: packages
-schema: quiltcore/schema.yaml
+dirs:
+  config: .quilt
+  names: named_packages
+  versions: packages
 type: application/ld+json

@@ -6,9 +6,9 @@ class CoreRegistry:
     def __init__(self, root: Path):
         self.params = CoreConfig()
         self.root = root
-        self.config = root / self.params.get('config_dir')
-        self.names = self.config / self.params.get('names_dir')
-        self.versions = self.config / self.params.get('versions_dir')
+        self.config = root / self.params.get('dirs/config')
+        self.names = self.config / self.params.get('dirs/names')
+        self.versions = self.config / self.params.get('dirs/versions')
 
     async def list(self) -> list:
         """List all packages in the registry."""
