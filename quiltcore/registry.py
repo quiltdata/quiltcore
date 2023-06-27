@@ -3,7 +3,10 @@ from .resource import CoreResource
 from .values import CoreValues
 
 class CoreRegistry(CoreResource):
-    """Registry of Names and parent of Values"""
+    """
+    Registry of Names and parent of Values
+    `list` and `get` return CoreName with parent of CoreValues
+    """
 
     def __init__(self, path: Path):
         super().__init__(path)
@@ -12,5 +15,5 @@ class CoreRegistry(CoreResource):
         values = base / self.config.path('dirs/values')
         self.values = CoreValues(values, self)
 
-    def child_params(self, key: str) -> CoreValues:
+    def parent(self, key: str):
         return self.values

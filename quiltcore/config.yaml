@@ -14,8 +14,8 @@ resources:
     child: CoreName
     glob: '*'
   CoreName:
-    child: CoreBlob
-    glob: '*/*'
+    child: CoreManifest
+    glob: '*'
   CoreRegistry:
     child: CoreName
     glob: '*/*'

@@ -1,5 +1,5 @@
 from pytest import fixture
-from quiltcore import CoreRegistry, CoreName
+from quiltcore import CoreRegistry, CoreManifest, CoreName
 from upath import UPath
 
 from .conftest import TEST_BKT, TEST_PKG, TEST_TAG, TEST_HASH
@@ -31,9 +31,9 @@ def test_registry_get(reg):
 
 def test_name_get(reg):
     first = reg.list()[0]
-    hash = first.get(TEST_TAG)
-    assert hash == TEST_HASH
+    man = first.get(TEST_TAG)
+    assert TEST_HASH in str(man)
 
     latest = first.get("latest")
-    assert len(latest) == 64
+    assert isinstance(latest, CoreManifest)
 

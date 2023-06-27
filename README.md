@@ -23,7 +23,6 @@ poetry install
 ```python
 import quiltcore as qc
 from upath import UPath
-from anyio import run
 
 BKT="s3://quilt-example"
 PKG="example/wellcharts"
