@@ -2,7 +2,7 @@
 # MegaLinter GitHub Action configuration file
 # More info at https://megalinter.github.io
 name: MegaLinter
-on:
+on:  # yamllint disable-line rule:truthy
   push: # Comment this line to trigger action only on pull-requests (not recommended if you don't pay for GH Actions)
 permissions: read-all
 env: # Comment env block if you do not want to apply fixes

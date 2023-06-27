@@ -22,5 +22,15 @@ resources:
   CoreValues:
     child: CoreBlob
     glob: "*"
+schema:
+  headers:
+    version: string
+    message: string
+  columns:
+    logical_key: string
+    physical_keys: [string]
+    size: int64
+    hash: struct<type: string, value: string>
+    meta: struct<>
 
 type: application/ld+json
