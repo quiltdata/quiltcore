@@ -15,6 +15,9 @@ def test_registry(reg):
     assert reg
     assert reg.config
     assert TEST_BKT in str(reg.config)
+    assert '.quilt/named_packages' in str(reg.names)
+    assert '.quilt/packages' in str(reg.versions)
+    assert reg.versions.exists()
 
 def test_registry_list(reg):
     result = reg.list()

@@ -22,6 +22,7 @@ poetry install
 
 ```python
 import quiltcore as qc
+from upath import UPath
 
 BKT="s3://quilt-example"
 PKG="example/wellcharts"
@@ -32,7 +33,7 @@ dest="."
 
 <!--pytest-codeblocks:cont-->
 ```python
-reg = qc.CoreRegistry(BKT)
+reg = qc.CoreRegistry(UPath(BKT))
 # versions = reg.namespace(PKG)
 # manifest = versions.latest()
 ```
