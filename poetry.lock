@@ -1108,22 +1108,6 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
-name = "pytest-trio"
-version = "0.8.0"
-description = "Pytest plugin for trio"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pytest-trio-0.8.0.tar.gz", hash = "sha256:8363db6336a79e6c53375a2123a41ddbeccc4aa93f93788651641789a56fb52e"},
-    {file = "pytest_trio-0.8.0-py3-none-any.whl", hash = "sha256:e6a7e7351ae3e8ec3f4564d30ee77d1ec66e1df611226e5618dbb32f9545c841"},
-]
-
-[package.dependencies]
-outcome = ">=1.1.0"
-pytest = ">=7.2.0"
-trio = ">=0.22.0"
-
-[[package]]
 name = "pytest-watcher"
 version = "0.3.4"
 description = "Automatically rerun your tests on file modifications"
@@ -1637,4 +1621,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "59dd119b45a2873715f3f73d2a5f762e0bf6050c8668110216220ea8fcc5e262"
+content-hash = "183c618deee3a02036db927c0f5bac395fc7a3878d13e2c1f7296a648516ba42"

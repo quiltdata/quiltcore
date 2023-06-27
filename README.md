@@ -23,6 +23,7 @@ poetry install
 ```python
 import quiltcore as qc
 from upath import UPath
+from anyio import run
 
 BKT="s3://quilt-example"
 PKG="example/wellcharts"
@@ -33,9 +34,9 @@ dest="."
 
 <!--pytest-codeblocks:cont-->
 ```python
-reg = qc.CoreRegistry(UPath(BKT))
-# versions = reg.namespace(PKG)
-# manifest = versions.latest()
+registry = qc.CoreRegistry(UPath(BKT))
+# hash = run(registry.get_hash, PKG)
+# manifest = run(registry.get, hash)
 ```
 
 ### Get Object

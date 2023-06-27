@@ -21,20 +21,20 @@ def test_registry(reg):
     assert reg.versions.exists()
     assert reg.names.is_dir()
 
-async def test_registry_list(reg):
-    result = await reg.list()
+def test_registry_list(reg):
+    result = reg.list()
     assert isinstance(result, list)
     assert len(result) > 0
     assert TEST_PKG in str(result[0])
 
-async def test_registry_get_hash(reg):
-    hash = await reg.get_hash(TEST_PKG, TEST_TAG)
+def test_registry_get_hash(reg):
+    hash = reg.get_hash(TEST_PKG, TEST_TAG)
     assert hash == TEST_HASH
 
-    latest = await reg.get_hash(TEST_PKG, "latest")
+    latest = reg.get_hash(TEST_PKG, "latest")
     assert len(latest) == 64
 
-async def test_registry_get(reg):
-    hash = await reg.get_hash(TEST_PKG, TEST_TAG)
-    manifest = await reg.get(hash)
+def test_registry_get(reg):
+    hash = reg.get_hash(TEST_PKG, TEST_TAG)
+    manifest = reg.get(hash)
     assert isinstance(manifest, CoreManifest)
