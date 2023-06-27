@@ -20,7 +20,7 @@ class CoreResource:
         self.config = CoreConfig()
         self.name = self.__class__.__name__
         rkey = f"resources/{self.name}"
-        self.params = self.config.get(rkey) or {}  # type: ignore
+        self.params = self.get_dict(rkey)
         self.path = path
         _child = self.param("child", "CoreResource")
         self.klass = CoreResource.ClassFromName(_child)
@@ -31,6 +31,13 @@ class CoreResource:
 
     def __str__(self):
         return str(self.path)
+
+    def get_path(self, key: str) -> Path:
+        str_path = self.config.get_str(key, ".")
+        return Path(str_path)
+    
+    def get_dict(self, key: str) -> dict:
+        return self.config.get(key) or {}
 
     def param(self, key: str, default: str) -> str:
         """Return a param."""

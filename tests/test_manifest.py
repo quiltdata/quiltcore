@@ -9,3 +9,6 @@ def test_man():
     man = CoreManifest(path)
     assert man
     assert man.table
+    print(man.table)
+    assert man.version == "v0"  # type: ignore
+    assert man.body.num_rows == 1

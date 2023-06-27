@@ -14,8 +14,5 @@ class CoreConfig(UnYaml):
         data = yaml_data if len(yaml_data) > 0 else CoreConfig.DefaultConfig()
         super().__init__(data)
 
-    def get(self, key: str, default="") -> str:
+    def get_str(self, key: str, default="") -> str:
         return super().get(key) or default
-
-    def path(self, key: str) -> Path:
-        return Path(self.get(key, "."))
