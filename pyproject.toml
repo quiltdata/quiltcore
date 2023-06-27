@@ -16,6 +16,7 @@ pandas = "^2.0.2"
 pytest-codeblocks = "^0.16.1"
 universal-pathlib = "^0.0.23"
 s3fs = "^2023.6.0"
+pandas-stubs = "^2.0.2.230605"
 
 
 [tool.poetry.group.dev.dependencies]
