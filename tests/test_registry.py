@@ -1,10 +1,11 @@
 from pathlib import Path
-from pytest import fixture
+from pytest import fixture, mark
 from quiltcore import CoreRegistry
 from upath import UPath
 
 from .conftest import TEST_BKT, TEST_PKG
 
+pytestmark = mark.anyio
 
 @fixture
 def reg():
@@ -18,8 +19,10 @@ def test_registry(reg):
     assert '.quilt/named_packages' in str(reg.names)
     assert '.quilt/packages' in str(reg.versions)
     assert reg.versions.exists()
+    assert reg.names.is_dir()
 
-def test_registry_list(reg):
-    result = reg.list()
+async def test_registry_list(reg):
+    result = await reg.list()
     assert isinstance(result, list)
-    assert len(result) == 0
+    assert len(result) > 0
+    assert TEST_PKG in str(result[0])

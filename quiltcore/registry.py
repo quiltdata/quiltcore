@@ -2,7 +2,6 @@ from pathlib import Path
 
 from .config import CoreConfig
 
-
 class CoreRegistry:
     def __init__(self, root: Path):
         self.params = CoreConfig()
@@ -11,5 +10,7 @@ class CoreRegistry:
         self.names = self.config / self.params.get('names_dir')
         self.versions = self.config / self.params.get('versions_dir')
 
-    def list(self):
-        return []
+    async def list(self) -> list:
+        """List all packages in the registry."""
+        gen = self.names.glob('*/*')
+        return list(gen)
