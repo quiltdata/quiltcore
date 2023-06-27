@@ -26,6 +26,7 @@ schema:
   headers:
     version: string
     message: string
+  name: logical_key
   columns:
     logical_key: string
     physical_keys: [string]
