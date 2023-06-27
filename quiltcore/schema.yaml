@@ -3,10 +3,9 @@ version: string
 user_meta: null
 message: string
 logical_key: string
-physical_keys: # list<item: string>
-  child 0, item: string
+physical_keys: [string]
 size: int64
-hash: # struct<type: string, value: string>
-  child 0, type: string
-  child 1, value: string
+hash:
+  type: string
+  value: string
 meta: struct<>

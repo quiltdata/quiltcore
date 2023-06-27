@@ -30,7 +30,9 @@ schema:
     logical_key: string
     physical_keys: [string]
     size: int64
-    hash: struct<type: string, value: string>
-    meta: struct<>
+    hash:
+      type: string
+      value: string
+    meta: struct
 
 type: application/ld+json
