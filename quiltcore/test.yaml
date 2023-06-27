@@ -1,0 +1,38 @@
+# pyarrow.Table
+----
+version: string
+message: null
+logical_key: string
+physical_keys: list<item: string>
+  child 0, item: string
+size: int64
+hash: struct<type: string, value: string>
+  child 0, type: string
+  child 1, value: string
+meta: struct<format: struct<compression: string, name: string>, target: string>
+  child 0, format: struct<compression: string, name: string>
+      child 0, compression: string
+      child 1, name: string
+  child 1, target: string
+----
+version: [["v0",null]]
+message: [2 nulls]
+logical_key: [[null,"camera-reviews"]]
+physical_keys: [[null,["s3://quilt-example/akarve/amazon-reviews/camera-reviews?versionId=ihb.qioVby3gnRaMRFLNsxcX.Yir_K14"]]]
+size: [[null,100764599]]
+hash: [
+  -- is_valid:  [false,true]
+  -- child 0 type: string
+[null,"SHA256"]
+  -- child 1 type: string
+[null,"c833f360052b40b4cb82ba40e4ea702355ad3d92c2bd9a1ba2c2436de9c637ff"]]
+meta: [
+  -- is_valid:  [false,true]
+  -- child 0 type: struct<compression: string, name: string>
+    -- is_valid:    [false,true]
+    -- child 0 type: string
+[null,"snappy_columns"]
+    -- child 1 type: string
+[null,"parquet"]
+  -- child 1 type: string
+[null,"parquet"]]

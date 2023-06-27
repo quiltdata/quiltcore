@@ -8,5 +8,19 @@ _yaml:
 dirs:
   config: .quilt
   names: named_packages
-  versions: packages
+  values: packages
+resources:
+  CoreManifest:
+    child: CoreName
+    glob: '*'
+  CoreName:
+    child: CoreBlob
+    glob: '*/*'
+  CoreRegistry:
+    child: CoreName
+    glob: '*/*'
+  CoreValues:
+    child: CoreBlob
+    glob: '*'
+  
 type: application/ld+json

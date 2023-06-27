@@ -5,6 +5,6 @@ from .conftest import TEST_TABLE
 
 def test_man():
     path = UPath(TEST_TABLE)
-    man = CoreManifest.FromPath(path)
+    man = CoreManifest(path)
     assert man
     assert man.table

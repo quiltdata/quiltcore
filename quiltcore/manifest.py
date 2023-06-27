@@ -3,16 +3,12 @@ from pathlib import Path
 import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
-class CoreManifest:
+from .resource import CoreResource
+
+class CoreManifest(CoreResource):
     """In-memory representation of a serialized package manifest."""
 
-    @staticmethod
-    def FromPath(path: Path):
-        """Create a manifest from a file path."""
+    def __init__(self, path: Path):
+        super().__init__(path)
         with path.open(mode='rb') as fi:
-            table = pj.read_json(fi)
-            return CoreManifest(table)
-
-
-    def __init__(self, table: pa.Table):
-        self.table = table
+            self.table = pj.read_json(fi)

@@ -1,2 +1,0 @@
-class CoreNamespace:
-    pass
