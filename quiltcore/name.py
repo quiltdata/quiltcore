@@ -2,7 +2,7 @@ from pathlib import Path
 
 from .manifest import CoreManifest
 from .resource import CoreResource
-from .values import CoreValues
+
 
 class CoreName(CoreResource):
     """Namespace of Manifests by Hash"""
@@ -15,7 +15,7 @@ class CoreName(CoreResource):
         hash_file = self.path / tag
         return hash_file.read_text()
 
-    def child(self, path: Path, key: str = '') -> CoreManifest:
+    def child(self, path: Path, key: str = "") -> CoreManifest:
         """Return a child resource."""
         # return self.klass(path, self.parent(key))
         hash = self.hash(key)

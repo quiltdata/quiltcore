@@ -12,15 +12,15 @@ dirs:
 resources:
   CoreManifest:
     child: CoreName
-    glob: '*'
+    glob: "*"
   CoreName:
     child: CoreManifest
-    glob: '*'
+    glob: "*"
   CoreRegistry:
     child: CoreName
-    glob: '*/*'
+    glob: "*/*"
   CoreValues:
     child: CoreBlob
-    glob: '*'
-  
+    glob: "*"
+
 type: application/ld+json

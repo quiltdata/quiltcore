@@ -3,7 +3,7 @@
 version: string
 message: null
 logical_key: string
-physical_keys: list<item: string>
+physical_keys: list<string>
   child 0, item: string
 size: int64
 hash: struct<type: string, value: string>
