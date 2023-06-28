@@ -21,9 +21,11 @@ class CoreBlob(CoreResource):
     def setup(self, row: dict):
         columns = self.get_dict("schema/columns")
         for key, type in columns.items():
-            value = row[key]
+            value = row[key][0]
+            print(f"key: {key}, value: {value}, type: {type}")
             if isinstance(value, list):
                 value = value[0]
+                key = key.rstrip('s')
             if type == "int64":
                 value = int(value)
             setattr(self, key, value)

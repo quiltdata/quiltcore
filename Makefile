@@ -1,6 +1,6 @@
 sinclude .env # create from example.env
-PROJECT=quiltcore
 .PHONY: install test watch all clean typecheck
+PROJECT=quiltcore
 TEST_README=--codeblocks
 
 ifeq ($(TEST_OS),windows-latest)
@@ -21,7 +21,7 @@ install:
 update:
 	poetry update
 
-test: typecheck
+test: clean typecheck
 	poetry run pytest $(TEST_README) --cov --cov-report xml:coverage.xml
 
 test-readme:
