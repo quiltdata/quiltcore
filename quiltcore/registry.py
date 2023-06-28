@@ -12,9 +12,9 @@ class CoreRegistry(CoreResource):
 
     def __init__(self, path: Path, parent: CoreResource | None = None):
         super().__init__(path, parent)
-        base = path / self.get_path("dirs/config")
-        self.path = base / self.get_path("dirs/names")
-        values = base / self.get_path("dirs/values")
+        base = path / self.cf.get_path("dirs/config")
+        self.path = base / self.cf.get_path("dirs/names")
+        values = base / self.cf.get_path("dirs/values")
         self.values = CoreValues(values, self)
 
     def child_parent(self, key: str):

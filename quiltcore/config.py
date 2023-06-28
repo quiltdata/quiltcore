@@ -16,3 +16,11 @@ class CoreConfig(UnYaml):
 
     def get_str(self, key: str, default="") -> str:
         return super().get(key) or default
+
+    def get_path(self, key: str) -> Path:
+        str_path = self.get_str(key, ".")
+        return Path(str_path)
+    
+    def get_dict(self, key: str) -> dict:
+        return self.get(key) or {}
+

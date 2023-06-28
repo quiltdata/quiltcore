@@ -18,12 +18,12 @@ class CoreManifest(CoreResource):
         with path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         self.body = self.setup()
-        self.name_col = self.config.get_str("schema/name", "logical_key")
-        self.loc_col = self.config.get_str("schema/location", "physical_keys")
+        self.name_col = self.cf.get_str("schema/name", "logical_key")
+        self.loc_col = self.cf.get_str("schema/location", "physical_keys")
 
     def setup(self) -> pa.Table:
         first = self.table.take([0]).to_pydict()
-        headers = self.get_dict("schema/headers")
+        headers = self.cf.get_dict("schema/headers")
         keys = list(headers.keys())
         for key in keys:
             setattr(self, key, first[key][0])

@@ -13,7 +13,7 @@ def reg():
 
 def test_registry(reg):
     assert reg
-    assert reg.config
+    assert reg.cf
     assert ".quilt/named_packages" in str(reg.path)
     assert ".quilt/packages" in str(reg.values)
     assert reg.values.path.exists()

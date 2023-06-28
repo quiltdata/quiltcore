@@ -12,18 +12,14 @@ dirs:
 multihash:
   SHA256: sha2-256
 resources:
-  CoreManifest:
-    child: CoreBlob
-    glob: "*"
-  CoreName:
-    child: CoreManifest
-    glob: "*"
   CoreRegistry:
     child: CoreName
     glob: "*/*"
-  CoreValues:
-    child: CoreBlob
+  CoreName:
+    child: CoreManifest
     glob: "*"
+  CoreManifest:
+    child: CoreBlob
 schema:
   columns:
     logical_key: string

@@ -1,4 +1,3 @@
-from multiformats import multihash
 from pytest import fixture
 from quiltcore import CoreBlob, CoreManifest
 from tempfile import TemporaryDirectory
@@ -64,5 +63,6 @@ def test_blob_put(man: CoreManifest):
 
 
 def test_blob_verify(man: CoreManifest):
-    blob = man.get(TEST_KEY)
+    blob: CoreBlob = man.get(TEST_KEY)  # type: ignore
+    assert blob.hash_digest 
 
