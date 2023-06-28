@@ -15,16 +15,17 @@ def test_man(man: CoreManifest):
     assert man.version == "v0"  # type: ignore
     assert man.body.num_rows == 1
 
-
 def test_man_list(man: CoreManifest):
     results = man.list()
     assert len(results) == 1
-    assert results == [TEST_KEY]
+    blob = results[0]
+    assert isinstance(blob, CoreBlob)
+    assert str(blob.path) in TEST_OBJ
 
 def test_man_get(man: CoreManifest):
     blob = man.get(TEST_KEY)
     assert blob
     assert isinstance(blob, CoreBlob)
     assert str(blob.path) in TEST_OBJ
-    # assert result.version == TEST_VER  # type: ignore
+    # TODO: assert result.version == TEST_VER  # type: ignore
 

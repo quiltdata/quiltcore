@@ -55,10 +55,12 @@ class CoreResource:
         """Return the path for a child resource."""
         return self.path / key
 
+    def list_gen(self):
+        return self.path.glob(self.glob)
+
     def list(self) -> list[Self]:
         """List all child resources."""
-        gen = self.path.glob(self.glob)
-        return [self.child(x) for x in gen]
+        return [self.child(x) for x in self.list_gen()]
 
     def get(self, key: str) -> Self:
         """Get a child resource by name."""
