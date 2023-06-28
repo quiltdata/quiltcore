@@ -1,5 +1,6 @@
 from pytest import fixture
 from quiltcore import CoreBlob, CoreManifest
+from tempfile import TemporaryDirectory
 from upath import UPath
 
 from .conftest import TEST_TABLE, TEST_KEY, TEST_VER, TEST_OBJ
@@ -28,4 +29,13 @@ def test_man_get(man: CoreManifest):
     assert isinstance(blob, CoreBlob)
     assert str(blob.path) in TEST_OBJ
     # TODO: assert result.version == TEST_VER  # type: ignore
+
+def test_blob_put(man: CoreManifest):
+    blob = man.get(TEST_KEY)
+    with TemporaryDirectory() as tmpdirname:
+        dest = UPath(tmpdirname) / TEST_KEY
+        loc = blob.put(dest)
+        print(loc)
+        assert TEST_KEY in str(loc)
+        assert loc.exists()
 

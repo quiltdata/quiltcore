@@ -44,10 +44,10 @@ blob = manifest.get(TEST_KEY)
 
 ### Get Object
 
-<!--pytest.mark.skip-->
+<!--pytest-codeblocks:cont-->
 ```python
 with TemporaryDirectory() as tmpdirname:
-  dest = Path(tmpdirname) / TEST_KEY
+  dest = UPath(tmpdirname) / TEST_KEY
   local = blob.put(dest)
   print(local)
   assert local.exists()

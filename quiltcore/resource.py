@@ -68,3 +68,7 @@ class CoreResource:
         if not path.exists():
             raise KeyError(f"Key {key} not found in {self.path}")
         return self.child(path, key)
+    
+    def put(self, dest: Path) -> Path:
+        """Put a resource into dest. Return the new path"""
+        raise NotImplementedError
