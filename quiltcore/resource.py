@@ -50,6 +50,10 @@ class CoreResource:
     def child(self, path: Path, key: str = ""):
         """Return a child resource."""
         return self.klass(path, self.parent(key))
+    
+    def child_path(self, key: str) -> Path:
+        """Return the path for a child resource."""
+        return self.path / key
 
     def list(self) -> list[Self]:
         """List all child resources."""
@@ -58,5 +62,5 @@ class CoreResource:
 
     def get(self, key: str) -> Self:
         """Get a child resource by name."""
-        path = self.path / key
+        path = self.child_path(key)
         return self.child(path, key)

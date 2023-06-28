@@ -1,8 +1,8 @@
 from pytest import fixture
-from quiltcore import CoreManifest
+from quiltcore import CoreBlob, CoreManifest
 from upath import UPath
 
-from .conftest import TEST_TABLE
+from .conftest import TEST_TABLE, TEST_KEY, TEST_VER, TEST_OBJ
 
 @fixture
 def man():
@@ -19,4 +19,12 @@ def test_man(man: CoreManifest):
 def test_man_list(man: CoreManifest):
     results = man.list()
     assert len(results) == 1
-    assert results == ["camera-reviews"]
+    assert results == [TEST_KEY]
+
+def test_man_get(man: CoreManifest):
+    blob = man.get(TEST_KEY)
+    assert blob
+    assert isinstance(blob, CoreBlob)
+    assert str(blob.path) in TEST_OBJ
+    # assert result.version == TEST_VER  # type: ignore
+

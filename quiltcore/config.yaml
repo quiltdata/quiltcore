@@ -11,7 +11,7 @@ dirs:
   values: packages
 resources:
   CoreManifest:
-    child: CoreName
+    child: CoreBlob
     glob: "*"
   CoreName:
     child: CoreManifest
@@ -27,6 +27,7 @@ schema:
     version: string
     message: string
   name: logical_key
+  location: physical_keys
   columns:
     logical_key: string
     physical_keys: [string]

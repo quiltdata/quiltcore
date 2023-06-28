@@ -6,3 +6,6 @@ TEST_CAT = "https://open.quiltdata.com"
 
 TEST_URL = f"{TEST_CAT}/b/{TEST_BKT}/tree/.quilt/named_packages/{TEST_PKG}/{TEST_TAG}"
 TEST_TABLE = f"s3://quilt-example/.quilt/packages/{TEST_HASH}"
+TEST_KEY = "camera-reviews"
+TEST_VER = "ihb.qioVby3gnRaMRFLNsxcX.Yir_K14"
+TEST_OBJ = f"{TEST_BKT}/{TEST_PKG}/{TEST_KEY}?versionId={TEST_VER}"
