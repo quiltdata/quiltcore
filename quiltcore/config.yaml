@@ -9,6 +9,8 @@ dirs:
   config: .quilt
   names: named_packages
   values: packages
+multihash:
+  SHA256: sha2-256
 resources:
   CoreManifest:
     child: CoreBlob

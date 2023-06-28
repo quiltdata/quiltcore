@@ -1,3 +1,4 @@
+from multiformats import multihash
 from pathlib import Path
 
 from .manifest import CoreManifest
@@ -29,13 +30,20 @@ class CoreBlob(CoreResource):
             if type == "int64":
                 value = int(value)
             setattr(self, key, value)
+            if key == "hash":
+                self.setup_hash(value)  # type: ignore
+
+    def setup_hash(self, opt: dict):
+        self.hash_value = opt["value"]
+        hash_key = f'multihash/{opt["type"]}'
+        self.hash_type = self.config.get_str(hash_key)
+        self.hash_digest = multihash.get(self.hash_type)
 
     def name(self):
         return self.row[self.parent.name_col]  # type: ignore
     
     def location(self):
         return self.row[self.parent.loc_col]  # type: ignore
-
 
     def put(self, dest: Path) -> Path:
         """Put a resource into dest. Return the new path"""

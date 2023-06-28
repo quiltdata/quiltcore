@@ -1,3 +1,4 @@
+from multiformats import multihash
 from pytest import fixture
 from quiltcore import CoreBlob, CoreManifest
 from tempfile import TemporaryDirectory
@@ -35,13 +36,16 @@ def test_man_get(man: CoreManifest):
 
 
 def test_blob(man: CoreManifest):
-    blob = man.get(TEST_KEY)
+    blob: CoreBlob = man.get(TEST_KEY)  # type: ignore
     assert isinstance(blob.parent, CoreManifest)
     assert blob.logical_key == TEST_KEY  # type: ignore
     assert blob.physical_key == TEST_OBJ  # type: ignore
     assert blob.hash["value"] == TEST_OBJ_HASH  # type: ignore
     assert blob.hash["type"] == "SHA256"  # type: ignore
     assert blob.size == 100764599  # type: ignore
+
+    assert blob.hash_value == TEST_OBJ_HASH
+    assert blob.hash_type == "sha2-256"
 
     meta = blob.meta  # type: ignore
     assert meta
@@ -57,3 +61,8 @@ def test_blob_put(man: CoreManifest):
         print(loc)
         assert TEST_KEY in str(loc)
         assert loc.exists()
+
+
+def test_blob_verify(man: CoreManifest):
+    blob = man.get(TEST_KEY)
+
