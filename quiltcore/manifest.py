@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing_extensions import Self
 from upath import UPath
 
 import pyarrow as pa  # type: ignore
@@ -13,8 +14,8 @@ class CoreManifest(CoreResource):
     # TODO: cache Blobs to avoid repeated lookups
     # TODO: improve/replace child(key) handling
 
-    def __init__(self, path: Path, parent: CoreResource | None = None):
-        super().__init__(path, parent)
+    def __init__(self, path: Path, **kwargs):
+        super().__init__(path, **kwargs)
         with path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         self.body = self.setup()
@@ -31,8 +32,8 @@ class CoreManifest(CoreResource):
 
     def child_row(self, key: str) -> dict:
         """Return the dict for a child resource."""
-        expr = pc.field(self.name_col) == key
-        rows = self.body.filter(expr)
+        # TODO: cache to avoid continually re-calcluating
+        rows = self.body.filter(pc.field(self.name_col) == key)
         if rows.num_rows == 0:
             raise KeyError(f"Key [{key}] not found in {self.name_col} of {self.path}")
         return rows.to_pydict()
@@ -43,12 +44,13 @@ class CoreManifest(CoreResource):
         loc = row[self.loc_col][0][0]
         return UPath(loc)
 
-    def child(self, path: Path, key: str = ""):
-        """Return a child resource."""
-        row = self.child_row(key) if len(key) > 0 else {}
-        return self.klass(path, self, row)
+    def child_args(self, key: str) -> dict:
+        """Return the parameters for a child resource."""
+        row = self.child_row(key)
+        return {"row": row, "parent": self}
 
-    def list_gen(self):
-        """Return a generator of child paths."""
+    def list(self) -> list[Self]:
+        """List all child resources."""
         names = self.body.column(self.name_col).to_pylist()
-        return [self.child_path(name) for name in names]
+        return [self.child(self.child_path(x), x) for x in names]
+

@@ -10,12 +10,12 @@ class CoreRegistry(CoreResource):
     `list` and `get` return CoreName with parent of CoreValues
     """
 
-    def __init__(self, path: Path, parent: CoreResource | None = None):
-        super().__init__(path, parent)
+    def __init__(self, path: Path, **kwargs):
+        super().__init__(path, **kwargs)
         base = path / self.cf.get_path("dirs/config")
         self.path = base / self.cf.get_path("dirs/names")
         values = base / self.cf.get_path("dirs/values")
         self.values = CoreValues(values, self)
 
-    def child_parent(self, key: str):
-        return self.values
+    def child_args(self, key: str) -> dict:
+        return {"values": self.values}

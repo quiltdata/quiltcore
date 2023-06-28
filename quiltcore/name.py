@@ -7,16 +7,15 @@ from .resource import CoreResource
 class CoreName(CoreResource):
     """Namespace of Manifests by Hash"""
 
-    def __init__(self, path: Path, parent: CoreResource):
-        super().__init__(path, parent)
-        self.values = parent
+    def __init__(self, path: Path, **kwargs):
+        super().__init__(path, **kwargs)
+        self.values = kwargs['values']
 
     def hash(self, tag: str = "latest") -> str:
         hash_file = self.path / tag
         return hash_file.read_text()
 
-    def child(self, path: Path, key: str = "") -> CoreManifest:
-        """Return a child resource."""
-        # return self.klass(path, self.child_parent(key))
+    def child_path(self, key: str) -> Path:
+        """Return the path for a child resource."""
         hash = self.hash(key)
-        return CoreManifest(self.values.path / hash, self)
+        return self.values.path / hash
