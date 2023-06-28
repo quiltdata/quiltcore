@@ -65,4 +65,6 @@ class CoreResource:
     def get(self, key: str) -> Self:
         """Get a child resource by name."""
         path = self.child_path(key)
+        if not path.exists():
+            raise KeyError(f"Key {key} not found in {self.path}")
         return self.child(path, key)

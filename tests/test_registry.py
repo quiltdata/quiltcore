@@ -1,4 +1,4 @@
-from pytest import fixture
+from pytest import fixture, raises
 from quiltcore import CoreManifest, CoreName, CoreRegistry
 from upath import UPath
 
@@ -30,14 +30,19 @@ def test_registry_list(reg):
 
 
 def test_registry_get(reg):
-    manifest = reg.get(TEST_HASH)
-    assert isinstance(manifest, CoreName)
+    name = reg.get(TEST_PKG)
+    assert isinstance(name, CoreName)
+    assert TEST_PKG in str(name)
+
+    with raises(KeyError):
+        reg.get("invalid")
 
 
 def test_name_get(reg):
-    first = reg.list()[0]
-    man = first.get(TEST_TAG)
+    name = reg.get(TEST_PKG)
+    man = name.get(TEST_TAG)
+    assert isinstance(man, CoreManifest)
     assert TEST_HASH in str(man)
 
-    latest = first.get("latest")
+    latest = name.get("latest")
     assert isinstance(latest, CoreManifest)
