@@ -17,6 +17,6 @@ class CoreName(CoreResource):
 
     def child(self, path: Path, key: str = "") -> CoreManifest:
         """Return a child resource."""
-        # return self.klass(path, self.parent(key))
+        # return self.klass(path, self.child_parent(key))
         hash = self.hash(key)
         return CoreManifest(self.values.path / hash, self)

@@ -30,6 +30,10 @@ def test_man_get(man: CoreManifest):
     assert str(blob.path) in TEST_OBJ
     # TODO: assert result.version == TEST_VER  # type: ignore
 
+def test_blob(man: CoreManifest):
+    blob = man.get(TEST_KEY)
+    assert isinstance(blob.parent, CoreManifest)
+
 def test_blob_put(man: CoreManifest):
     blob = man.get(TEST_KEY)
     with TemporaryDirectory() as tmpdirname:

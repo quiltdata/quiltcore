@@ -23,11 +23,6 @@ resources:
     child: CoreBlob
     glob: "*"
 schema:
-  headers:
-    version: string
-    message: string
-  name: logical_key
-  location: physical_keys
   columns:
     logical_key: string
     physical_keys: [string]
@@ -36,5 +31,9 @@ schema:
       type: string
       value: string
     meta: struct
-
+  headers:
+    version: string
+    message: string
+  location: physical_keys
+  name: logical_key
 type: application/ld+json

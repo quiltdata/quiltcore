@@ -17,6 +17,7 @@ class CoreResource:
     """Generic resource class."""
 
     def __init__(self, path: Path, parent: CoreResource | None = None):
+        self.parent = parent
         self.config = CoreConfig()
         self.name = self.__class__.__name__
         rkey = f"resources/{self.name}"
@@ -43,13 +44,13 @@ class CoreResource:
         """Return a param."""
         return self.params[key] if key in self.params else default  # type: ignore
 
-    def parent(self, key: str) -> Self:
+    def child_parent(self, key: str) -> Self:
         """Return the params for a child resource."""
         return self
 
     def child(self, path: Path, key: str = ""):
         """Return a child resource."""
-        return self.klass(path, self.parent(key))
+        return self.klass(path, self.child_parent(key))
     
     def child_path(self, key: str) -> Path:
         """Return the path for a child resource."""
