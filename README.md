@@ -21,30 +21,36 @@ poetry install
 ```
 
 ```python
-import quiltcore as qc
+from quiltcore import CoreRegistry
+from tempfile import TemporaryDirectory
 from upath import UPath
 
-BKT="s3://quilt-example"
-PKG="example/wellcharts"
-dest="."
+TEST_BKT = "s3://quilt-example"
+TEST_PKG = "akarve/amazon-reviews"
+TEST_TAG = "1570503102"
+TEST_HASH = "ffe323137d0a84a9d1d6f200cecd616f434e121b3f53a8891a5c8d70f82244c2"
+TEST_KEY = "camera-reviews"
 ```
 
 ### Get Manifest
 
 <!--pytest-codeblocks:cont-->
 ```python
-registry = qc.CoreRegistry(UPath(BKT))
-# hash = run(registry.get_hash, PKG)
-# manifest = run(registry.get, hash)
+registry = CoreRegistry(UPath(TEST_BKT))
+named_package = registry.get(TEST_PKG)
+manifest = named_package.get(TEST_TAG)
+blob = manifest.get(TEST_KEY)
 ```
 
 ### Get Object
 
 <!--pytest.mark.skip-->
 ```python
-remote_object = manifest[-1]
-print(remote_object.uri())
-local = remote_object.put(dest)
+with TemporaryDirectory() as tmpdirname:
+  dest = Path(tmpdirname) / TEST_KEY
+  local = blob.put(dest)
+  print(local)
+  assert local.exists()
 ```
 
 ### Verify Object
