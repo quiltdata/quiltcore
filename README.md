@@ -51,11 +51,6 @@ with TemporaryDirectory() as tmpdirname:
   local = blob.put(dest)
   print(local)
   assert local.exists()
-```
-
-### Verify Object
-
-<!--pytest.mark.skip-->
-```python
-assert local_object.verify(remote_object.hash())
+  local_bytes = local.read_bytes()
+  assert blob.verify(local_bytes)
 ```
