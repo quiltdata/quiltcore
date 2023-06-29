@@ -41,11 +41,10 @@ tag:
 	git tag `poetry version | awk '{print $$2}'`
 	git push --tags
 
-pypi: clean
+pypi: clean tag
 	poetry version
 	poetry build
 	poetry publish --dry-run
-	echo "poetry version prepatch" # major minor
 
 clean-git:
 	git branch | grep -v '*' | grep -v 'main' | xargs git branch -D
