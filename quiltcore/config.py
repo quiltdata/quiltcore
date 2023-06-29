@@ -4,7 +4,7 @@ from un_yaml import UnYaml  # type: ignore
 
 
 class CoreConfig(UnYaml):
-    CONFIG_FILE = "config.yaml"
+    CONFIG_FILE = "quiltcore.yaml"
 
     @classmethod
     def DefaultConfig(cls) -> dict:
