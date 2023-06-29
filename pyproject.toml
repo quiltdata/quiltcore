@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "quiltcore"
-version = "0.1.0"
+version = "0.1.1"
 description = "next-generation package manager for universal data"
 authors = ["Ernest Prabhakar <ernest@quiltdata.io>"]
 readme = "README.md"
