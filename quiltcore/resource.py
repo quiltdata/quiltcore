@@ -43,7 +43,7 @@ class CoreResource:
     def child(self, path: Path, key: str = ""):
         """Return a child resource."""
         return self.klass(path, **self.child_args(key))
-    
+
     def child_path(self, key: str) -> Path:
         """Return the path for a child resource."""
         return self.path / key
@@ -61,7 +61,7 @@ class CoreResource:
         if not path.exists():
             raise KeyError(f"Key {key} not found in {self.path}")
         return self.child(path, key)
-    
+
     def put(self, dest: Path) -> Path:
         """Put a resource into dest. Return the new path"""
         raise NotImplementedError

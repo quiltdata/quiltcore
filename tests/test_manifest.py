@@ -2,7 +2,8 @@ from pytest import fixture
 from quiltcore import CoreBlob, CoreManifest
 from upath import UPath
 
-from .conftest import TEST_TABLE, TEST_KEY, TEST_OBJ
+from .conftest import TEST_KEY, TEST_OBJ, TEST_TABLE
+
 
 @fixture
 def man():

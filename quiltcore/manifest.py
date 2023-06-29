@@ -1,16 +1,17 @@
 from pathlib import Path
-from typing_extensions import Self
-from upath import UPath
 
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 import pyarrow.json as pj  # type: ignore
+from typing_extensions import Self
+from upath import UPath
 
 from .resource import CoreResource
 
 
 class CoreManifest(CoreResource):
     """In-memory representation of a serialized package manifest."""
+
     # TODO: cache Blobs to avoid repeated lookups
     # TODO: improve/replace child(key) handling
 
@@ -37,7 +38,7 @@ class CoreManifest(CoreResource):
         if rows.num_rows == 0:
             raise KeyError(f"Key [{key}] not found in {self.name_col} of {self.path}")
         return rows.to_pydict()
-        
+
     def child_path(self, key: str) -> Path:
         """Return the path for a child resource."""
         row = self.child_row(key)
@@ -53,4 +54,3 @@ class CoreManifest(CoreResource):
         """List all child resources."""
         names = self.body.column(self.name_col).to_pylist()
         return [self.child(self.child_path(x), x) for x in names]
-

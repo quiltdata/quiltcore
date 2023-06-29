@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from .manifest import CoreManifest
 from .resource import CoreResource
 
 
@@ -9,7 +8,7 @@ class CoreName(CoreResource):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.values = kwargs['values']
+        self.values = kwargs["values"]
 
     def hash(self, tag: str = "latest") -> str:
         hash_file = self.path / tag
