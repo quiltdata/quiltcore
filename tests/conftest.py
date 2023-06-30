@@ -1,0 +1,12 @@
+TEST_BKT = "s3://quilt-example"
+TEST_PKG = "akarve/amazon-reviews"
+TEST_TAG = "1570503102"
+TEST_HASH = "ffe323137d0a84a9d1d6f200cecd616f434e121b3f53a8891a5c8d70f82244c2"
+TEST_CAT = "https://open.quiltdata.com"
+
+TEST_URL = f"{TEST_CAT}/b/{TEST_BKT}/tree/.quilt/named_packages/{TEST_PKG}/{TEST_TAG}"
+TEST_TABLE = f"s3://quilt-example/.quilt/packages/{TEST_HASH}"
+TEST_KEY = "camera-reviews"
+TEST_VER = "ihb.qioVby3gnRaMRFLNsxcX.Yir_K14"
+TEST_OBJ = f"{TEST_BKT}/{TEST_PKG}/{TEST_KEY}?versionId={TEST_VER}"
+TEST_OBJ_HASH = "c833f360052b40b4cb82ba40e4ea702355ad3d92c2bd9a1ba2c2436de9c637ff"

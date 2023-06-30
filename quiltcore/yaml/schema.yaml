@@ -1,0 +1,11 @@
+---
+version: string
+user_meta: null
+message: string
+logical_key: string
+physical_keys: [string]
+size: int64
+hash:
+  type: string
+  value: string
+meta: struct<>

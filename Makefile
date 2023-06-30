@@ -1,6 +1,7 @@
 sinclude .env # create from example.env
+.PHONY: install test watch all clean typecheck
 PROJECT=quiltcore
-.PHONY: install test watch all clean
+TEST_README=--codeblocks
 
 ifeq ($(TEST_OS),windows-latest)
 	TEST_README=''
@@ -20,14 +21,11 @@ install:
 update:
 	poetry update
 
-test:
-	poetry run pytest --cov --cov-report xml:coverage.xml
+test: clean typecheck
+	poetry run pytest $(TEST_README) --cov --cov-report xml:coverage.xml
 
-test-short:
-	make test "SKIP_LONG_TESTS=True"
-
-test-long:
-	make test "SKIP_LONG_TESTS=False"
+test-readme:
+	poetry run pytest $(TEST_README) 
 
 typecheck:
 	poetry run mypy $(PROJECT) tests
@@ -43,11 +41,10 @@ tag:
 	git tag `poetry version | awk '{print $$2}'`
 	git push --tags
 
-pypi: clean
+pypi: clean tag
 	poetry version
 	poetry build
 	poetry publish --dry-run
-	echo "poetry version prepatch" # major minor
 
 clean-git:
 	git branch | grep -v '*' | grep -v 'main' | xargs git branch -D

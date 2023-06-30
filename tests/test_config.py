@@ -1,7 +1,7 @@
-from quiltcore import CoreConfig
+from quiltcore import Config
 
 
 def test_config():
-    cfg = CoreConfig()
+    cfg = Config()
     assert cfg
-    assert cfg.get("root") == ".quilt"
+    assert cfg.get("dirs/config") == ".quilt"

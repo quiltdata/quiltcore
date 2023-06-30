@@ -1,27 +1,29 @@
 [tool.poetry]
 name = "quiltcore"
-version = "0.1.0"
-description = "next-generation package manager for universal data"
+version = "0.1.2"
+description = "low-level plubming to read/write Quilt packages"
 authors = ["Ernest Prabhakar <ernest@quiltdata.io>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-anyio = "^3.7.0"
-trio = "^0.22.0"
 typing-extensions = "^4.6.3"
 tzlocal = "^5.0.1"
 un-yaml = ">=0.3.1"
 # un-yaml = {git = "https://github.com/data-yaml/un-yaml.git", rev = "main"}
 pyarrow = "^12.0.0"
 pandas = "^2.0.2"
+pytest-codeblocks = "^0.16.1"
+universal-pathlib = "^0.0.23"
+s3fs = "^2023.6.0"
+pandas-stubs = "^2.0.2.230605"
+multiformats = "^0.2.1"
 
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
 isort = "^5.12.0"
 mypy = "^1.4.1"
-pytest-trio = "^0.8.0"
 pytest-watcher = "^0.3.4"
 pytest-cov = "^4.0.0"
 types-pyyaml = "^6.0.12.10"
