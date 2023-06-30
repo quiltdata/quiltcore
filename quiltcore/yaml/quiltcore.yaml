@@ -8,18 +8,18 @@ _yaml:
 dirs:
   config: .quilt
   names: named_packages
-  values: packages
+  versions: packages
 multihash:
   SHA256: sha2-256
 resources:
-  CoreRegistry:
-    child: CoreName
+  Registry:
+    child: Namespace
     glob: "*/*"
-  CoreName:
-    child: CoreManifest
+  Namespace:
+    child: Manifest
     glob: "*"
-  CoreManifest:
-    child: CoreBlob
+  Manifest:
+    child: Blob
 schema:
   columns:
     logical_key: string
@@ -32,6 +32,6 @@ schema:
   headers:
     version: string
     message: string
-  location: physical_keys
+  place: physical_keys
   name: logical_key
 type: application/ld+json

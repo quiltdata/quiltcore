@@ -21,7 +21,7 @@ poetry install
 ```
 
 ```python
-from quiltcore import CoreRegistry
+from quiltcore import Registry
 from tempfile import TemporaryDirectory
 from upath import UPath
 
@@ -36,7 +36,8 @@ TEST_KEY = "camera-reviews"
 
 <!--pytest-codeblocks:cont-->
 ```python
-registry = CoreRegistry(UPath(TEST_BKT))
+path = UPath(TEST_BKT)
+registry = Registry(path)
 named_package = registry.get(TEST_PKG)
 manifest = named_package.get(TEST_TAG)
 blob = manifest.get(TEST_KEY)

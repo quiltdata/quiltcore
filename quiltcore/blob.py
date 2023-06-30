@@ -2,21 +2,14 @@ from pathlib import Path
 
 from multiformats import multihash
 
-from .manifest import CoreManifest
-from .resource import CoreResource
+from .resource import Resource
 
 
-class CoreBlob(CoreResource):
-    """Storage for dereferenced Names"""
+class Blob(Resource):
+    """Represents a single blob of data in a datastore."""
 
-    MH_PREFIX = "1220"
-
-    @staticmethod
-    def FromKeyInManifest(key: str, manifest: CoreManifest) -> "CoreBlob":
-        path = manifest.child_path(key)
-        row = manifest.child_row(key)
-        return CoreBlob(path, parent=manifest, row=row)
-
+    MH_PREFIX_SHA256 = "1220"
+    
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.parent = kwargs["parent"]
@@ -37,6 +30,10 @@ class CoreBlob(CoreResource):
             if key == "hash":
                 self.setup_hash(value)  # type: ignore
 
+    #
+    # Calculate and verify hash
+    #
+
     def setup_hash(self, opt: dict):
         self.hash_value = opt["value"]
         hash_key = f'multihash/{opt["type"]}'
@@ -46,18 +43,7 @@ class CoreBlob(CoreResource):
     def digest(self, bstring: bytes) -> str:
         digest = self.hash_digest.digest(bstring)
         hex = digest.hex()
-        return hex.strip(CoreBlob.MH_PREFIX)
-
-    def name(self):
-        return self.row[self.parent.name_col]  # type: ignore
-
-    def location(self):
-        return self.row[self.parent.loc_col]  # type: ignore
-
-    def put(self, dest: Path) -> Path:
-        """Put a resource into dest. Return the new path"""
-        dest.write_bytes(self.path.read_bytes())  # for binary files
-        return dest
+        return hex.strip(Blob.MH_PREFIX_SHA256)
 
     def verify(self, bstring: bytes) -> bool:
         """Verify that bytes match the hash"""
@@ -65,3 +51,14 @@ class CoreBlob(CoreResource):
         print(digest)
         print(self.hash_value)
         return digest == self.hash_value
+
+    #
+    # Convenience Methods
+    #
+
+    def name(self):
+        return self.row[self.parent.name_col]  # type: ignore
+
+    def place(self):
+        return self.row[self.parent.place_col]  # type: ignore
+

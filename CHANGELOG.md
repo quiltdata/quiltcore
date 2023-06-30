@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 0.1.2 (2023-06-29)
+
+- remove prefix from Core classes
+- rename config to quiltcore.yaml
+
 ## 0.1.1 (2023-06-28)
 
 - create and test Core classes
