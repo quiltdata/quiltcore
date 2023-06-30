@@ -9,7 +9,7 @@ class Blob(Resource):
     """Represents a single blob of data in a datastore."""
 
     MH_PREFIX_SHA256 = "1220"
-    
+
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.parent = kwargs["parent"]
@@ -61,4 +61,3 @@ class Blob(Resource):
 
     def place(self):
         return self.row[self.parent.place_col]  # type: ignore
-

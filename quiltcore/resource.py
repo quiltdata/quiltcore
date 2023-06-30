@@ -35,7 +35,7 @@ class Resource:
     def param(self, key: str, default: str) -> str:
         """Return a param."""
         return self.params[key] if key in self.params else default  # type: ignore
-    
+
     def setup_params(self):
         """Load Resource-specific params from config file."""
         self.params = self.cf.get_dict(f"resources/{self.class_name}")
@@ -45,7 +45,7 @@ class Resource:
 
     #
     # Private Methods for child resources
-    # 
+    #
 
     def child_args(self, key: str) -> dict:
         """Return the parameters for a child resource."""
@@ -65,7 +65,7 @@ class Resource:
 
     #
     # Public HTTP-like Methods
-    # 
+    #
 
     def list(self) -> list[Self]:
         """List all child resources."""

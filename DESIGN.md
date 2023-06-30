@@ -22,7 +22,7 @@ attempts to define a next-generation architecture and primitives
 ### 2. quiltcore.yaml
 
 Rather than hard-coding any constants, all configuration
-parameters are stored in a [yaml file](./quiltcore/quiltcore.yaml).
+parameters are stored in a [yaml file](./quiltcore/yaml/quiltcore.yaml).
 
 By making explicit what was previously implicit, this should:
 

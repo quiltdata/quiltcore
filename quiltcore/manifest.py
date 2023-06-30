@@ -35,7 +35,7 @@ class Manifest(Resource):
 
     #
     # Private Methods for child resources
-    # 
+    #
 
     def child_row(self, key: str) -> dict:
         """Return the dict for a child resource."""
@@ -58,7 +58,7 @@ class Manifest(Resource):
 
     #
     # Public HTTP-like Methods
-    # 
+    #
 
     def list(self) -> list[Self]:
         """List all child resources."""
