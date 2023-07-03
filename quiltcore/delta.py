@@ -21,7 +21,8 @@ class Delta(Resource):
         self.key = args.get("key", self.path.name)
         self.prefix = args.get("prefix")
         if self.prefix:
-            self.key = Path(self.prefix) / self.key
+            ppath =  Path(self.prefix) / self.key
+            self.key = str(ppath.as_posix())
     
     def __repr__(self):
         return super().__repr__() + f": {self.args}"

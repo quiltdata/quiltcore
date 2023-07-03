@@ -20,6 +20,8 @@ resources:
     glob: "*"
   Manifest:
     child: Blob
+  Delta:
+    child: Blob
 schema:
   columns:
     logical_key: string
