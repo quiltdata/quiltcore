@@ -3,9 +3,10 @@ from __future__ import annotations
 from pathlib import Path
 
 import quiltcore
-from typing_extensions import Self
+from typing import Generator
+from tempfile import TemporaryDirectory
 
-from .config import Config
+from .yaml.config import Config
 
 
 class Resource:
@@ -14,6 +15,19 @@ class Resource:
     Manages configuration and provides common methods.
     Subclasses override child* to customize get/list behavior
     """
+
+    @staticmethod
+    def TempGen(filename: str = "") -> Generator[Path, None, None]:
+        """Return generator to a temporary directory."""
+        with TemporaryDirectory() as tmpdirname:
+                temp_path = Path(tmpdirname) / filename if len(filename) > 0 else Path(tmpdirname)
+                yield temp_path
+
+    @staticmethod
+    def TempDir(filename: str = "") -> Path:
+        for path in Resource.TempGen(filename):
+            return path
+        return Path(".")  # should never happen
 
     @staticmethod
     def ClassFromName(name: str) -> type:
@@ -67,18 +81,22 @@ class Resource:
     # Public HTTP-like Methods
     #
 
-    def list(self) -> list[Self]:
+    def list(self) -> list["Resource"]:
         """List all child resources."""
         return [self.child(x) for x in self.child_list()]
 
-    def get(self, key: str) -> Self:
+    def get(self, key: str, **kwargs) -> "Resource":
         """Get a child resource by name."""
         path = self.child_path(key)
         if not path.exists():
             raise KeyError(f"Key {key} not found in {self.path}")
         return self.child(path, key)
 
-    def put(self, dest: Path) -> Path:
+    def put(self, dest: Path, **kwargs) -> Path:
         """Copy contents of resource's path into _dest_."""
         dest.write_bytes(self.path.read_bytes())  # for binary files
         return dest
+    
+    def delete(self, key: str = "", **kwargs) -> None:
+        """Delete a child resource by name."""
+        pass

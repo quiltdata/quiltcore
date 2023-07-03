@@ -60,7 +60,7 @@ class Manifest(Resource):
     # Public HTTP-like Methods
     #
 
-    def list(self) -> list[Self]:
+    def list(self) -> list[Resource]:
         """List all child resources."""
         names = self.body.column(self.name_col).to_pylist()
         return [self.child(self.child_path(x), x) for x in names]
