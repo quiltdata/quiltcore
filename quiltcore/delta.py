@@ -1,6 +1,8 @@
 from pathlib import Path
 from yaml import dump
 
+from .blob import Blob
+from .manifest import Manifest
 from .resource import Resource
 
 
@@ -35,6 +37,6 @@ class Delta(Resource):
         return {
             "action": self.action,
             "key": self.key,
+            "path": self.path,
             "prefix": self.prefix,
         }
-    

@@ -30,10 +30,19 @@ class Changes(Resource):
             return path / Changes.MANIFEST_FILE
         return path
 
+    @staticmethod
+    def GetManifest(args: dict) -> Manifest:
+        if Changes.MANIFEST_KEY in args:
+            return args[Changes.MANIFEST_KEY]
+        path = Changes.ScratchFile()
+        return Manifest(path)   
+
     def __init__(self, path = None, **kwargs):
         cache = Changes.GetCache(path)
         super().__init__(cache, **kwargs)
-        self.manifest = kwargs.get(Changes.MANIFEST_KEY)
+        self.manifest = Changes.GetManifest(kwargs)
+        self.name_col = self.manifest.name_col
+        self.place_col = self.manifest.place_col
         self.deltas = {}
 
     def __str__(self):
@@ -42,7 +51,11 @@ class Changes(Resource):
     def to_dict(self):
         return {k: v.to_dict() for k, v in self.deltas.items()}
     
-    def put(self, src: Path, **kwargs) -> Path:
+    #
+    # Mutate Changes
+    #
+    
+    def put(self, path: Path, **kwargs) -> Path:
         """
         Create and track a Delta for this source Path. 
         Options: 
@@ -51,7 +64,7 @@ class Changes(Resource):
         * prefix: pre-pended to key if non-empty
 .
         """
-        delta = Delta(src, **kwargs)
+        delta = Delta(path, **kwargs)
         self.deltas[delta.key] = delta
         return delta.path
     
@@ -61,16 +74,31 @@ class Changes(Resource):
             del self.deltas[key]
             return
         raise KeyError(f"Key {key} not found in {self.deltas}")
+    
+    #
+    # Create Blob for each Delta
 
     def get_delta(self, key: str, **kwargs) -> Delta:
-        """
-        Get a child resource by name.
-        Q: Is this at all useful?
-        Why not use get(message) to return a Manifest?
-        """
+        """ Return a Delta by key. Raise KeyError if not found. """
         if key in self.deltas:
             return self.deltas[key]
         raise KeyError(f"Key {key} not found in {self.deltas}")
+
+    def child_path(self, key: str) -> Path:
+        """Return the Path for a child resource."""
+        delta = self.get_delta(key)
+        return delta.path
+
+    def child_args(self, key: str) -> dict:
+        """Return the parameters for a child resource."""
+        return {
+            "parent": self.manifest,
+            "row": {
+                self.name_col: key,
+                self.place_col: self.child_path(key),
+            }
+        }
+    
     
     def list_deltas(self, **kwargs) -> list[Resource]:
         """
@@ -79,10 +107,3 @@ class Changes(Resource):
         Why not return this info as a String instead?
         """
         return list(self.deltas.values())
-    
-    #
-    # Create new Manifest
-    # 1. Get list of paths and keys (merge with `manifest`, if any)
-    # 2. Create Blobs for each path ("row=")
-    # 3. 
-

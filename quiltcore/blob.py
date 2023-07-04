@@ -11,14 +11,6 @@ class Blob(Resource):
 
     MH_PREFIX_SHA256 = "1220"
 
-    @staticmethod
-    def FromKeyPath(key: str, path: Path, parent: Manifest, **kwargs) -> "Blob":
-        """Create a Blob from a key and path."""
-        row = {parent.name_col: key, parent.place_col: str(path)}
-        kwargs["parent"] = parent
-        kwargs["row"] = row
-        return Blob(path, **kwargs)
-
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.parent = kwargs["parent"]

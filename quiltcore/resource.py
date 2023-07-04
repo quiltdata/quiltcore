@@ -62,7 +62,7 @@ class Resource:
     #
 
     def child_args(self, key: str) -> dict:
-        """Return the parameters for a child resource."""
+        """Return the kwargs for a child resource."""
         return {}
 
     def child(self, path: Path, key: str = ""):
@@ -73,8 +73,8 @@ class Resource:
         """Return the path for a child resource."""
         return self.path / key
 
-    def child_list(self):
-        """List/generator of valid children, based on self.glob"""
+    def child_list(self) -> Generator[Path, None, None]:
+        """List/generator of valid child paths; defaults to self.glob"""
         return self.path.glob(self.glob)
 
     #
@@ -92,10 +92,10 @@ class Resource:
             raise KeyError(f"Key {key} not found in {self.path}")
         return self.child(path, key)
 
-    def put(self, dest: Path, **kwargs) -> Path:
-        """Copy contents of resource's path into _dest_."""
-        dest.write_bytes(self.path.read_bytes())  # for binary files
-        return dest
+    def put(self, path: Path, **kwargs) -> Path:
+        """Copy contents of resource's path into _path_."""
+        path.write_bytes(self.path.read_bytes())  # for binary files
+        return path
     
     def delete(self, key: str = "", **kwargs) -> None:
         """Delete a child resource by name."""

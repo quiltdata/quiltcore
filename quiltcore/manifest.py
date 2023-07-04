@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import logging
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 import pyarrow.json as pj  # type: ignore
@@ -19,13 +20,16 @@ class Manifest(Resource):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        with path.open(mode="rb") as fi:
-            self.table = pj.read_json(fi)
-        self.body = self.setup_table()
+        try:
+            self.body = self.setup_table(path)
+        except FileNotFoundError:
+            logging.warning(f"Manifest not found: {path}")
         self.name_col = self.cf.get_str("schema/name", "logical_key")
         self.place_col = self.cf.get_str("schema/place", "physical_keys")
 
-    def setup_table(self) -> pa.Table:
+    def setup_table(self, path: Path) -> pa.Table:
+        with path.open(mode="rb") as fi:
+            self.table = pj.read_json(fi)
         first = self.table.take([0]).to_pydict()
         headers = self.cf.get_dict("schema/headers")
         keys = list(headers.keys())
