@@ -59,19 +59,19 @@ def test_chg_delta_rm(infile: UPath):
 def test_chg_put(chg: Changes, infile: UPath):
     test_key = "largo"
     chg.put(infile, key=test_key)
-    delta = chg.get(test_key)
+    delta = chg.get_delta(test_key)
     assert delta.key == test_key
 
     chg.delete(test_key)
     with raises(KeyError):
-        chg.get(test_key)
+        chg.get_delta(test_key)
 
     with raises(KeyError):
         chg.get("invalid_key")
 
-def test_chg_list(chg: Changes, infile: UPath):
+def test_chg_deltas(chg: Changes, infile: UPath):
     chg.put(infile)
-    deltas = chg.list()
+    deltas = chg.list_deltas()
     assert len(deltas) == 1
     rsrc = deltas[0]
     assert isinstance(rsrc, Delta)

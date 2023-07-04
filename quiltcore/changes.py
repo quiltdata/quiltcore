@@ -52,14 +52,30 @@ class Changes(Resource):
         """ Delete the key from this change set """
         if key in self.deltas:
             del self.deltas[key]
+            return
         raise KeyError(f"Key {key} not found in {self.deltas}")
 
-    def get(self, key: str, **kwargs) -> Delta:
-        """Get a child resource by name."""
+    def get_delta(self, key: str, **kwargs) -> Delta:
+        """
+        Get a child resource by name.
+        Q: Is this at all useful?
+        Why not use get(message) to return a Manifest?
+        """
         if key in self.deltas:
             return self.deltas[key]
         raise KeyError(f"Key {key} not found in {self.deltas}")
     
-    def list(self, **kwargs) -> list[Resource]:
-        """List child Deltas."""
+    def list_deltas(self, **kwargs) -> list[Resource]:
+        """
+        List child Deltas.
+        Q: Does anyone care?
+        Why not return this info as a String instead?
+        """
         return list(self.deltas.values())
+    
+    #
+    # Create new Manifest
+    # 1. Get list of paths and keys (merge with `manifest`, if any)
+    # 2. Create Blobs for each path ("row=")
+    # 3. 
+

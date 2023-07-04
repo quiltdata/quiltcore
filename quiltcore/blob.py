@@ -2,6 +2,7 @@ from pathlib import Path
 
 from multiformats import multihash
 
+from .manifest import Manifest
 from .resource import Resource
 
 
@@ -9,6 +10,14 @@ class Blob(Resource):
     """Represents a single blob of data in a datastore."""
 
     MH_PREFIX_SHA256 = "1220"
+
+    @staticmethod
+    def FromKeyPath(key: str, path: Path, parent: Manifest, **kwargs) -> "Blob":
+        """Create a Blob from a key and path."""
+        row = {parent.name_col: key, parent.place_col: str(path)}
+        kwargs["parent"] = parent
+        kwargs["row"] = row
+        return Blob(path, **kwargs)
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
