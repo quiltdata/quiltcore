@@ -41,8 +41,8 @@ class Changes(Resource):
         cache = Changes.GetCache(path)
         super().__init__(cache, **kwargs)
         self.manifest = Changes.GetManifest(kwargs)
-        self.name_col = self.manifest.name_col
-        self.place_col = self.manifest.place_col
+        self.kName = self.manifest.kName
+        self.kPlaces = self.manifest.kPlaces
         self.deltas = {}
 
     def __str__(self):
@@ -91,11 +91,13 @@ class Changes(Resource):
 
     def child_args(self, key: str) -> dict:
         """Return the parameters for a child resource."""
+        path = self.child_path(key)
+
         return {
             "parent": self.manifest,
             "row": {
-                self.name_col: key,
-                self.place_col: self.child_path(key),
+                self.kName: [key],
+                self.kPlaces: [[str(path)]],
             }
         }
     

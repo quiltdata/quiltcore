@@ -20,6 +20,8 @@ resources:
     glob: "*"
   Manifest:
     child: Blob
+  Changes:
+    child: Blob
   Delta:
     child: Blob
 schema:
@@ -34,6 +36,7 @@ schema:
   headers:
     version: string
     message: string
-  place: physical_keys
+  places: physical_keys
+  place: physical_key
   name: logical_key
 type: application/ld+json
