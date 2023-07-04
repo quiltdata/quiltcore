@@ -47,6 +47,10 @@ def test_chg_delta(infile: UPath):
     assert delta.path == infile
     assert delta.action == "add"
     assert delta.key == FILENAME
+    p = delta.to_dict()
+    assert p["key"] == FILENAME
+    y = str(delta)
+    assert f"key: {FILENAME}" in y
 
 
 def test_chg_delta_rm(infile: UPath):
@@ -76,3 +80,8 @@ def test_chg_deltas(chg: Changes, infile: UPath):
     rsrc = deltas[0]
     assert isinstance(rsrc, Delta)
     assert rsrc.key == FILENAME
+
+def test_chg_str(chg: Changes, infile: UPath):
+    chg.put(infile)
+    y = str(chg)
+    assert f"{FILENAME}:" in y

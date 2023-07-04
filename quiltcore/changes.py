@@ -1,4 +1,5 @@
 from pathlib import Path
+from yaml import dump
 
 from .delta import Delta
 from .manifest import Manifest
@@ -35,6 +36,12 @@ class Changes(Resource):
         self.manifest = kwargs.get(Changes.MANIFEST_KEY)
         self.deltas = {}
 
+    def __str__(self):
+        return dump(self.to_dict())
+
+    def to_dict(self):
+        return {k: v.to_dict() for k, v in self.deltas.items()}
+    
     def put(self, src: Path, **kwargs) -> Path:
         """
         Create and track a Delta for this source Path. 
