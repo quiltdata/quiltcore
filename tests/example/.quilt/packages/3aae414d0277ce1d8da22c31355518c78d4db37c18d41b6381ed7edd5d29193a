@@ -1,0 +1,4 @@
+{"version": "v0", "message": "un-forced patch-update adds ADDME.md"}
+{"logical_key": "ADDME.md", "physical_keys": ["s3://udp-spec/manual/force/ADDME.md?versionId=8_v7adfzCyMCIgp.9nvVaflbga4IonuJ"], "size": 36, "hash": {"type": "SHA256", "value": "bf93c6007cba506bdd19e81e64f37407266f1e8233807a12398edef3b4a6de74"}, "meta": {}}
+{"logical_key": "DELETEME.md", "physical_keys": ["s3://udp-spec/manual/force/DELETEME.md?versionId=1x48KC_hptIgpRYtjRntvMU6FcfBmBiT"], "size": 16, "hash": {"type": "SHA256", "value": "f3dd7401c0386de73998f7e2d54e9c3aeffefd75a7bc0cf690da251e16daf59b"}, "meta": {}}
+{"logical_key": "README.md", "physical_keys": ["s3://udp-spec/manual/force/README.md?versionId=B0zNSMELW__87yfYtZcfcdBw3qxHkFhm"], "size": 88, "hash": {"type": "SHA256", "value": "dd53e8f2bdb383f56ebfc759661effc3244da9ab1d37cb73f6eed8cf9edbbc05"}, "meta": {}}

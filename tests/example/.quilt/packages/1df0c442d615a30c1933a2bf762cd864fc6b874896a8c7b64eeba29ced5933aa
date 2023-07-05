@@ -1,0 +1,2 @@
+{"version": "v0", "user_meta": null, "message": null}
+{"logical_key": "README.md", "physical_keys": ["s3://udp-spec/test_run/test_push/README.md?versionId=6gmmqpgBuKlJUcEs90DdrhSRSD9O5vXA"], "size": 26, "hash": {"type": "SHA256", "value": "a181b6e98c80db7dde144acd0a26a9bf64303b6d60eb73675232e67534275b38"}, "meta": {}}
