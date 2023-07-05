@@ -13,7 +13,7 @@ def chg():
 
 
 @fixture
-def infile(dir: UPath) -> UPath:
+def infile(dir: UPath) -> UPath:  # noqa: F401
     path = dir / FILENAME
     path.write_text(FILETEXT)
     return path.resolve()
@@ -25,12 +25,12 @@ def changed(chg: Changes, infile: UPath):
     return chg
 
 
-def test_chg_dir(dir: UPath):
+def test_chg_dir(dir: UPath):  # noqa: F401
     chg = Changes(dir)
     assert chg.path == dir / Changes.MANIFEST_FILE
 
 
-def test_chg_file(dir: UPath):
+def test_chg_file(dir: UPath):  # noqa: F401
     outfile = dir / "outfile.json"
     chg = Changes(outfile)
     assert chg.path == outfile

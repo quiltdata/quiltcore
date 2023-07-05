@@ -45,7 +45,7 @@ def test_entry_meta(entry: Entry):
     assert meta["target"] == "parquet"
 
 
-def test_entry_get(entry: Entry, dir: UPath):
+def test_entry_get(entry: Entry, dir: UPath):  # noqa: F401
     dest = dir / TEST_KEY
     assert not dest.exists()
 
@@ -64,7 +64,7 @@ def test_entry_digest_verify(entry: Entry):
     assert entry.verify(DATA_HW)
 
 
-def test_entry_verify(entry: Entry, dir: UPath):
+def test_entry_verify(entry: Entry, dir: UPath):  # noqa: F401
     assert entry.hash
     dest = dir / TEST_KEY
     loc = str(dest)
