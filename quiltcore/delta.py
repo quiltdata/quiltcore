@@ -19,11 +19,11 @@ class Delta(ResourceKey):
 
     def setup(self, args: dict):
         self.action = args.get("action", "add")
-        self.key = args.get("key", self.path.name)
+        self.name = args.get("name", self.path.name)
         self.prefix = args.get("prefix")
         if self.prefix:
-            ppath = Path(self.prefix) / self.key
-            self.key = str(ppath.as_posix())
+            ppath = Path(self.prefix) / self.name
+            self.name = str(ppath.as_posix())
 
     def __repr__(self):
         return super().__repr__()
@@ -34,7 +34,7 @@ class Delta(ResourceKey):
     def to_dict(self) -> dict:
         return {
             "action": self.action,
-            "key": self.key,
+            "name": self.name,
             "path": self.path,
             "prefix": self.prefix,
         }

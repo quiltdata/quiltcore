@@ -1,13 +1,12 @@
 from pytest import fixture, raises
 from quiltcore import Manifest, Namespace, Volume
 
-from .conftest import dir, TEST_BKT, TEST_PKG, UPath  # noqa: F401
+from .conftest import dir, TEST_BKT, TEST_PKG, TEST_VOL, UPath  # noqa: F401
 
 
 @fixture
 def vol():
-    path_bkt = UPath(TEST_BKT)
-    return Volume(path_bkt)
+    return Volume.FromURI(TEST_VOL)
 
 
 def test_vol(vol):
@@ -45,6 +44,15 @@ def test_vol_man_latest(vol):
     man = vol.get(TEST_PKG, tag="latest")
     assert isinstance(man, Manifest)
 
-def test_vol_translate(vol):
-    assert vol
+def test_vol_translate(dir: UPath):
+    v_s3 = Volume.FromURI(TEST_BKT)
+    assert v_s3
+    v_tmp = Volume(dir)
+    assert v_tmp
+
+    man = v_s3.get(TEST_PKG)
+    assert man
+
+    # result = v_tmp.put(man, prefix = "data")
+    
 

@@ -1,9 +1,11 @@
 from pathlib import Path
+from upath import UPath
 
 from yaml import dump
 
 from .delta import Delta
 from .manifest import Manifest
+from .resource import Resource
 from .resource_key import ResourceKey
 
 
@@ -53,7 +55,7 @@ class Changes(ResourceKey):
     # Mutating Changes
     #
 
-    def put(self, path: Path, **kwargs) -> Path:
+    def post(self, key: str, **kwargs) -> Resource:
         """
                 Create and track a Delta for this source Path.
                 Options:
@@ -62,9 +64,10 @@ class Changes(ResourceKey):
                 * prefix: pre-pended to key if non-empty
         .
         """
+        path = UPath(key)
         delta = Delta(path, **kwargs)
-        self.keystore[delta.key] = delta
-        return delta.path
+        self.keystore[delta.name] = delta
+        return delta
 
     def delete(self, key: str, **kwargs) -> None:
         """Delete the key from this change set"""
@@ -80,7 +83,7 @@ class Changes(ResourceKey):
     def child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         delta = self.get_delta(key)
-        return {self.kName: [delta.key], self.kPlaces: str(delta.path)}
+        return {self.kName: [delta.name], self.kPlaces: str(delta.path)}
 
     def get_delta(self, key: str, **kwargs) -> Delta:
         """Return a Delta by key. Raise KeyError if not found."""

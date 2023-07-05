@@ -16,12 +16,12 @@ def chg():
 def infile(dir: UPath) -> UPath:
     path = dir / FILENAME
     path.write_text(FILETEXT)
-    return path
+    return path.resolve()
 
 
 @fixture
 def changed(chg: Changes, infile: UPath):
-    chg.put(infile)
+    chg.post(str(infile))
     return chg
 
 
@@ -44,25 +44,25 @@ def test_chg_delta(infile: UPath):
     delta = Delta(infile)
     assert delta.path == infile
     assert delta.action == "add"
-    assert delta.key == FILENAME
+    assert delta.name == FILENAME
     p = delta.to_dict()
-    assert p["key"] == FILENAME
+    assert p["name"] == FILENAME
     y = str(delta)
-    assert f"key: {FILENAME}" in y
+    assert f"name: {FILENAME}" in y
 
 
 def test_chg_delta_rm(infile: UPath):
-    delta = Delta(infile, action="rm", key="foo.md", prefix="bar/")
+    delta = Delta(infile, action="rm", name="foo.md", prefix="bar/")
     assert delta.path == infile
     assert delta.action == "rm"
-    assert delta.key == "bar/foo.md"
+    assert delta.name == "bar/foo.md"
 
 
 def test_chg_put(chg: Changes, infile: UPath):
     test_key = "largo"
-    chg.put(infile, key=test_key)
+    chg.post(str(infile), name=test_key)
     delta = chg.get_delta(test_key)
-    assert delta.key == test_key
+    assert delta.name == test_key
 
     chg.delete(test_key)
     with raises(KeyError):

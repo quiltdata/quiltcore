@@ -73,12 +73,21 @@ class Resource:
         return []
 
     def get(self, key: str, **kwargs) -> "Resource":
-        """Get a child resource by name."""
+        """Get a child resource by key."""
         return self
 
-    def put(self, path: Path, **kwargs) -> Path:
+    def patch(self, res: Resource, **kwargs) -> "Resource":
+        """Update and return a child resource."""
+        raise NotImplementedError
+
+    def post(self, key: str, **kwargs) -> "Resource":
+        """Create and return a child resource using key."""
+        raise NotImplementedError
+
+    def put(self, res: Resource, **kwargs) -> "Resource":
+        """Replace and return a child resource."""
         raise NotImplementedError
 
     def delete(self, key: str, **kwargs) -> None:
         """Delete a child resource by name."""
-        pass
+        raise NotImplementedError

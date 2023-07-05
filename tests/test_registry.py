@@ -2,12 +2,12 @@ from pytest import fixture, raises
 from quiltcore import Manifest, Namespace, Registry
 from upath import UPath
 
-from .conftest import TEST_BKT, TEST_HASH, TEST_PKG, TEST_TAG
+from .conftest import TEST_VOL, TEST_HASH, TEST_PKG, TEST_TAG
 
 
 @fixture
 def reg():
-    path_bkt = UPath(TEST_BKT)
+    path_bkt = UPath(TEST_VOL)
     return Registry(path_bkt)
 
 
@@ -22,7 +22,7 @@ def test_reg(reg):
 
 
 def test_reg_eq(reg):
-    path = UPath(TEST_BKT)
+    path = UPath(TEST_VOL)
     reg2 = Registry(path)
     assert reg == reg2
     assert reg == reg.args["Registry"]

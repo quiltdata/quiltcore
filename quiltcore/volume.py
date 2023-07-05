@@ -22,6 +22,12 @@ class Volume(ResourceKey):
     KEY_SELF = "."
     MH_PREFIX = Entry.MH_PREFIX["SHA256"]
 
+    @staticmethod
+    def FromURI(uri: str, **kwargs) -> "Volume":
+        """Create a Volume from a URI"""
+        path = UPath(uri)
+        return Volume(path, **kwargs)
+
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.registry = Registry(path, **self.args)
