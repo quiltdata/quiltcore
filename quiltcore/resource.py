@@ -79,6 +79,6 @@ class Resource:
     def put(self, path: Path, **kwargs) -> Path:
         raise NotImplementedError
 
-    def delete(self, key: str = "", **kwargs) -> None:
+    def delete(self, key: str, **kwargs) -> None:
         """Delete a child resource by name."""
         pass

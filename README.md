@@ -49,9 +49,9 @@ entry = manifest.get(TEST_KEY)
 ```python
 with TemporaryDirectory() as tmpdirname:
   dest = UPath(tmpdirname) / TEST_KEY
-  local = entry.get(dest)
-  print(local)
-  assert local.exists()
-  local_bytes = local.read_bytes()
+  entry.get(dest)
+  print(dest)
+  assert dest.exists()
+  local_bytes = dest.read_bytes()
   assert entry.verify(local_bytes)
 ```

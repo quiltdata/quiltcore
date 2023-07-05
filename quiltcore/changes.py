@@ -66,7 +66,7 @@ class Changes(ResourceKey):
         self.keystore[delta.key] = delta
         return delta.path
 
-    def delete(self, key: str = "", **kwargs) -> None:
+    def delete(self, key: str, **kwargs) -> None:
         """Delete the key from this change set"""
         if key in self.keystore:
             del self.keystore[key]
