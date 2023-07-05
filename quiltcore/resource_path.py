@@ -26,7 +26,9 @@ class ResourcePath(Resource):
 
     def child(self, path: Path, key: str = ""):
         """Return a child resource."""
-        return self.klass(path, **self.child_args(key))
+        args = self.child_args(key)
+        merged = {**self.args, **args}
+        return self.klass(path, **merged)
 
     def child_path(self, key: str) -> Path:
         """Return the path for a child resource."""

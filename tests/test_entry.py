@@ -10,6 +10,11 @@ DATA_HW = b"Hello world!"
 HASH_HW = "1220c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
 # with Multhash prefix 1220
 
+@fixture
+def dir():
+    with TemporaryDirectory() as tmpdirname:
+        yield UPath(tmpdirname)
+
 
 @fixture
 def man() -> Manifest:
@@ -27,6 +32,8 @@ def entry(man: Manifest) -> Entry:
 def test_entry_init(entry: Entry):
     assert entry
     assert isinstance(entry, Entry)
+    print(entry.args.keys())
+    assert isinstance(entry.args["Manifest"], Manifest)
 
 
 def test_entry_setup(entry: Entry):
@@ -45,13 +52,13 @@ def test_entry_meta(entry: Entry):
     assert meta["target"] == "parquet"
 
 
-def test_entry_put(entry: Entry):
-    with TemporaryDirectory() as tmpdirname:
-        dest = UPath(tmpdirname) / TEST_KEY
-        loc = entry.put(dest)
-        print(loc)
-        assert TEST_KEY in str(loc)
-        assert loc.exists()
+def test_entry_get(entry: Entry, dir: UPath):
+    dest = dir / TEST_KEY
+    assert not dest.exists()
+
+    loc = str(dest)
+    entry.get(loc)
+    assert TEST_KEY in loc
 
 
 def test_entry_digest(entry: Entry):
@@ -64,11 +71,11 @@ def test_entry_digest_verify(entry: Entry):
     assert entry.verify(DATA_HW)
 
 
-def test_entry_verify(entry: Entry):
+def test_entry_verify(entry: Entry, dir: UPath):
     assert entry.hash
-    with TemporaryDirectory() as tmpdirname:
-        dest = UPath(tmpdirname) / TEST_KEY
-        entry.put(dest)
-        assert dest.exists()
-        bstring = dest.read_bytes()
-        assert entry.verify(bstring)
+    dest = dir / TEST_KEY
+    loc = str(dest)
+    entry.get(loc)
+    assert dest.exists()
+    bstring = dest.read_bytes()
+    assert entry.verify(bstring)

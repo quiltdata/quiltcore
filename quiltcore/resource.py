@@ -37,16 +37,21 @@ class Resource:
         return getattr(quiltcore, name)
 
     def __init__(self, path: Path, **kwargs):
-        self.cf = Config()
-        self.class_name = self.__class__.__name__
         self.path = path
+        self.args = kwargs
+        self.class_name = self.__class__.__name__
+        self.args[self.class_name] = self
+        self.cf = Config()
         self.setup_params()
 
     def __repr__(self):
-        return f"<{self.class_name} {self.path}>"
+        return f"<{self.class_name}({self.path}, {self.args})>"
 
     def __str__(self):
-        return str(self.path)
+        return f"<{self.class_name}({self.path})>"
+    
+    def __eq__(self, other):
+        return str(self) == str(other)
 
     def param(self, key: str, default: str) -> str:
         """Return a param."""
@@ -72,9 +77,7 @@ class Resource:
         return self
 
     def put(self, path: Path, **kwargs) -> Path:
-        """Copy contents of resource's path into _path_."""
-        path.write_bytes(self.path.read_bytes())  # for binary files
-        return path
+        raise NotImplementedError
 
     def delete(self, key: str = "", **kwargs) -> None:
         """Delete a child resource by name."""

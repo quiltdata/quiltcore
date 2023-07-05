@@ -13,16 +13,18 @@ def man():
 
 def test_man(man: Manifest):
     assert man
-    assert man.table
     assert man.version == "v0"  # type: ignore
+    assert "Manifest" in man.args
+
+
+def test_man_table(man: Manifest):
+    assert man.table
     assert man.body
     assert man.body.num_rows == 1
     schema = man.body.schema
     assert schema
     columns = man.cf.get_dict("quilt3/columns")
     assert list(columns.keys()) == schema.names
-
-
 
 
 def test_man_child_dict(man: Manifest):
@@ -56,6 +58,7 @@ def test_man_list(man: Manifest):
 
 def test_man_get(man: Manifest):
     entry = man.get(TEST_KEY)
+    assert "Manifest" in entry.args
     assert entry
     assert isinstance(entry, Entry)
     assert TEST_KEY in str(entry.path)

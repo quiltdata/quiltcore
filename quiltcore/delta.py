@@ -16,7 +16,6 @@ class Delta(ResourceKey):
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.setup(kwargs)
-        self.args = kwargs
 
     def setup(self, args: dict):
         self.action = args.get("action", "add")
@@ -27,7 +26,7 @@ class Delta(ResourceKey):
             self.key = str(ppath.as_posix())
 
     def __repr__(self):
-        return super().__repr__() + f": {self.args}"
+        return super().__repr__()
 
     def __str__(self):
         return dump(self.to_dict())
