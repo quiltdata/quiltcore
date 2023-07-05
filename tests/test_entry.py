@@ -10,21 +10,31 @@ DATA_HW = b"Hello world!"
 HASH_HW = "c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
 # w/o 1220 prefix
 
+import os
 
 @fixture
-def entry():
-    path = UPath(TEST_TABLE)
-    man = Manifest(path)
+def man() -> Manifest:
+    man = Manifest(UPath(TEST_TABLE))
+    return man
+
+
+@fixture
+def entry(man: Manifest) -> Entry:
+    man = Manifest(UPath(TEST_TABLE))
     entry: Entry = man.get(TEST_KEY)  # type: ignore
     return entry
 
 
-def test_entry(entry: Entry):
-    assert isinstance(entry.parent, Manifest)
-    assert entry.logical_key == TEST_KEY  # type: ignore
-    assert entry.physical_key == TEST_OBJ  # type: ignore
-    assert entry.hash["value"] == TEST_OBJ_HASH  # type: ignore
-    assert entry.hash["type"] == "SHA256"  # type: ignore
+def test_entry_init(entry: Entry):
+    assert entry
+    assert isinstance(entry, Entry)
+
+
+def test_entry_setup(entry: Entry):
+    assert entry.name == TEST_KEY
+    assert entry.path == TEST_OBJ
+    assert entry.hash == TEST_OBJ_HASH
+    assert entry.hash_type == "SHA256"  # type: ignore
     assert entry.size == 100764599  # type: ignore
 
     assert entry.hash == TEST_OBJ_HASH

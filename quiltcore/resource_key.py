@@ -10,11 +10,17 @@ class ResourceKey(Resource):
     """
     Get/List child resources by key in Manifest
     """
+    DEFAULT_HASH_TYPE = "SHA256"
     MANIFEST = "_manifest"
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
+        self.defaultHash = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)   
+        self.kHash = self.cf.get_str("quilt3/hash", "hash")
+        self.kName = self.cf.get_str("quilt3/name", "logical_key")
         self.kPath = "path"
+        self.kPlaces = self.cf.get_str("quilt3/places", "physical_keys")
+        self.kSize = self.cf.get_str("quilt3/size", "size")
 
     #
     # Abstract Methods for child resources
@@ -41,8 +47,6 @@ class ResourceKey(Resource):
     def child(self, key: str, **kwargs):
         """Return a child resource."""
         path = self.child_path(key, **kwargs)
-        if self.MANIFEST not in kwargs:
-            kwargs[self.MANIFEST] = self
         return self.klass(path, **kwargs)
 
     #

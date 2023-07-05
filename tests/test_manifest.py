@@ -33,6 +33,13 @@ def test_man_child_dict(man: Manifest):
     assert hash["type"] == man.DEFAULT_HASH_TYPE
 
 
+def test_man_entry(man: Manifest):
+    entry = man.get(TEST_KEY)
+    assert entry
+    assert isinstance(entry, Entry)
+    assert entry.args
+
+
 def test_man_list(man: Manifest):
     results = man.list()
     assert len(results) == 1
@@ -45,6 +52,5 @@ def test_man_get(man: Manifest):
     entry = man.get(TEST_KEY)
     assert entry
     assert isinstance(entry, Entry)
-    assert entry.manifest == man
     assert TEST_KEY in str(entry.path)
     # TODO: assert entry.version == TEST_VER

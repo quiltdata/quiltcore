@@ -3,10 +3,10 @@ from yaml import dump
 
 from .delta import Delta
 from .manifest import Manifest
-from .resource import Resource
+from .resource_key import ResourceKey
 
 
-class Changes(Resource):
+class Changes(ResourceKey):
     """
     Track Changes to a new or existing Manifest
     Add a file: put(path, action="add", key="filename.txt", prefix="./")
@@ -40,9 +40,6 @@ class Changes(Resource):
     def __init__(self, path = None, **kwargs):
         cache = Changes.GetCache(path)
         super().__init__(cache, **kwargs)
-        self.manifest = Changes.GetManifest(kwargs)
-        self.kName = self.manifest.kName
-        self.kPlaces = self.manifest.kPlaces
         self.deltas = {}
 
     def __str__(self):
@@ -52,7 +49,7 @@ class Changes(Resource):
         return {k: v.to_dict() for k, v in self.deltas.items()}
     
     #
-    # Mutate Changes
+    # Mutating Changes
     #
     
     def put(self, path: Path, **kwargs) -> Path:
@@ -76,7 +73,8 @@ class Changes(Resource):
         raise KeyError(f"Key {key} not found in {self.deltas}")
     
     #
-    # Create Blob for each Delta
+    # ResourceKey helper methods
+    #
 
     def get_delta(self, key: str, **kwargs) -> Delta:
         """ Return a Delta by key. Raise KeyError if not found. """
@@ -88,24 +86,7 @@ class Changes(Resource):
         """Return the Path for a child resource."""
         delta = self.get_delta(key)
         return delta.path
-
-    def child_args(self, key: str) -> dict:
-        """Return the parameters for a child resource."""
-        path = self.child_path(key)
-
-        return {
-            "parent": self.manifest,
-            "row": {
-                self.kName: [key],
-                self.kPlaces: [[str(path)]],
-            }
-        }
     
-    
-    def list_deltas(self, **kwargs) -> list[Resource]:
-        """
-        List child Deltas.
-        Q: Does anyone care?
-        Why not return this info as a String instead?
-        """
-        return list(self.deltas.values())
+    def child_names(self, **kwargs) -> list[str]:
+        """Return keys for each change."""
+        return list(self.deltas.keys())

@@ -26,17 +26,17 @@ class Entry(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.parent = kwargs[self.PARENT_KEY]
+        self.args = kwargs
         self.setup(kwargs)
         
     def get_value(self, row:dict, key:str):
+        print(f"get_value: {key} from {row}")
         value = row.get(key, None)
         return value[0] if value else {}
     
     def setup(self, row: dict):
-        self.name = self.get_value(row, self.parent.kName)
-        
-        hash = self.get_value(row, self.parent.kHash)
+        self.name = self.get_value(row, self.kName)
+        hash = self.get_value(row, self.kHash)
         self.setup_hash(hash)
 
     #
@@ -45,7 +45,7 @@ class Entry(ResourceKey):
 
     def setup_hash(self, opt: dict = {}):
         """Set or create hash attributes."""
-        type = opt.get("type", self.parent.kHashType)
+        type = opt.get("type", self.defaultHash)
         hash_key = f'multihash/{type}'
         self.hash_type = self.cf.get_str(hash_key)
         self.hash_digest = multihash.get(self.hash_type)

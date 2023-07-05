@@ -81,8 +81,8 @@ def test_chg_get(changed: Changes):
     entry = changed.get(FILENAME)
     assert isinstance(entry, Entry)
 
-def test_chg_deltas(changed: Changes):
-    deltas = changed.list_deltas()
+def test_chg_list(changed: Changes):
+    deltas = changed.list()
     assert len(deltas) == 1
     rsrc = deltas[0]
     assert isinstance(rsrc, Delta)
