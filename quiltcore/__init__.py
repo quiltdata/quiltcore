@@ -31,4 +31,5 @@ from .manifest import Manifest  # noqa: F401
 from .namespace import Namespace  # noqa: F401
 from .registry import Registry  # noqa: F401
 from .resource import Resource  # noqa: F401
+from .volume import Volume  # noqa: F401
 from .yaml.config import Config  # noqa: F401

@@ -8,6 +8,8 @@ _yaml:
 multihash:
   SHA256: sha2-256
 resources:
+  Volume:
+    child: Manifest
   Registry:
     child: Namespace
     glob: "*/*"

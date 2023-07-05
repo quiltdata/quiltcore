@@ -41,13 +41,13 @@ class Changes(ResourceKey):
     def __init__(self, path=None, **kwargs):
         cache = Changes.GetCache(path)
         super().__init__(cache, **kwargs)
-        self.deltas = {}
+        self.keystore = {}
 
     def __str__(self):
         return dump(self.to_dict())
 
     def to_dict(self):
-        return {k: v.to_dict() for k, v in self.deltas.items()}
+        return {k: v.to_dict() for k, v in self.keystore.items()}
 
     #
     # Mutating Changes
@@ -63,15 +63,15 @@ class Changes(ResourceKey):
         .
         """
         delta = Delta(path, **kwargs)
-        self.deltas[delta.key] = delta
+        self.keystore[delta.key] = delta
         return delta.path
 
     def delete(self, key: str = "", **kwargs) -> None:
         """Delete the key from this change set"""
-        if key in self.deltas:
-            del self.deltas[key]
+        if key in self.keystore:
+            del self.keystore[key]
             return
-        raise KeyError(f"Key {key} not found in {self.deltas}")
+        raise KeyError(f"Key {key} not found in {self.keystore}")
 
     #
     # ResourceKey helper methods
@@ -84,15 +84,15 @@ class Changes(ResourceKey):
 
     def get_delta(self, key: str, **kwargs) -> Delta:
         """Return a Delta by key. Raise KeyError if not found."""
-        if key in self.deltas:
-            return self.deltas[key]
-        raise KeyError(f"Key {key} not found in {self.deltas}")
+        if key in self.keystore:
+            return self.keystore[key]
+        raise KeyError(f"Key {key} not found in {self.keystore}")
 
-    def child_path(self, key: str) -> Path:
+    def key_path(self, key: str, args: dict = {}) -> Path:
         """Return the Path for a child resource."""
         delta = self.get_delta(key)
         return delta.path
 
     def child_names(self, **kwargs) -> list[str]:
         """Return keys for each change."""
-        return list(self.deltas.keys())
+        return list(self.keystore.keys())

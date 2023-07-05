@@ -1,4 +1,14 @@
+from tempfile import TemporaryDirectory
+
 from pathlib import Path
+from pytest import fixture
+from upath import UPath
+
+@fixture
+def dir():
+    with TemporaryDirectory() as tmpdirname:
+        yield UPath(tmpdirname)
+
 
 TEST_REG = "tests/example"
 TEST_BKT = (Path.cwd() / TEST_REG).as_uri()

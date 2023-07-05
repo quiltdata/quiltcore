@@ -1,19 +1,10 @@
-from tempfile import TemporaryDirectory
-
-from pytest import fixture, raises
+from pytest import raises
 from quiltcore import Changes, Delta, Entry
-from upath import UPath
 
-# from .conftest import TEST_BKT, TEST_HASH, TEST_PKG, TEST_TAG
+from .conftest import dir, fixture, UPath  # noqa: F401
 
 FILENAME = "filename.txt"
 FILETEXT = "hello world"
-
-
-@fixture
-def dir():
-    with TemporaryDirectory() as tmpdirname:
-        yield UPath(tmpdirname)
 
 
 @fixture

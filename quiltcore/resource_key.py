@@ -41,16 +41,17 @@ class ResourceKey(Resource):
     # Concrete Methods for child resources
     #
 
-    def child_path(self, key: str) -> Path:
+    def key_path(self, key: str, args: dict = {}) -> Path:
         """Return the Path for a child resource."""
-        row = self.child_dict(key)
-        place = row[self.kPath]
+        if self.kPath not in args:
+            raise KeyError(f"Missing {self.kPath} in {args.keys()}")
+        place = args[self.kPath]
         return UPath(place)
 
     def child(self, key: str, **kwargs):
         """Return a child resource."""
-        path = self.child_path(key, **kwargs)
         args = self.child_dict(key)
+        path = self.key_path(key, args)
         merged = {**self.args, **args}
         if self.kPath in merged:
             del merged[self.kPath]
