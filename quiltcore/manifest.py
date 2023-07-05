@@ -16,18 +16,19 @@ class Manifest(ResourceKey):
     list/get returns Entry with Path to the Place data actually lives
     """
 
+    DEFAULT_HASH_TYPE = "SHA256"
+
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         try:
             self.body = self.setup_table()
         except FileNotFoundError:
             logging.warning(f"Manifest not found: {path}")
-        self.kName = self.cf.get_str("schema/name", "logical_key")
-        self.kPlaces = self.cf.get_str("schema/places", "physical_keys")
-        self.kPlace = self.cf.get_str("schema/place", "physical_key")
-        self.kSize = self.cf.get_str("schema/size", "size")
-        self.kHash = self.cf.get_str("schema/hash", "hash")
-        self.kHashType = self.cf.get_str("schema/hash_type", "SHA256")   
+        self.kName = self.cf.get_str("quilt3/name", "logical_key")
+        self.kPlaces = self.cf.get_str("quilt3/places", "physical_keys")
+        self.kSize = self.cf.get_str("quilt3/size", "size")
+        self.kHash = self.cf.get_str("quilt3/hash", "hash")
+        self.defaultHash = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)   
 
     def setup_table(self) -> pa.Table:
         """
@@ -38,7 +39,7 @@ class Manifest(ResourceKey):
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         first = self.table.take([0]).to_pydict()
-        headers = self.cf.get_dict("schema/headers")
+        headers = self.cf.get_dict("quilt3/headers")
         keys = list(headers.keys())
         for header in keys:
             setattr(self, header, first[header][0])
@@ -48,7 +49,7 @@ class Manifest(ResourceKey):
     # Private Methods for child resources
     #
 
-    def child_names(self) -> list[str]:
+    def child_names(self, **kwargs) -> list[str]:
         """List all child resources."""
         names = self.body.column(self.kName).to_pylist()
         return names

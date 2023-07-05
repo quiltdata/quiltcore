@@ -5,10 +5,6 @@ _yaml:
   app_version: 0.1.0
   doc: quiltcore
   doc_version: 0.1.0
-dirs:
-  config: .quilt
-  names: named_packages
-  versions: packages
 multihash:
   SHA256: sha2-256
 resources:
@@ -24,7 +20,7 @@ resources:
     child: Entry
   Delta:
     child: Entry
-schema:
+quilt3:
   columns:
     logical_key: string
     physical_keys: [string]
@@ -33,12 +29,15 @@ schema:
       type: string
       value: string
     meta: struct
+  dirs:
+    config: .quilt
+    names: named_packages
+    versions: packages
+  hash_type: SHA256
   headers:
     version: string
     message: string
-  places: physical_keys
-  place: physical_key
-  name: logical_key
   hash: hash
-  hash_type: SHA256
-type: application/ld+json
+  mime_type: application/ld+json
+  name: logical_key
+  places: physical_keys

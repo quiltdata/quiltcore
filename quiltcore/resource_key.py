@@ -8,16 +8,16 @@ from .resource import Resource
 
 class ResourceKey(Resource):
     """
-    Path-based list and get.
+    Get/List child resources by key in Manifest
     """
-    PARENT_KEY = "_parent"
+    MANIFEST = "_manifest"
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.kPath = "path"
 
     #
-    # Private Methods for child resources
+    # Abstract Methods for child resources
     #
 
     def child_names(self, **kwargs) -> list[str]:
@@ -41,7 +41,8 @@ class ResourceKey(Resource):
     def child(self, key: str, **kwargs):
         """Return a child resource."""
         path = self.child_path(key, **kwargs)
-        kwargs[self.PARENT_KEY] = self
+        if self.MANIFEST not in kwargs:
+            kwargs[self.MANIFEST] = self
         return self.klass(path, **kwargs)
 
     #
@@ -54,5 +55,5 @@ class ResourceKey(Resource):
 
     def list(self, **kwargs) -> list[Resource]:
         """List all child resources by name."""
-        return [self.child(x, **kwargs) for x in self.child_names(**kwargs)]
+        return [self.child(key, **kwargs) for key in self.child_names(**kwargs)]
 

@@ -12,9 +12,9 @@ class Registry(ResourcePath):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        base = path / self.cf.get_path("dirs/config")
-        self.path = base / self.cf.get_path("dirs/names")
-        self.versions = base / self.cf.get_path("dirs/versions")
+        base = path / self.cf.get_path("quilt3/dirs/config")
+        self.path = base / self.cf.get_path("quilt3/dirs/names")
+        self.versions = base / self.cf.get_path("quilt3/dirs/versions")
 
     def child_args(self, key: str) -> dict:
         return {"versions": self.versions}
