@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from .resource import Resource
+from .resource_path import ResourcePath
 
 
-class Namespace(Resource):
+class Namespace(ResourcePath):
     """
     Namespacespace of Manifests by Hash
     list/get returns a specific Manifest

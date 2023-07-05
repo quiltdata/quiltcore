@@ -1,5 +1,5 @@
 from pytest import fixture
-from quiltcore import Blob, Manifest
+from quiltcore import Entry, Manifest
 from upath import UPath
 
 from .conftest import TEST_KEY, TEST_OBJ, TEST_TABLE
@@ -21,14 +21,14 @@ def test_man(man: Manifest):
 def test_man_list(man: Manifest):
     results = man.list()
     assert len(results) == 1
-    blob = results[0]
-    assert isinstance(blob, Blob)
-    assert str(blob.path) in TEST_OBJ
+    entry = results[0]
+    assert isinstance(entry, Entry)
+    assert str(entry.path) in TEST_OBJ
 
 
 def test_man_get(man: Manifest):
-    blob = man.get(TEST_KEY)
-    assert blob
-    assert isinstance(blob, Blob)
-    assert str(blob.path) in TEST_OBJ
+    entry = man.get(TEST_KEY)
+    assert entry
+    assert isinstance(entry, Entry)
+    assert str(entry.path) in TEST_OBJ
     # TODO: assert result.version == TEST_VER

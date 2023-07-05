@@ -19,11 +19,11 @@ resources:
     child: Manifest
     glob: "*"
   Manifest:
-    child: Blob
+    child: Entry
   Changes:
-    child: Blob
+    child: Entry
   Delta:
-    child: Blob
+    child: Entry
 schema:
   columns:
     logical_key: string
@@ -39,4 +39,6 @@ schema:
   places: physical_keys
   place: physical_key
   name: logical_key
+  hash: hash
+  hash_type: SHA256
 type: application/ld+json

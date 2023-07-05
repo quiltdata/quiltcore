@@ -1,5 +1,5 @@
 from pytest import fixture, raises
-from quiltcore import Blob, Changes, Delta, Manifest
+from quiltcore import Entry, Changes, Delta
 from tempfile import TemporaryDirectory
 from upath import UPath
 
@@ -78,8 +78,8 @@ def test_chg_put(chg: Changes, infile: UPath):
         chg.get("invalid_key")
 
 def test_chg_get(changed: Changes):
-    blob = changed.get(FILENAME)
-    assert isinstance(blob, Blob)
+    entry = changed.get(FILENAME)
+    assert isinstance(entry, Entry)
 
 def test_chg_deltas(changed: Changes):
     deltas = changed.list_deltas()

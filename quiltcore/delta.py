@@ -1,12 +1,12 @@
 from pathlib import Path
 from yaml import dump
 
-from .blob import Blob
+from .entry import Entry
 from .manifest import Manifest
-from .resource import Resource
+from .resource_key import ResourceKey
 
 
-class Delta(Resource):
+class Delta(ResourceKey):
     """
     A single change to a Manifest
     Use 'get' to return the new revision

@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from .resource import Resource
+from .resource_path import ResourcePath
 
 
-class Registry(Resource):
+class Registry(ResourcePath):
     """
     Top-level Resource reperesenting a Quilt Registry.
     Defines core paths containing Namespaces and Manifests.
