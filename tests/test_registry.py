@@ -18,14 +18,14 @@ def test_reg(reg):
     assert ".quilt/packages" in str(reg.versions)
     assert reg.versions.exists()
     assert reg.path.is_dir()
-    assert "Registry" in reg.args
+    assert "registry" in reg.args
 
 
 def test_reg_eq(reg):
     path = UPath(TEST_VOL)
     reg2 = Registry(path)
     assert reg == reg2
-    assert reg == reg.args["Registry"]
+    assert reg == reg.args["registry"]
 
 
 def test_reg_list(reg):
@@ -49,13 +49,17 @@ def test_reg_get(reg):
 def test_reg_name(reg):
     name = reg.get(TEST_PKG)
     assert isinstance(name, Namespace)
-    assert "Registry" in name.args
+    assert "registry" in name.args
+    ns_key = "namespace._key"
+    assert ns_key in name.args.keys()
+    assert name.args[ns_key] == TEST_PKG
 
     man = name.get(TEST_TAG)
     assert isinstance(man, Manifest)
     assert TEST_HASH in str(man)
-    assert "Registry" in man.args
-    assert "Namespace" in man.args
+    assert "registry" in man.args
+    assert "namespace" in man.args
+    assert ns_key in man.args
 
 def test_reg_name_latest(reg):
     name = reg.get(TEST_PKG)

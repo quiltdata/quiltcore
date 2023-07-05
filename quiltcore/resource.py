@@ -16,6 +16,12 @@ class Resource:
     Subclasses override child* to customize get/list behavior
     """
 
+    DEFAULT_HASH_TYPE = "SHA256"
+    KEY_GLOB = "glob"
+    KEY_KEY = "_key"
+    KEY_PATH = "_path"
+    MANIFEST = "_manifest"
+
     @staticmethod
     def TempGen(filename: str = "") -> Generator[Path, None, None]:
         """Return generator to a temporary directory."""
@@ -39,8 +45,13 @@ class Resource:
     def __init__(self, path: Path, **kwargs):
         self.path = path
         self.args = kwargs
+        self.name = path.name
         self.class_name = self.__class__.__name__
-        self.args[self.class_name] = self
+        self.class_key = self.class_name.lower()
+        self.args[self.class_key] = self
+        key = kwargs.get(self.KEY_KEY, None)
+        if key is not None:
+            self.args[f"{self.class_key}.{self.KEY_KEY}"] = key
         self.cf = Config()
         self.setup_params()
 

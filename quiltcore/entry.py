@@ -81,3 +81,15 @@ class Entry(ResourceKey):
         path = UPath(key)
         path.write_bytes(self.path.read_bytes())  # for binary files
         return self
+
+    #
+    # Rewrite Manifest
+    #
+
+    def translate(self, root1: str, root2: str) -> "Entry":
+        """
+        Translate entry paths onto a new root.
+        """
+        entries = self.list()
+
+        return self

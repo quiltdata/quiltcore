@@ -46,7 +46,7 @@ class Volume(ResourceKey):
         return names
     
 #
-# Concrete Resource methods
+# List/Delete vs keystore
 #
 
     def delete(self, key: str, **kwargs) -> None:
@@ -75,11 +75,11 @@ class Volume(ResourceKey):
         if key in self.keystore:
             opts = self.keystore[key]
             print(f"Volume.get({key}) opts: {opts.keys()}")
-            return opts["Manifest"]
+            return opts["manifest"]
 
         manifest = self.get_manifest(key, **kwargs)
         args = manifest.args.copy()
-        args[self.kPath] = manifest.path
+        args[self.KEY_PATH] = manifest.path
         self.keystore[key] = args
         return manifest
     
@@ -103,8 +103,7 @@ class Volume(ResourceKey):
             mh = opts[self.KEY_MH]
             return mh.strip(self.MH_PREFIX)
         return ""
-    
-    
+        
 #
 # PUT and helpers - upload a Manfiest or other resource
 #
@@ -116,6 +115,17 @@ class Volume(ResourceKey):
 
     def put(self, res: Resource, **kwargs) -> "Resource":
         """Insert/Replace and return a child resource."""
+        if not isinstance(res, Manifest):
+            raise TypeError(f"Volume.put requires a Manifest, not {type(res)}")
+        hash_path = self.registry.versions / res.name
+        if hash_path.exists():
+            raise FileExistsError(f"Manifest {hash_path} already exists")
+        
+        namespace = kwargs.get("namespace") or res.args.get("namespace")
+        name = namespace
+            
+        man2 = Manifest(hash_path, **self.registry.args)
+        entries = res.list()
         return self
 
 

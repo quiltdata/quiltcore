@@ -5,6 +5,7 @@ import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
+from .entry import Entry
 from .resource_key import ResourceKey
 
 
@@ -53,5 +54,5 @@ class Manifest(ResourceKey):
             raise KeyError(f"Key [{key}] not found in {self.kName} of {self.path}")
         row = rows.to_pydict()
         place = row[self.kPlaces][0][0]
-        row[self.kPath] = place
+        row[self.KEY_PATH] = place
         return row

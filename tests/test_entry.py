@@ -34,7 +34,7 @@ def test_entry_init(entry: Entry):
     assert entry
     assert isinstance(entry, Entry)
     print(entry.args.keys())
-    assert isinstance(entry.args["Manifest"], Manifest)
+    assert isinstance(entry.args["manifest"], Manifest)
 
 
 def test_entry_setup(entry: Entry):

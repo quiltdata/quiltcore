@@ -14,7 +14,7 @@ class ResourcePath(Resource):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.glob = self.param("glob", "*")
+        self.glob = self.param(self.KEY_GLOB, "*")
 
     #
     # Private Methods for Path-based child resources
@@ -27,6 +27,7 @@ class ResourcePath(Resource):
     def child(self, path: Path, key: str = ""):
         """Return a child resource."""
         args = self.child_args(key)
+        args[self.KEY_KEY] = key
         merged = {**self.args, **args}
         return self.klass(path, **merged)
 

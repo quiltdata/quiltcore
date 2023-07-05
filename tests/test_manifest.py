@@ -2,7 +2,8 @@ from pytest import fixture
 from quiltcore import Entry, Manifest
 from upath import UPath
 
-from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_SIZE, TEST_TABLE
+from .conftest import TEST_BKT, TEST_KEY, TEST_OBJ_HASH,\
+                      TEST_SIZE, TEST_TABLE,  TEST_VOL
 
 
 @fixture
@@ -14,7 +15,7 @@ def man():
 def test_man(man: Manifest):
     assert man
     assert man.version == "v0"  # type: ignore
-    assert "Manifest" in man.args
+    assert "manifest" in man.args
 
 
 def test_man_table(man: Manifest):
@@ -58,7 +59,7 @@ def test_man_list(man: Manifest):
 
 def test_man_get(man: Manifest):
     entry = man.get(TEST_KEY)
-    assert "Manifest" in entry.args
+    assert "manifest" in entry.args
     assert entry
     assert isinstance(entry, Entry)
     assert TEST_KEY in str(entry.path)

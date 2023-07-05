@@ -21,13 +21,13 @@ def vol():
 def test_vol(vol):
     assert vol
     assert vol.cf
-    assert "Volume" in vol.args
+    assert "volume" in vol.args
 
 
 def test_vol_reg(vol):
     reg = vol.registry
     assert reg
-    assert "Volume" in reg.args
+    assert "volume" in reg.args
 
 
 def test_vol_get(vol):
@@ -57,16 +57,19 @@ def test_vol_man_latest(vol):
 def test_vol_translate(dir: UPath):  # noqa: F401
     v_s3 = Volume.FromURI(TEST_BKT)
     assert v_s3
-    v_tmp = Volume(dir)
-    assert v_tmp
-
+    pkg_s3 = v_s3.path / ".quilt/named_packages" / TEST_PKG
+    assert pkg_s3.exists()
     man = v_s3.get(TEST_PKG)
     assert man
 
+    v_tmp = Volume(dir)
+    assert v_tmp
+    pkg_tmp = v_tmp.path / ".quilt/named_packages" / TEST_PKG
+    assert not pkg_tmp.exists()
+
     result = v_tmp.put(man, prefix = "data")
     assert result
-
-    name_folder = v_tmp.path / ".quilt/named_packages" / TEST_PKG
-    assert not name_folder.exists()
+    pkg_tmp = v_tmp.path / ".quilt/named_packages" / TEST_PKG
+    # assert pkg_tmp.exists()
     
 
