@@ -3,7 +3,7 @@ from pathlib import Path
 TEST_REG = "tests/example"
 TEST_BKT = (Path.cwd() / TEST_REG).as_uri()
 TEST_PKG = "manual/force"
-TEST_TAG = "1680720661"
+TEST_TAG = "1680720965"
 TEST_HASH = "3210f808ac0467726439191eea3bd0a66ab261122ee55758367620fedc77fe08"
 TEST_SIZE = 30
 # TEST_CAT = "https://open.quiltdata.com"

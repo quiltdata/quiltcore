@@ -32,12 +32,16 @@ class Entry(ResourceKey):
     def get_value(self, row:dict, key:str):
         print(f"get_value: {key} from {row}")
         value = row.get(key, None)
-        return value[0] if value else {}
+        return value[0] if value else None
     
     def setup(self, row: dict):
         self.name = self.get_value(row, self.kName)
-        hash = self.get_value(row, self.kHash)
-        self.setup_hash(hash)
+        self.meta = self.get_value(row, self.kMeta)
+        hash = self.get_value(row, self.kHash) or {}
+        self.setup_hash(hash)  # type: ignore
+        self.size = self.get_value(row, self.kSize)
+        if not self.size:
+            self.size = self.path.stat().st_size
 
     #
     # Calculate and verify hash
@@ -60,12 +64,13 @@ class Entry(ResourceKey):
         return self.digest(bytes)
 
     def digest(self, bstring: bytes) -> str:
+        """Return the multihash digest of `bstring`"""
         digest = self.hash_digest.digest(bstring)
         hex = digest.hex()
-        return hex #.strip(Entry.MH_PREFIX_SHA256)
+        return digest.hex()
 
     def verify(self, bstring: bytes) -> bool:
-        """Verify that digest of bytes match the hash"""
+        """Verify that multihash digest of bytes match the multihash"""
         digest = self.digest(bstring)
         logging.debug(f"verify.digest: {digest}")
-        return digest == self.hash
+        return digest == self.multihash

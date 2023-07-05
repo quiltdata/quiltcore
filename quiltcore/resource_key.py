@@ -17,6 +17,7 @@ class ResourceKey(Resource):
         super().__init__(path, **kwargs)
         self.defaultHash = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)   
         self.kHash = self.cf.get_str("quilt3/hash", "hash")
+        self.kMeta = self.cf.get_str("quilt3/meta", "meta")
         self.kName = self.cf.get_str("quilt3/name", "logical_key")
         self.kPath = "path"
         self.kPlaces = self.cf.get_str("quilt3/places", "physical_keys")

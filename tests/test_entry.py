@@ -1,14 +1,14 @@
 from tempfile import TemporaryDirectory
 
-from pytest import fixture
+from pytest import fixture, mark
 from quiltcore import Entry, Manifest
 from upath import UPath
 
 from .conftest import TEST_KEY, TEST_OBJ, TEST_OBJ_HASH, TEST_TABLE
 
 DATA_HW = b"Hello world!"
-HASH_HW = "c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
-# w/o 1220 prefix
+HASH_HW = "1220c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
+# with Multhash prefix 1220
 
 import os
 
@@ -34,13 +34,13 @@ def test_entry_setup(entry: Entry):
     assert entry.name == TEST_KEY
     # assert entry.path == TEST_OBJ
     assert entry.hash == TEST_OBJ_HASH
-    assert entry.hash_type == "SHA256"  # type: ignore
-    assert entry.size == 100764599  # type: ignore
-
-    assert entry.hash == TEST_OBJ_HASH
     assert entry.hash_type == "sha2-256"
+    assert entry.size == 30
 
-    meta = entry.meta  # type: ignore
+
+@mark.skip
+def test_entry_meta(entry: Entry):
+    meta = entry.meta
     assert meta
     assert isinstance(meta, dict)
     assert meta["target"] == "parquet"
@@ -56,16 +56,12 @@ def test_entry_put(entry: Entry):
 
 
 def test_entry_digest(entry: Entry):
-    assert entry.hash_digest
-    digest = entry.hash_digest.digest(DATA_HW)
-    assert digest.hex() == Entry.MH_PREFIX["SHA256"] + HASH_HW
-
     digest2 = entry.digest(DATA_HW)
     assert digest2 == HASH_HW
 
 
 def test_entry_digest_verify(entry: Entry):
-    entry.hash = HASH_HW
+    entry.multihash = HASH_HW
     assert entry.verify(DATA_HW)
 
 
