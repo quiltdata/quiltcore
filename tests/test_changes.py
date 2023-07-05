@@ -82,11 +82,11 @@ def test_chg_get(changed: Changes):
     assert isinstance(entry, Entry)
 
 def test_chg_list(changed: Changes):
-    deltas = changed.list()
-    assert len(deltas) == 1
-    rsrc = deltas[0]
-    assert isinstance(rsrc, Delta)
-    assert rsrc.key == FILENAME
+    entries = changed.list()
+    assert len(entries) == 1
+    entry = entries[0]
+    assert isinstance(entry, Entry)
+    assert entry.name == FILENAME
 
 def test_chg_str(changed: Changes):
     y = str(changed)

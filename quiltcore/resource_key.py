@@ -47,7 +47,10 @@ class ResourceKey(Resource):
     def child(self, key: str, **kwargs):
         """Return a child resource."""
         path = self.child_path(key, **kwargs)
-        return self.klass(path, **kwargs)
+        args = self.child_dict(key)
+        if self.kPath in args:
+            del args[self.kPath]
+        return self.klass(path, **args)
 
     #
     # Concrete HTTP Methods

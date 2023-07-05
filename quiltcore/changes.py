@@ -76,6 +76,14 @@ class Changes(ResourceKey):
     # ResourceKey helper methods
     #
 
+    def child_dict(self, key: str) -> dict:
+        """Return the dict for a child resource."""
+        delta = self.get_delta(key)
+        return {
+            self.kName: [delta.key],
+            self.kPlaces: str(delta.path)
+        }
+
     def get_delta(self, key: str, **kwargs) -> Delta:
         """ Return a Delta by key. Raise KeyError if not found. """
         if key in self.deltas:
