@@ -1,5 +1,13 @@
 # CHANGELOG.md
 
+## 0.2.0 (2023-07-06)
+
+- rename schema to quilt3
+- replace Blob with Entry
+- include local registry example
+- add Changes
+- create Manifest from Changes
+
 ## 0.1.2 (2023-06-29)
 
 - remove prefix from Core classes

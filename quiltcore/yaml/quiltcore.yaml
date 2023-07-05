@@ -2,7 +2,7 @@
 _yaml:
   _version: 0.3.1
   app: quiltcore
-  app_version: 0.1.0
+  app_version: 0.2.0
   doc: quilt3
   doc_version: 0.2.0
 multihash:
