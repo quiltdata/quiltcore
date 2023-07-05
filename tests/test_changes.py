@@ -1,6 +1,7 @@
-from pytest import fixture, raises
-from quiltcore import Entry, Changes, Delta
 from tempfile import TemporaryDirectory
+
+from pytest import fixture, raises
+from quiltcore import Changes, Delta, Entry
 from upath import UPath
 
 # from .conftest import TEST_BKT, TEST_HASH, TEST_PKG, TEST_TAG
@@ -26,10 +27,12 @@ def infile(dir: UPath) -> UPath:
     path.write_text(FILETEXT)
     return path
 
+
 @fixture
 def changed(chg: Changes, infile: UPath):
     chg.put(infile)
     return chg
+
 
 def test_chg_dir(dir: UPath):
     chg = Changes(dir)
@@ -77,9 +80,11 @@ def test_chg_put(chg: Changes, infile: UPath):
     with raises(KeyError):
         chg.get("invalid_key")
 
+
 def test_chg_get(changed: Changes):
     entry = changed.get(FILENAME)
     assert isinstance(entry, Entry)
+
 
 def test_chg_list(changed: Changes):
     entries = changed.list()
@@ -87,6 +92,7 @@ def test_chg_list(changed: Changes):
     entry = entries[0]
     assert isinstance(entry, Entry)
     assert entry.name == FILENAME
+
 
 def test_chg_str(changed: Changes):
     y = str(changed)

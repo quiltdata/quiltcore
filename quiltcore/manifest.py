@@ -1,11 +1,9 @@
+import logging
 from pathlib import Path
 
-import logging
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 import pyarrow.json as pj  # type: ignore
-from typing_extensions import Self
-from upath import UPath
 
 from .resource_key import ResourceKey
 
@@ -15,7 +13,6 @@ class Manifest(ResourceKey):
     In-memory representation of a serialized package manifest.
     list/get returns Entry with Path to the Place data actually lives
     """
-
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)

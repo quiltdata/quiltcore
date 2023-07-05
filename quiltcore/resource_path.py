@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
-
-import quiltcore
 from typing import Generator
-from tempfile import TemporaryDirectory
+
 
 from .resource import Resource
 
@@ -52,5 +50,3 @@ class ResourcePath(Resource):
         if not path.exists():
             raise KeyError(f"Key {key} not found in {self.path}")
         return self.child(path, key)
-
-

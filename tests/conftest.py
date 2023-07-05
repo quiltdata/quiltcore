@@ -1,5 +1,5 @@
-
 from pathlib import Path
+
 TEST_REG = "tests/example"
 TEST_BKT = (Path.cwd() / TEST_REG).as_uri()
 TEST_PKG = "manual/force"
@@ -22,5 +22,5 @@ TEST_ROW = {
     "hash": {
         "value": [TEST_OBJ_HASH],
         "type": ["SHA256"],
-    }
+    },
 }

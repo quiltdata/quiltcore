@@ -2,7 +2,7 @@ from pytest import fixture
 from quiltcore import Entry, Manifest
 from upath import UPath
 
-from .conftest import TEST_KEY, TEST_OBJ, TEST_SIZE, TEST_TABLE, TEST_OBJ_HASH
+from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_SIZE, TEST_TABLE
 
 
 @fixture

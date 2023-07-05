@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import Generator
 
 import quiltcore
-from typing import Generator
-from tempfile import TemporaryDirectory
 
 from .yaml.config import Config
 
@@ -20,8 +20,10 @@ class Resource:
     def TempGen(filename: str = "") -> Generator[Path, None, None]:
         """Return generator to a temporary directory."""
         with TemporaryDirectory() as tmpdirname:
-                temp_path = Path(tmpdirname) / filename if len(filename) > 0 else Path(tmpdirname)
-                yield temp_path
+            temp_path = (
+                Path(tmpdirname) / filename if len(filename) > 0 else Path(tmpdirname)
+            )
+            yield temp_path
 
     @staticmethod
     def TempDir(filename: str = "") -> Path:
@@ -73,7 +75,7 @@ class Resource:
         """Copy contents of resource's path into _path_."""
         path.write_bytes(self.path.read_bytes())  # for binary files
         return path
-    
+
     def delete(self, key: str = "", **kwargs) -> None:
         """Delete a child resource by name."""
         pass

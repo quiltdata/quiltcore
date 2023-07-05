@@ -1,9 +1,8 @@
-
 import logging
-from multiformats import multihash
 from pathlib import Path
 
-from .manifest import Manifest
+from multiformats import multihash
+
 from .resource_key import ResourceKey
 
 
@@ -28,12 +27,12 @@ class Entry(ResourceKey):
         super().__init__(path, **kwargs)
         self.args = kwargs
         self.setup(kwargs)
-        
-    def get_value(self, row:dict, key:str):
+
+    def get_value(self, row: dict, key: str):
         print(f"get_value: {key} from {row}")
         value = row.get(key, None)
         return value[0] if value else None
-    
+
     def setup(self, row: dict):
         self.name = self.get_value(row, self.kName)
         self.meta = self.get_value(row, self.kMeta)
@@ -50,7 +49,7 @@ class Entry(ResourceKey):
     def setup_hash(self, opt: dict = {}):
         """Set or create hash attributes."""
         type = opt.get("type", self.defaultHash)
-        hash_key = f'multihash/{type}'
+        hash_key = f"multihash/{type}"
         self.hash_type = self.cf.get_str(hash_key)
         self.hash_digest = multihash.get(self.hash_type)
         self.hash_prefix = Entry.MH_PREFIX[type]
@@ -66,7 +65,7 @@ class Entry(ResourceKey):
     def digest(self, bstring: bytes) -> str:
         """Return the multihash digest of `bstring`"""
         digest = self.hash_digest.digest(bstring)
-        hex = digest.hex()
+        digest.hex()
         return digest.hex()
 
     def verify(self, bstring: bytes) -> bool:

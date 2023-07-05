@@ -4,13 +4,12 @@ from pytest import fixture, mark
 from quiltcore import Entry, Manifest
 from upath import UPath
 
-from .conftest import TEST_KEY, TEST_OBJ, TEST_OBJ_HASH, TEST_TABLE
+from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_TABLE
 
 DATA_HW = b"Hello world!"
 HASH_HW = "1220c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
 # with Multhash prefix 1220
 
-import os
 
 @fixture
 def man() -> Manifest:

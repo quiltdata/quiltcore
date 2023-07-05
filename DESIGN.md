@@ -49,10 +49,19 @@ This implementation dynamically generates behavior directly
 from the configuration file into single-purpose sublasses.
 Other implementations may choose to generate code statically.
 
-### 3. lob
+### 3. Entry
 
-The final leaf node is the [Blob](./quiltcore/blob.py) class.
-This handles individually verifying and uploading data.
+The final leaf node is the [Entry](./quiltcore/entry.py) class.
+This tracks information for each manifest entry, including:
+
+- name: str (logical_key)
+- path: Path (physical_key)
+- size: int
+- hash: str[hex]
+- multihash: str[hex]
+- meta: object[metadata]
+
+This also handles individually verifying and uploading data.
 
 ## Open Issues
 

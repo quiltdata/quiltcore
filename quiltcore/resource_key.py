@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 from upath import UPath
 
 from .resource import Resource
@@ -10,12 +11,13 @@ class ResourceKey(Resource):
     """
     Get/List child resources by key in Manifest
     """
+
     DEFAULT_HASH_TYPE = "SHA256"
     MANIFEST = "_manifest"
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.defaultHash = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)   
+        self.defaultHash = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)
         self.kHash = self.cf.get_str("quilt3/hash", "hash")
         self.kMeta = self.cf.get_str("quilt3/meta", "meta")
         self.kName = self.cf.get_str("quilt3/name", "logical_key")
@@ -64,4 +66,3 @@ class ResourceKey(Resource):
     def list(self, **kwargs) -> list[Resource]:
         """List all child resources by name."""
         return [self.child(key, **kwargs) for key in self.child_names(**kwargs)]
-

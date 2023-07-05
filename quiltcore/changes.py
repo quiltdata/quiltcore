@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from yaml import dump
 
 from .delta import Delta
@@ -21,7 +22,7 @@ class Changes(ResourceKey):
     @staticmethod
     def ScratchFile() -> Path:
         return Changes.TempDir(Changes.MANIFEST_FILE)
-    
+
     @staticmethod
     def GetCache(path: Path) -> Path:
         if not path:
@@ -35,9 +36,9 @@ class Changes(ResourceKey):
         if Changes.MANIFEST_KEY in args:
             return args[Changes.MANIFEST_KEY]
         path = Changes.ScratchFile()
-        return Manifest(path)   
+        return Manifest(path)
 
-    def __init__(self, path = None, **kwargs):
+    def __init__(self, path=None, **kwargs):
         cache = Changes.GetCache(path)
         super().__init__(cache, **kwargs)
         self.deltas = {}
@@ -47,31 +48,31 @@ class Changes(ResourceKey):
 
     def to_dict(self):
         return {k: v.to_dict() for k, v in self.deltas.items()}
-    
+
     #
     # Mutating Changes
     #
-    
+
     def put(self, path: Path, **kwargs) -> Path:
         """
-        Create and track a Delta for this source Path. 
-        Options: 
-        * action: add [default], rm
-        * key: defaults to filename
-        * prefix: pre-pended to key if non-empty
-.
+                Create and track a Delta for this source Path.
+                Options:
+                * action: add [default], rm
+                * key: defaults to filename
+                * prefix: pre-pended to key if non-empty
+        .
         """
         delta = Delta(path, **kwargs)
         self.deltas[delta.key] = delta
         return delta.path
-    
+
     def delete(self, key: str = "", **kwargs) -> None:
-        """ Delete the key from this change set """
+        """Delete the key from this change set"""
         if key in self.deltas:
             del self.deltas[key]
             return
         raise KeyError(f"Key {key} not found in {self.deltas}")
-    
+
     #
     # ResourceKey helper methods
     #
@@ -79,13 +80,10 @@ class Changes(ResourceKey):
     def child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         delta = self.get_delta(key)
-        return {
-            self.kName: [delta.key],
-            self.kPlaces: str(delta.path)
-        }
+        return {self.kName: [delta.key], self.kPlaces: str(delta.path)}
 
     def get_delta(self, key: str, **kwargs) -> Delta:
-        """ Return a Delta by key. Raise KeyError if not found. """
+        """Return a Delta by key. Raise KeyError if not found."""
         if key in self.deltas:
             return self.deltas[key]
         raise KeyError(f"Key {key} not found in {self.deltas}")
@@ -94,7 +92,7 @@ class Changes(ResourceKey):
         """Return the Path for a child resource."""
         delta = self.get_delta(key)
         return delta.path
-    
+
     def child_names(self, **kwargs) -> list[str]:
         """Return keys for each change."""
         return list(self.deltas.keys())
