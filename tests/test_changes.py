@@ -1,10 +1,18 @@
-from pytest import raises
-from quiltcore import Changes, Delta, Entry
+from tempfile import TemporaryDirectory
 
-from .conftest import dir, fixture, UPath  # noqa: F401
+from pytest import fixture, raises
+from quiltcore import Changes, Delta, Entry
+from upath import UPath
+
 
 FILENAME = "filename.txt"
 FILETEXT = "hello world"
+
+
+@fixture
+def dir():
+    with TemporaryDirectory() as tmpdirname:
+        yield UPath(tmpdirname)
 
 
 @fixture
@@ -13,7 +21,7 @@ def chg():
 
 
 @fixture
-def infile(dir: UPath) -> UPath:  # noqa: F401
+def infile(dir: UPath) -> UPath:
     path = dir / FILENAME
     path.write_text(FILETEXT)
     return path.resolve()
@@ -25,12 +33,12 @@ def changed(chg: Changes, infile: UPath):
     return chg
 
 
-def test_chg_dir(dir: UPath):  # noqa: F401
+def test_chg_dir(dir: UPath):
     chg = Changes(dir)
     assert chg.path == dir / Changes.MANIFEST_FILE
 
 
-def test_chg_file(dir: UPath):  # noqa: F401
+def test_chg_file(dir: UPath):
     outfile = dir / "outfile.json"
     chg = Changes(outfile)
     assert chg.path == outfile

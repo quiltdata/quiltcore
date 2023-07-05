@@ -59,6 +59,10 @@ class Volume(ResourceKey):
     def list(self, **kwargs) -> list["Resource"]:
         """List all child resources."""
         return [self.get(x) for x in self.child_names()]
+    
+#
+# GET and helpers - return a Manfiest
+#
 
     def get(self, key: str, **kwargs) -> "Resource":
         """
@@ -79,10 +83,6 @@ class Volume(ResourceKey):
         self.keystore[key] = args
         return manifest
     
-#
-# get helpers
-#
-
     def get_manifest(self, key: str, **kwargs) -> "Resource":
         """
         Create manifest for Namespace `key` and `kwargs`
@@ -104,5 +104,18 @@ class Volume(ResourceKey):
             return mh.strip(self.MH_PREFIX)
         return ""
     
+    
+#
+# PUT and helpers - upload a Manfiest or other resource
+#
+# - PUT Entry: copies individual file onto Volume
+# - PUT Manifest:
+#   - copies necessary Entries onto Volume (unless --nocopy and non-local)
+#   - calculates hash and creates Namespaced folders
+#   - copies Manifest onto Volume
+
+    def put(self, res: Resource, **kwargs) -> "Resource":
+        """Insert/Replace and return a child resource."""
+        return self
 
 

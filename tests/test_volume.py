@@ -1,7 +1,16 @@
+from tempfile import TemporaryDirectory
+
 from pytest import fixture, raises
 from quiltcore import Manifest, Namespace, Volume
 
-from .conftest import dir, TEST_BKT, TEST_PKG, TEST_VOL, UPath  # noqa: F401
+from .conftest import TEST_BKT, TEST_PKG, TEST_VOL
+from upath import UPath
+
+
+@fixture
+def dir():
+    with TemporaryDirectory() as tmpdirname:
+        yield UPath(tmpdirname)
 
 
 @fixture
@@ -44,7 +53,8 @@ def test_vol_man_latest(vol):
     man = vol.get(TEST_PKG, tag="latest")
     assert isinstance(man, Manifest)
 
-def test_vol_translate(dir: UPath):
+
+def test_vol_translate(dir: UPath):  # noqa: F401
     v_s3 = Volume.FromURI(TEST_BKT)
     assert v_s3
     v_tmp = Volume(dir)
@@ -53,6 +63,10 @@ def test_vol_translate(dir: UPath):
     man = v_s3.get(TEST_PKG)
     assert man
 
-    # result = v_tmp.put(man, prefix = "data")
+    result = v_tmp.put(man, prefix = "data")
+    assert result
+
+    name_folder = v_tmp.path / ".quilt/named_packages" / TEST_PKG
+    assert not name_folder.exists()
     
 

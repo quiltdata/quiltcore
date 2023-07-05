@@ -1,12 +1,20 @@
+from tempfile import TemporaryDirectory
+
 from pytest import fixture, mark
 from quiltcore import Entry, Manifest
 from upath import UPath
 
-from .conftest import dir, TEST_KEY, TEST_OBJ_HASH, TEST_TABLE  # noqa: F401
+from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_TABLE
 
 DATA_HW = b"Hello world!"
 HASH_HW = "1220c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
 # with Multhash prefix 1220
+
+
+@fixture
+def dir():
+    with TemporaryDirectory() as tmpdirname:
+        yield UPath(tmpdirname)
 
 
 @fixture
@@ -45,7 +53,7 @@ def test_entry_meta(entry: Entry):
     assert meta["target"] == "parquet"
 
 
-def test_entry_get(entry: Entry, dir: UPath):  # noqa: F401
+def test_entry_get(entry: Entry, dir: UPath):
     dest = dir / TEST_KEY
     assert not dest.exists()
 
@@ -64,7 +72,7 @@ def test_entry_digest_verify(entry: Entry):
     assert entry.verify(DATA_HW)
 
 
-def test_entry_verify(entry: Entry, dir: UPath):  # noqa: F401
+def test_entry_verify(entry: Entry, dir: UPath):
     assert entry.hash
     dest = dir / TEST_KEY
     loc = str(dest)

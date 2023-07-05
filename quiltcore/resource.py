@@ -85,7 +85,7 @@ class Resource:
         raise NotImplementedError
 
     def put(self, res: Resource, **kwargs) -> "Resource":
-        """Replace and return a child resource."""
+        """Insert/Replace and return a child resource."""
         raise NotImplementedError
 
     def delete(self, key: str, **kwargs) -> None:
