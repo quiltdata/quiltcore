@@ -1,8 +1,10 @@
 import logging
 from pathlib import Path
+from upath import UPath
 
 from multiformats import multihash
 
+from .resource import Resource
 from .resource_key import ResourceKey
 
 
@@ -29,7 +31,7 @@ class Entry(ResourceKey):
         self.setup(kwargs)
 
     def get_value(self, row: dict, key: str):
-        print(f"get_value: {key} from {row}")
+        logging.debug(f"get_value: {key} from {row}")
         value = row.get(key, None)
         return value[0] if value else None
 
@@ -73,3 +75,9 @@ class Entry(ResourceKey):
         digest = self.digest(bstring)
         logging.debug(f"verify.digest: {digest}")
         return digest == self.multihash
+
+    def get(self, key: str, **kwargs) -> Resource:
+        """Copy contents of resource's path into _path_."""
+        path = UPath(key)
+        path.write_bytes(self.path.read_bytes())  # for binary files
+        return self
