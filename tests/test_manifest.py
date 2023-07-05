@@ -17,6 +17,12 @@ def test_man(man: Manifest):
     assert man.version == "v0"  # type: ignore
     assert man.body
     assert man.body.num_rows == 1
+    schema = man.body.schema
+    assert schema
+    columns = man.cf.get_dict("quilt3/columns")
+    assert list(columns.keys()) == schema.names
+
+
 
 
 def test_man_child_dict(man: Manifest):

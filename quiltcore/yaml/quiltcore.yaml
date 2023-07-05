@@ -1,10 +1,10 @@
 ---
 _yaml:
   _version: 0.3.1
-  app: registry
+  app: quiltcore
   app_version: 0.1.0
-  doc: quiltcore
-  doc_version: 0.1.0
+  doc: quilt3
+  doc_version: 0.2.0
 multihash:
   SHA256: sha2-256
 resources:
@@ -34,10 +34,10 @@ quilt3:
     names: named_packages
     versions: packages
   hash_type: SHA256
+  hash: hash
   headers:
     version: string
     message: string
-  hash: hash
   mime_type: application/ld+json
   name: logical_key
   places: physical_keys
