@@ -1,4 +1,5 @@
 import logging
+from copy import copy
 from pathlib import Path
 from upath import UPath
 
@@ -36,7 +37,7 @@ class Entry(ResourceKey):
         return value[0] if value else None
 
     def setup(self, row: dict):
-        self.name = self.get_value(row, self.kName)
+        self.name = self.get_value(row, self.kName) or self.path.name
         self.meta = self.get_value(row, self.kMeta)
         hash = self.get_value(row, self.kHash) or {}
         self.setup_hash(hash)  # type: ignore
@@ -77,19 +78,15 @@ class Entry(ResourceKey):
         return digest == self.multihash
 
     def get(self, key: str, **kwargs) -> Resource:
-        """Copy contents of resource's path into _path_."""
-        path = UPath(key)
+        """Copy contents of resource's path into _key_ directory."""
+        dir = UPath(key)
+        dir.mkdir(parents=True, exist_ok=True)
+        path = dir / self.name
+        print(path)
         path.write_bytes(self.path.read_bytes())  # for binary files
-        return self
+        clone = copy(self)
+        clone.path = path.resolve()
+        clone.args = kwargs
+        print("clone", clone)
 
-    #
-    # Rewrite Manifest
-    #
-
-    def translate(self, root1: str, root2: str) -> "Entry":
-        """
-        Translate entry paths onto a new root.
-        """
-        entries = self.list()
-
-        return self
+        return clone

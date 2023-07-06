@@ -54,12 +54,13 @@ def test_entry_meta(entry: Entry):
 
 
 def test_entry_get(entry: Entry, dir: UPath):
-    dest = dir / TEST_KEY
+    dest = dir / "data"
     assert not dest.exists()
 
     loc = str(dest)
-    entry.get(loc)
-    assert TEST_KEY in loc
+    clone = entry.get(loc)
+    assert TEST_KEY in str(clone.path)
+    assert entry.path != clone.path
 
 
 def test_entry_digest(entry: Entry):
@@ -71,12 +72,9 @@ def test_entry_digest_verify(entry: Entry):
     entry.multihash = HASH_HW
     assert entry.verify(DATA_HW)
 
-
 def test_entry_verify(entry: Entry, dir: UPath):
     assert entry.hash
-    dest = dir / TEST_KEY
-    loc = str(dest)
-    entry.get(loc)
-    assert dest.exists()
-    bstring = dest.read_bytes()
+    clone = entry.get(str(dir))
+    assert clone.path.exists()
+    bstring = clone.path.read_bytes()
     assert entry.verify(bstring)
