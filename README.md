@@ -48,10 +48,11 @@ entry = manifest.get(TEST_KEY)
 <!--pytest-codeblocks:cont-->
 ```python
 with TemporaryDirectory() as tmpdirname:
-  dest = UPath(tmpdirname) / TEST_KEY
+  dest = UPath(tmpdirname)
+  outfile = dest / TEST_KEY
   entry.get(dest)
-  print(dest)
-  assert dest.exists()
-  local_bytes = dest.read_bytes()
+  print(outfile.resolve())
+  assert outfile.exists()
+  local_bytes = outfile.read_bytes()
   assert entry.verify(local_bytes)
 ```

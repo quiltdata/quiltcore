@@ -1,4 +1,4 @@
-import pyarrow as pa
+import pyarrow as pa  # type: ignore
 
 from jsonlines import Writer
 from pathlib import Path
