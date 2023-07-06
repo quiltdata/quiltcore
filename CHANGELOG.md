@@ -5,8 +5,8 @@
 - rename schema to quilt3
 - replace Blob with Entry
 - include local registry example
-- add Changes
-- create Manifest from Changes
+- add Changes, Volume
+- put Manifest into Volume
 
 ## 0.1.2 (2023-06-29)
 
