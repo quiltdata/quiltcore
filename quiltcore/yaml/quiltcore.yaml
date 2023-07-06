@@ -34,7 +34,7 @@ quilt3:
   dirs:
     config: .quilt
     names: named_packages
-    versions: packages
+    manifests: packages
   hash_type: SHA256
   hash: hash
   headers:

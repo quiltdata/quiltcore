@@ -15,8 +15,8 @@ def test_reg(reg):
     assert reg
     assert reg.cf
     assert ".quilt/named_packages" in str(reg.path)
-    assert ".quilt/packages" in str(reg.versions)
-    assert reg.versions.exists()
+    assert ".quilt/packages" in str(reg.manifests)
+    assert reg.manifests.exists()
     assert reg.path.is_dir()
     assert "registry" in reg.args
 

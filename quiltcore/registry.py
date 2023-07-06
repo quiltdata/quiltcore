@@ -14,7 +14,7 @@ class Registry(ResourcePath):
         super().__init__(path, **kwargs)
         base = path / self.cf.get_path("quilt3/dirs/config")
         self.path = base / self.cf.get_path("quilt3/dirs/names")
-        self.versions = base / self.cf.get_path("quilt3/dirs/versions")
+        self.manifests = base / self.cf.get_path("quilt3/dirs/manifests")
 
     def child_args(self, key: str) -> dict:
-        return {"versions": self.versions}
+        return {"manifests": self.manifests}

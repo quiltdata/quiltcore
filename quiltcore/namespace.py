@@ -12,7 +12,7 @@ class Namespace(ResourcePath):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.versions = kwargs["versions"]
+        self.manifests = kwargs["manifests"]
 
     def hash(self, tag: str = TAG_DEFAULT) -> str:
         hash_file = self.path / tag
@@ -21,4 +21,4 @@ class Namespace(ResourcePath):
     def child_path(self, key: str) -> Path:
         """Return the path for a child resource."""
         hash = self.hash(key)
-        return self.versions / hash
+        return self.manifests / hash

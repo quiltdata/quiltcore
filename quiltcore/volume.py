@@ -90,7 +90,7 @@ class Volume(ResourceKey):
         opts: dict[str,str] = kwargs
         hash = self.get_hash(opts)
         if len(hash) > 0:
-            return Manifest(self.registry.versions / hash, **self.args)
+            return Manifest(self.registry.manifests / hash, **self.args)
 
         tag = opts.get(self.KEY_TAG, Namespace.TAG_DEFAULT)
         name = self.registry.get(key)
@@ -117,7 +117,7 @@ class Volume(ResourceKey):
         """Insert/Replace and return a child resource."""
         if not isinstance(res, Manifest):
             raise TypeError(f"Volume.put requires a Manifest, not {type(res)}")
-        hash_path = self.registry.versions / res.name
+        hash_path = self.registry.manifests / res.name
         if hash_path.exists():
             raise FileExistsError(f"Manifest {hash_path} already exists")
         
