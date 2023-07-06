@@ -40,7 +40,7 @@ path = UPath(TEST_BKT)
 registry = Registry(path)
 named_package = registry.get(TEST_PKG)
 manifest = named_package.get(TEST_TAG)
-blob = manifest.get(TEST_KEY)
+entry = manifest.get(TEST_KEY)
 ```
 
 ### Get Object
@@ -48,10 +48,11 @@ blob = manifest.get(TEST_KEY)
 <!--pytest-codeblocks:cont-->
 ```python
 with TemporaryDirectory() as tmpdirname:
-  dest = UPath(tmpdirname) / TEST_KEY
-  local = blob.put(dest)
-  print(local)
-  assert local.exists()
-  local_bytes = local.read_bytes()
-  assert blob.verify(local_bytes)
+  dest = UPath(tmpdirname)
+  outfile = dest / TEST_KEY
+  entry.get(dest)
+  print(outfile.resolve())
+  assert outfile.exists()
+  local_bytes = outfile.read_bytes()
+  assert entry.verify(local_bytes)
 ```

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from time import time
+from typing import Generator
 
 import quiltcore
-from typing_extensions import Self
 
-from .config import Config
+from .yaml.config import Config
 
 
 class Resource:
@@ -15,22 +17,61 @@ class Resource:
     Subclasses override child* to customize get/list behavior
     """
 
+    DEFAULT_HASH_TYPE = "SHA256"
+    KEY_GLOB = "glob"
+    KEY_KEY = "_key"
+    KEY_NAME = f"namespace.{KEY_KEY}"
+    KEY_PATH = "_path"
+    MANIFEST = "_manifest"
+    TAG_DEFAULT = "latest"
+    
+
+    @staticmethod
+    def TempGen(filename: str = "") -> Generator[Path, None, None]:
+        """Return generator to a temporary directory."""
+        with TemporaryDirectory() as tmpdirname:
+            temp_path = (
+                Path(tmpdirname) / filename if len(filename) > 0 else Path(tmpdirname)
+            )
+            yield temp_path
+
+    @staticmethod
+    def TempDir(filename: str = "") -> Path:
+        for path in Resource.TempGen(filename):
+            return path
+        return Path(".")  # should never happen
+
     @staticmethod
     def ClassFromName(name: str) -> type:
         """Return a class from a string."""
         return getattr(quiltcore, name)
+    
+    @staticmethod
+    def Timestamp() -> str:
+        "Return integer timestamp."
+        return str(int(time()))
 
     def __init__(self, path: Path, **kwargs):
-        self.cf = Config()
-        self.class_name = self.__class__.__name__
         self.path = path
+        self.args = kwargs
+        self.name = path.name
+        self.class_name = self.__class__.__name__
+        self.class_key = self.class_name.lower()
+        self.args[self.class_key] = self
+        key = kwargs.get(self.KEY_KEY, None)
+        if key is not None:
+            self.args[f"{self.class_key}.{self.KEY_KEY}"] = key
+        self.cf = Config()
         self.setup_params()
 
     def __repr__(self):
-        return f"<{self.class_name} {self.path}>"
+        return f"<{self.class_name}({self.path}, {self.args})>"
 
     def __str__(self):
-        return str(self.path)
+        return f"<{self.class_name}({self.path})>"
+    
+    def __eq__(self, other):
+        return str(self) == str(other)
 
     def param(self, key: str, default: str) -> str:
         """Return a param."""
@@ -44,41 +85,29 @@ class Resource:
         self.klass = Resource.ClassFromName(_child)
 
     #
-    # Private Methods for child resources
+    # Abstract HTTP Methods
     #
 
-    def child_args(self, key: str) -> dict:
-        """Return the parameters for a child resource."""
-        return {}
-
-    def child(self, path: Path, key: str = ""):
-        """Return a child resource."""
-        return self.klass(path, **self.child_args(key))
-
-    def child_path(self, key: str) -> Path:
-        """Return the path for a child resource."""
-        return self.path / key
-
-    def child_list(self):
-        """List/generator of valid children, based on self.glob"""
-        return self.path.glob(self.glob)
-
-    #
-    # Public HTTP-like Methods
-    #
-
-    def list(self) -> list[Self]:
+    def list(self, **kwargs) -> list["Resource"]:
         """List all child resources."""
-        return [self.child(x) for x in self.child_list()]
+        return []
 
-    def get(self, key: str) -> Self:
-        """Get a child resource by name."""
-        path = self.child_path(key)
-        if not path.exists():
-            raise KeyError(f"Key {key} not found in {self.path}")
-        return self.child(path, key)
+    def get(self, key: str, **kwargs) -> "Resource":
+        """Get a child resource by key."""
+        return self
 
-    def put(self, dest: Path) -> Path:
-        """Copy contents of resource's path into _dest_."""
-        dest.write_bytes(self.path.read_bytes())  # for binary files
-        return dest
+    def patch(self, res: Resource, **kwargs) -> "Resource":
+        """Update and return a child resource."""
+        raise NotImplementedError
+
+    def post(self, key: str, **kwargs) -> "Resource":
+        """Create and return a child resource using key."""
+        raise NotImplementedError
+
+    def put(self, res: Resource, **kwargs) -> "Resource":
+        """Insert/Replace and return a child resource."""
+        raise NotImplementedError
+
+    def delete(self, key: str, **kwargs) -> None:
+        """Delete a child resource by name."""
+        raise NotImplementedError

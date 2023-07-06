@@ -17,16 +17,19 @@ The core Resource classes are, in order of increasing specialization:
 - Registry
 - Namespace
 - Manifest
-- Blob
+- Entry
 
 These make use of the 'Config' class which loads and
 manages the 'quiltcore.yaml' configuration file.
 
 """
 
-from .blob import Blob  # noqa: F401
-from .config import Config  # noqa: F401
+from .changes import Changes  # noqa: F401
+from .delta import Delta  # noqa: F401
+from .entry import Entry  # noqa: F401
 from .manifest import Manifest  # noqa: F401
 from .namespace import Namespace  # noqa: F401
 from .registry import Registry  # noqa: F401
 from .resource import Resource  # noqa: F401
+from .volume import Volume  # noqa: F401
+from .yaml.config import Config  # noqa: F401

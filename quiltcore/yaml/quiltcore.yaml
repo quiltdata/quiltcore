@@ -1,17 +1,15 @@
 ---
 _yaml:
   _version: 0.3.1
-  app: registry
-  app_version: 0.1.0
-  doc: quiltcore
-  doc_version: 0.1.0
-dirs:
-  config: .quilt
-  names: named_packages
-  versions: packages
+  app: quiltcore
+  app_version: 0.2.0
+  doc: quilt3
+  doc_version: 0.2.0
 multihash:
   SHA256: sha2-256
 resources:
+  Volume:
+    child: Manifest
   Registry:
     child: Namespace
     glob: "*/*"
@@ -19,8 +17,12 @@ resources:
     child: Manifest
     glob: "*"
   Manifest:
-    child: Blob
-schema:
+    child: Entry
+  Changes:
+    child: Entry
+  Delta:
+    child: Entry
+quilt3:
   columns:
     logical_key: string
     physical_keys: [string]
@@ -29,9 +31,15 @@ schema:
       type: string
       value: string
     meta: struct
+  dirs:
+    config: .quilt
+    names: named_packages
+    manifests: packages
+  hash_type: SHA256
+  hash: hash
   headers:
     version: string
     message: string
-  place: physical_keys
+  mime_type: application/ld+json
   name: logical_key
-type: application/ld+json
+  places: physical_keys
