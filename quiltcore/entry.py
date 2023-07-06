@@ -31,6 +31,10 @@ class Entry(ResourceKey):
         self.args = kwargs
         self.setup(kwargs)
 
+    #
+    # Parse and unparse
+    #
+
     def get_value(self, row: dict, key: str):
         logging.debug(f"get_value: {key} from {row}")
         value = row.get(key, None)
@@ -45,6 +49,17 @@ class Entry(ResourceKey):
         if not self.size:
             self.size = self.path.stat().st_size
 
+    def to_row(self) -> dict:
+        return {
+            self.kName: self.name,
+            self.kPlaces: [str(self.path)],
+            self.kSize: self.size,
+            self.kHash: {
+                "value": self.hash,
+                "type": self.DEFAULT_HASH_TYPE
+            },
+            self.kMeta: self.meta,                
+        }
     #
     # Calculate and verify hash
     #

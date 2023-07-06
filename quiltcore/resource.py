@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from time import time
 from typing import Generator
 
 import quiltcore
@@ -19,8 +20,11 @@ class Resource:
     DEFAULT_HASH_TYPE = "SHA256"
     KEY_GLOB = "glob"
     KEY_KEY = "_key"
+    KEY_NAME = f"namespace.{KEY_KEY}"
     KEY_PATH = "_path"
     MANIFEST = "_manifest"
+    TAG_DEFAULT = "latest"
+    
 
     @staticmethod
     def TempGen(filename: str = "") -> Generator[Path, None, None]:
@@ -41,6 +45,11 @@ class Resource:
     def ClassFromName(name: str) -> type:
         """Return a class from a string."""
         return getattr(quiltcore, name)
+    
+    @staticmethod
+    def Timestamp() -> str:
+        "Return integer timestamp."
+        return str(int(time()))
 
     def __init__(self, path: Path, **kwargs):
         self.path = path

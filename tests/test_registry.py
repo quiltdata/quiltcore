@@ -32,7 +32,9 @@ def test_reg_list(reg):
     result = reg.list()
     assert isinstance(result, list)
     assert len(result) > 0
+    print(result)
     first = result[0]
+    print(first)
     assert isinstance(first, Namespace)
     assert TEST_PKG in str(first)
 

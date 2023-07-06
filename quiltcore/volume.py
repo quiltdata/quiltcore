@@ -1,3 +1,6 @@
+import pyarrow as pa
+
+from jsonlines import Writer
 from pathlib import Path
 from upath import UPath
 
@@ -92,7 +95,7 @@ class Volume(ResourceKey):
         if len(hash) > 0:
             return Manifest(self.registry.manifests / hash, **self.args)
 
-        tag = opts.get(self.KEY_TAG, Namespace.TAG_DEFAULT)
+        tag = opts.get(self.KEY_TAG, self.TAG_DEFAULT)
         name = self.registry.get(key)
         return name.get(tag)        
 
@@ -117,15 +120,27 @@ class Volume(ResourceKey):
         """Insert/Replace and return a child resource."""
         if not isinstance(res, Manifest):
             raise TypeError(f"Volume.put requires a Manifest, not {type(res)}")
-        hash_path = self.registry.manifests / res.name
+        man: Manifest = res
+        hash_path = self.registry.manifests / man.hash()
         if hash_path.exists():
             raise FileExistsError(f"Manifest {hash_path} already exists")
-        
-        namespace = kwargs.get("namespace") or res.args.get("namespace")
-        name = namespace
-            
-        man2 = Manifest(hash_path, **self.registry.args)
-        entries = res.list()
-        return self
 
+        ns_name = kwargs.get(self.KEY_NAME) or man.args.get(self.KEY_NAME) or f"unknown/{self.Timestamp()}"
+        kwargs[self.KEY_NAME] = ns_name
+
+        ns_name = self.write_entries(man, hash_path, ns_name)
+        man2 = Manifest(hash_path, **self.args)
+        self.registry.put(man2, **kwargs)
+        return man2
+    
+    def write_entries(self, man: Manifest, path: Path, name: str) -> str:
+        dest = str(self.path / name)
+        entries = [entry.get(dest) for entry in man.list()]
+        rows = [entry.to_row() for entry in entries]  # type: ignore
+        table = pa.Table.from_pylist(rows)
+        with path.open(mode="wb") as fo:
+            with Writer(fo) as writer:
+                writer.write(man.header_dict())
+                writer.write(table.to_pydict())
+        return name
 

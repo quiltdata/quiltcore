@@ -53,23 +53,25 @@ def test_vol_man_latest(vol):
     man = vol.get(TEST_PKG, tag="latest")
     assert isinstance(man, Manifest)
 
-
-def test_vol_translate(dir: UPath):  # noqa: F401
+def test_vol_put(dir: UPath):  # noqa: F401
     v_s3 = Volume.FromURI(TEST_BKT)
-    assert v_s3
-    pkg_s3 = v_s3.path / ".quilt/named_packages" / TEST_PKG
+    pkg_s3 = v_s3.registry.path / TEST_PKG
     assert pkg_s3.exists()
     man = v_s3.get(TEST_PKG)
     assert man
 
     v_tmp = Volume(dir)
-    assert v_tmp
-    pkg_tmp = v_tmp.path / ".quilt/named_packages" / TEST_PKG
+    pkg_tmp = v_tmp.registry.path / TEST_PKG
     assert not pkg_tmp.exists()
 
-    result = v_tmp.put(man, prefix = "data")
-    assert result
-    pkg_tmp = v_tmp.path / ".quilt/named_packages" / TEST_PKG
-    # assert pkg_tmp.exists()
+    man2 = v_tmp.put(man)
+    assert pkg_tmp.exists()
+
+    assert man2.path.exists()
+
+    latest = pkg_tmp / Volume.TAG_DEFAULT
+    assert latest.exists()
+    hash = latest.read_text()
+    assert hash == man2.name
     
 

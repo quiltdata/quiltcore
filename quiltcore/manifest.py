@@ -22,6 +22,20 @@ class Manifest(ResourceKey):
         except FileNotFoundError:
             logging.warning(f"Manifest not found: {path}")
 
+    def hash(self) -> str:
+        return self.name
+
+#
+# Parse Table
+#
+
+    def header_keys(self) -> list[str]:
+        headers = self.cf.get_dict("quilt3/headers")
+        return list(headers.keys())
+
+    def header_dict(self) -> dict:
+        return {k: getattr(self, k) for k in self.header_keys()}
+
     def setup_table(self) -> pa.Table:
         """
         Read the manifest into a pyarrow Table.
@@ -31,8 +45,7 @@ class Manifest(ResourceKey):
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         first = self.table.take([0]).to_pydict()
-        headers = self.cf.get_dict("quilt3/headers")
-        keys = list(headers.keys())
+        keys = self.header_keys()
         for header in keys:
             setattr(self, header, first[header][0])
         return self.table.drop_columns(keys).slice(1)

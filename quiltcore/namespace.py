@@ -8,13 +8,12 @@ class Namespace(ResourcePath):
     Namespacespace of Manifests by Hash
     list/get returns a specific Manifest
     """
-    TAG_DEFAULT = "latest"
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.manifests = kwargs["manifests"]
 
-    def hash(self, tag: str = TAG_DEFAULT) -> str:
+    def hash(self, tag: str = ResourcePath.TAG_DEFAULT) -> str:
         hash_file = self.path / tag
         return hash_file.read_text()
 
