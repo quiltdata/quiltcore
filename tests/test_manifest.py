@@ -25,8 +25,8 @@ def test_man_table(man: Manifest):
     schema = man.body.schema
     assert schema
     columns = man.cf.get_dict("quilt3/columns")
-    assert list(columns.keys()) == schema.names
-
+    for key in columns:
+        assert key in schema.names
 
 def test_man_child_dict(man: Manifest):
     cd = man._child_dict(TEST_KEY)

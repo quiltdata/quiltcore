@@ -1,12 +1,13 @@
 import logging
 from pathlib import Path
+from urllib.parse import quote, unquote
+
 
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
 from .resource_key import ResourceKey
-
 
 class Manifest(ResourceKey):
     """
@@ -17,7 +18,7 @@ class Manifest(ResourceKey):
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         try:
-            self.body = self.setup_table()
+            self.body = self._setup_table()
         except FileNotFoundError:
             logging.warning(f"Manifest not found: {path}")
 
@@ -35,7 +36,7 @@ class Manifest(ResourceKey):
     def header_dict(self) -> dict:
         return {k: getattr(self, k) for k in self.cols}
 
-    def setup_table(self) -> pa.Table:
+    def _setup_table(self) -> pa.Table:
         """
         Read the manifest into a pyarrow Table.
         Extract header values into attributes.
@@ -49,8 +50,33 @@ class Manifest(ResourceKey):
             if header in first:
                 self.cols.append(header)
                 setattr(self, header, first[header][0])
-        return self.table.drop_columns(self.cols).slice(1)
+        body = self.table.drop_columns(self.cols).slice(1)
+        return self.decode_table(body)
 
+    def decode_table(self, body: pa.Table) -> pa.Table:
+        """
+        URL-Decode appropriate columns of the manifest.
+        """
+        encoded = self.cf.get_dict("quilt3/encoded")
+        for old_col, new_col in encoded.items():
+            if old_col in body.column_names:
+                body = body.append_column(
+                    new_col,
+                    self.decode_item(body.column(old_col)),
+                )
+
+        return body
+    
+    def decode_item(self, item):
+        item_type = type(item)
+        if isinstance(item, str):
+            return unquote(item)
+        if isinstance(item, pa.ChunkedArray):
+            return pa.chunked_array([self.decode_item(chunk) for chunk in item.chunks])
+        if issubclass(item_type, pa.Array):
+            return [unquote(str(chunk)) for chunk in item.to_pylist()]
+        raise TypeError(f"Unexpected type: {item_type}")
+        
     #
     # Private Methods for child resources
     #

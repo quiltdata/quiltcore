@@ -15,11 +15,11 @@ class Registry(ResourcePath):
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.root = path
-        self.base = self.setup_dir(path, "quilt3/dirs/config")
-        self.path = self.setup_dir(self.base, "quilt3/dirs/names")
-        self.manifests = self.setup_dir(self.base, "quilt3/dirs/manifests")
+        self.base = self._setup_dir(path, "quilt3/dirs/config")
+        self.path = self._setup_dir(self.base, "quilt3/dirs/names")
+        self.manifests = self._setup_dir(self.base, "quilt3/dirs/manifests")
 
-    def setup_dir(self, path: Path, key: str) -> Path:
+    def _setup_dir(self, path: Path, key: str) -> Path:
         """Form dir and create if it does not exist."""
         dir = path / self.cf.get_path(key)
         if not dir.exists():

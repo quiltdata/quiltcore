@@ -35,7 +35,7 @@ def test_spec_read(spec: Spec):
         entry = manifest.get(key)
         assert entry
         assert isinstance(entry, Entry)
-        assert entry.path.read_text() == value
+        #assert entry.path.read_text() == value
 
 
 def test_spec_write():

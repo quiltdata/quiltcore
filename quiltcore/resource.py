@@ -64,7 +64,7 @@ class Resource:
         if key is not None:
             self.args[f"{self.class_key}.{self.KEY_KEY}"] = key
         self.cf = Config()
-        self.setup_params()
+        self._setup_params()
 
     def __repr__(self):
         return f"<{self.class_name}({self.path}, {self.args})>"
@@ -79,7 +79,7 @@ class Resource:
         """Return a param."""
         return self.params[key] if key in self.params else default  # type: ignore
 
-    def setup_params(self):
+    def _setup_params(self):
         """Load Resource-specific params from config file."""
         self.params = self.cf.get_dict(f"resources/{self.class_name}")
         self.glob = self.param("glob", "*")

@@ -15,9 +15,9 @@ class Delta(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.setup(kwargs)
+        self._setup(kwargs)
 
-    def setup(self, args: dict):
+    def _setup(self, args: dict):
         self.action = args.get("action", "add")
         self.name = args.get("name", self.path.name)
         self.prefix = args.get("prefix")

@@ -29,7 +29,7 @@ class Entry(ResourceKey):
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.args = kwargs
-        self.setup(kwargs)
+        self._setup(kwargs)
 
     #
     # Parse and unparse
@@ -40,11 +40,11 @@ class Entry(ResourceKey):
         value = row.get(key, None)
         return value[0] if value else None
 
-    def setup(self, row: dict):
+    def _setup(self, row: dict):
         self.name = self.get_value(row, self.kName) or self.path.name
         self.meta = self.get_value(row, self.kMeta)
         hash = self.get_value(row, self.kHash) or {}
-        self.setup_hash(hash)  # type: ignore
+        self._setup_hash(hash)  # type: ignore
         self.size = self.get_value(row, self.kSize)
         if not self.size:
             self.size = self.path.stat().st_size
@@ -62,7 +62,7 @@ class Entry(ResourceKey):
     # Calculate and verify hash
     #
 
-    def setup_hash(self, opt: dict = {}):
+    def _setup_hash(self, opt: dict = {}):
         """Set or create hash attributes."""
         type = opt.get("type", self.defaultHash)
         hash_key = f"multihash/{type}"
