@@ -1,10 +1,10 @@
 from tempfile import TemporaryDirectory
 
 from pytest import fixture, raises
-from quiltcore import Manifest, Namespace, Volume
+from quiltcore import Manifest, Volume
+from upath import UPath
 
 from .conftest import TEST_BKT, TEST_PKG, TEST_VOL
-from upath import UPath
 
 
 @fixture
@@ -42,7 +42,7 @@ def test_vol_list(vol):
     result = vol.list()
     assert isinstance(result, list)
     assert len(result) == 0
-    
+
     vol.get(TEST_PKG)
     results = vol.list()
     assert len(results) == 1
@@ -52,6 +52,7 @@ def test_vol_list(vol):
 def test_vol_man_latest(vol):
     man = vol.get(TEST_PKG, tag="latest")
     assert isinstance(man, Manifest)
+
 
 def test_vol_put(dir: UPath):  # noqa: F401
     v_s3 = Volume.FromURI(TEST_BKT)
@@ -73,5 +74,3 @@ def test_vol_put(dir: UPath):  # noqa: F401
     assert latest.exists()
     hash = latest.read_text()
     assert hash == man2.name
-    
-

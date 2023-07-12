@@ -2,8 +2,7 @@ from pytest import fixture
 from quiltcore import Entry, Manifest
 from upath import UPath
 
-from .conftest import TEST_BKT, TEST_KEY, TEST_OBJ_HASH,\
-                      TEST_SIZE, TEST_TABLE,  TEST_VOL
+from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_SIZE, TEST_TABLE
 
 
 @fixture
@@ -29,7 +28,7 @@ def test_man_table(man: Manifest):
 
 
 def test_man_child_dict(man: Manifest):
-    cd = man ._child_dict(TEST_KEY)
+    cd = man._child_dict(TEST_KEY)
     assert cd
     assert isinstance(cd, dict)
     assert cd[man.kName] == [TEST_KEY]

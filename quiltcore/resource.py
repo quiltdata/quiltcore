@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from urllib.parse import quote, unquote
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from time import time
 from typing import Generator
-from upath import UPath
+from urllib.parse import quote, unquote
 
 import quiltcore
+from upath import UPath
 
 from .yaml.config import Config
 
@@ -27,7 +27,6 @@ class Resource:
     MANIFEST = "_manifest"
     TAG_DEFAULT = "latest"
     UNQUOTED = "/:"
-    
 
     @staticmethod
     def TempGen(filename: str = "") -> Generator[Path, None, None]:
@@ -48,7 +47,7 @@ class Resource:
     def ClassFromName(name: str) -> type:
         """Return a class from a string."""
         return getattr(quiltcore, name)
-    
+
     @staticmethod
     def Timestamp() -> str:
         "Return integer timestamp."
@@ -72,7 +71,7 @@ class Resource:
 
     def __str__(self):
         return f"<{self.class_name}({self.path})>"
-    
+
     def __eq__(self, other):
         return str(self) == str(other)
 
@@ -86,7 +85,7 @@ class Resource:
         self.glob = self.param("glob", "*")
         _child = self.param("child", "Resource")
         self.klass = Resource.ClassFromName(_child)
-    
+
     #
     # URL Encoding of Physical Keys
     #
@@ -106,6 +105,7 @@ class Resource:
             return UPath(key)
         decoded = unquote(key)
         return UPath(decoded)
+
     #
     # Abstract HTTP Methods
     #

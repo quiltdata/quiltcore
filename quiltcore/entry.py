@@ -1,10 +1,9 @@
 import logging
 from copy import copy
 from pathlib import Path
-from upath import UPath
-from urllib.parse import quote
 
 from multiformats import multihash
+from upath import UPath
 
 from .resource import Resource
 from .resource_key import ResourceKey
@@ -55,13 +54,10 @@ class Entry(ResourceKey):
             self.kName: self.name,
             self.kPlaces: [self.encode(self.path)],
             self.kSize: self.size,
-            self.kHash: {
-                "value": self.hash,
-                "type": self.DEFAULT_HASH_TYPE
-            },
-            self.kMeta: self.meta,                
+            self.kHash: {"value": self.hash, "type": self.DEFAULT_HASH_TYPE},
+            self.kMeta: self.meta,
         }
-    
+
     #
     # Calculate and verify hash
     #
