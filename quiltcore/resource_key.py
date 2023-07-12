@@ -42,6 +42,7 @@ class ResourceKey(Resource):
         if self.KEY_PATH not in args:
             raise KeyError(f"Missing {self.KEY_PATH} in {args.keys()}")
         place = args[self.KEY_PATH]
+        self.decode(place)
         return UPath(place)
 
     def child(self, key: str, **kwargs):

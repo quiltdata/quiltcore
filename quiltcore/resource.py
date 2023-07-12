@@ -26,6 +26,7 @@ class Resource:
     KEY_PATH = "_path"
     MANIFEST = "_manifest"
     TAG_DEFAULT = "latest"
+    UNQUOTED = "/:"
     
 
     @staticmethod
@@ -97,7 +98,7 @@ class Resource:
     def encode(self, path: Path) -> str:
         """Encode path as a string."""
         key = str(path)
-        return quote(key) if self.encoded() else key
+        return quote(key, safe=self.UNQUOTED) if self.encoded() else key
 
     def decode(self, key: str) -> Path:
         """Decode string into a Path."""
