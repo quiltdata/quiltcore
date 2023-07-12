@@ -54,12 +54,12 @@ class Manifest(ResourceKey):
     # Private Methods for child resources
     #
 
-    def child_names(self, **kwargs) -> list[str]:
+    def  _child_names(self, **kwargs) -> list[str]:
         """List all child resources."""
         names = self.body.column(self.kName).to_pylist()
         return names
 
-    def child_dict(self, key: str) -> dict:
+    def  _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         # TODO: cache to avoid continually re-calcluating
         rows = self.body.filter(pc.field(self.kName) == key)

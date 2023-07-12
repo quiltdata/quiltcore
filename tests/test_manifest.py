@@ -29,7 +29,7 @@ def test_man_table(man: Manifest):
 
 
 def test_man_child_dict(man: Manifest):
-    cd = man.child_dict(TEST_KEY)
+    cd = man ._child_dict(TEST_KEY)
     assert cd
     assert isinstance(cd, dict)
     assert cd[man.kName] == [TEST_KEY]

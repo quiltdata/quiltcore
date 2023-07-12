@@ -25,11 +25,11 @@ class ResourceKey(Resource):
     # Abstract Methods for child resources
     #
 
-    def child_names(self, **kwargs) -> list[str]:
+    def  _child_names(self, **kwargs) -> list[str]:
         """Return names of each child resource."""
         return []
 
-    def child_dict(self, key: str) -> dict:
+    def  _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         return {}
 
@@ -47,7 +47,7 @@ class ResourceKey(Resource):
 
     def child(self, key: str, **kwargs):
         """Return a child resource."""
-        args = self.child_dict(key)
+        args = self ._child_dict(key)
         path = self.key_path(key, args)
         merged = {**self.args, **args}
         return self.klass(path, **merged)
@@ -62,4 +62,4 @@ class ResourceKey(Resource):
 
     def list(self, **kwargs) -> list[Resource]:
         """List all child resources by name."""
-        return [self.child(key, **kwargs) for key in self.child_names(**kwargs)]
+        return [self.child(key, **kwargs) for key in self ._child_names(**kwargs)]

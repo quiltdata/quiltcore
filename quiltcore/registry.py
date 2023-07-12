@@ -26,7 +26,7 @@ class Registry(ResourcePath):
             dir.mkdir(parents=True, exist_ok=True)
         return dir
 
-    def child_args(self, key: str) -> dict:
+    def  _child_args(self, key: str) -> dict:
         return {"manifests": self.manifests}
     
     def put(self, res: Resource, **kwargs) -> "Resource":

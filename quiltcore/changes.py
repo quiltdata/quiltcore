@@ -80,7 +80,7 @@ class Changes(ResourceKey):
     # ResourceKey helper methods
     #
 
-    def child_dict(self, key: str) -> dict:
+    def  _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         delta = self.get_delta(key)
         return {self.kName: [delta.name], self.kPlaces: str(delta.path)}
@@ -96,6 +96,6 @@ class Changes(ResourceKey):
         delta = self.get_delta(key)
         return delta.path
 
-    def child_names(self, **kwargs) -> list[str]:
+    def  _child_names(self, **kwargs) -> list[str]:
         """Return keys for each change."""
         return list(self.keystore.keys())

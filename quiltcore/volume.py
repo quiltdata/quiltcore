@@ -42,7 +42,7 @@ class Volume(ResourceKey):
     def is_local(self) -> bool:
         return self.uri.startswith("file://")
     
-    def child_names(self, **kwargs) -> list[str]:
+    def  _child_names(self, **kwargs) -> list[str]:
         """Return names of each child resource."""
         names = list(self.keystore.keys())
         names.remove(self.KEY_SELF)
@@ -61,7 +61,7 @@ class Volume(ResourceKey):
 
     def list(self, **kwargs) -> list["Resource"]:
         """List all child resources."""
-        return [self.get(x) for x in self.child_names()]
+        return [self.get(x) for x in self ._child_names()]
     
 #
 # GET and helpers - return a Manfiest
