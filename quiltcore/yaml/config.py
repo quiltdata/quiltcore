@@ -11,7 +11,7 @@ class Config(UnYaml):
         return UnYaml.LoadYaml(cls.CONFIG_FILE, __package__)
 
     def __init__(self, yaml_data: dict = {}) -> None:
-        data = yaml_data if len(yaml_data) > 0 else Config.DefaultConfig()
+        data = yaml_data if len(yaml_data) > 0 else self.DefaultConfig()
         super().__init__(data)
 
     def get_str(self, key: str, default="") -> str:

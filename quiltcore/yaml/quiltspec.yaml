@@ -1,0 +1,19 @@
+---
+_yaml:
+  _version: 0.3.1
+  app: quiltcore
+  app_version: 0.2.1
+  doc: quiltspec
+  doc_version: 0.1.0
+config:
+  registry: s3://quilt-example
+  namespace: spec/catalog
+  hash: 5745ba2d16b49a385d2aa4a187e74ebf440d82e6f9e633bffa165890fc80034a
+files:
+  READ ME.md: This is a README file.
+  timestamp.txt: 2018-01-01T00:00:00Z
+metadata:
+  Author: Ernie
+  Count: 1
+  Date: 2023-07-12
+

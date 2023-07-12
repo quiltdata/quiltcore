@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pyarrow as pa  # type: ignore
-from jsonlines import Writer
+from jsonlines import Writer  # type: ignore
 from upath import UPath
 
 from .entry import Entry
