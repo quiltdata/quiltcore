@@ -2,6 +2,7 @@ import logging
 from copy import copy
 from pathlib import Path
 from upath import UPath
+from urllib.parse import quote
 
 from multiformats import multihash
 
@@ -52,7 +53,7 @@ class Entry(ResourceKey):
     def to_row(self) -> dict:
         return {
             self.kName: self.name,
-            self.kPlaces: [str(self.path)],
+            self.kPlaces: [self.encode_path(self.path)],
             self.kSize: self.size,
             self.kHash: {
                 "value": self.hash,
@@ -60,6 +61,14 @@ class Entry(ResourceKey):
             },
             self.kMeta: self.meta,                
         }
+    
+    def encode_path(self, path: Path) -> str:
+        """Encode path as a string."""
+        key = str(path)
+        if self.cf.get_bool("quilt3/urlencode"):
+            logging.debug(f"encode_path: {key} -> {quote(key)}")
+            return quote(key)
+        return key
     #
     # Calculate and verify hash
     #

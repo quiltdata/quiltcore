@@ -43,3 +43,4 @@ quilt3:
   mime_type: application/ld+json
   name: logical_key
   places: physical_keys
+  urlencode: True
