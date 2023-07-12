@@ -53,7 +53,7 @@ class Entry(ResourceKey):
     def to_row(self) -> dict:
         return {
             self.kName: self.name,
-            self.kPlaces: [self.encode_path(self.path)],
+            self.kPlaces: [self.encode(self.path)],
             self.kSize: self.size,
             self.kHash: {
                 "value": self.hash,
@@ -62,13 +62,6 @@ class Entry(ResourceKey):
             self.kMeta: self.meta,                
         }
     
-    def encode_path(self, path: Path) -> str:
-        """Encode path as a string."""
-        key = str(path)
-        if self.cf.get_bool("quilt3/urlencode"):
-            logging.debug(f"encode_path: {key} -> {quote(key)}")
-            return quote(key)
-        return key
     #
     # Calculate and verify hash
     #
@@ -106,11 +99,11 @@ class Entry(ResourceKey):
         dir = UPath(key)
         dir.mkdir(parents=True, exist_ok=True)
         path = dir / self.name
-        print(path)
+        logging.debug(f"path: {path}")
         path.write_bytes(self.path.read_bytes())  # for binary files
         clone = copy(self)
         clone.path = path.resolve()
         clone.args = kwargs
-        print("clone", clone)
+        logging.debug(f"clone: {clone}")
 
         return clone

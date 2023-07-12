@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from urllib.parse import quote, unquote
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from time import time
 from typing import Generator
+from upath import UPath
 
 import quiltcore
 
@@ -83,7 +85,26 @@ class Resource:
         self.glob = self.param("glob", "*")
         _child = self.param("child", "Resource")
         self.klass = Resource.ClassFromName(_child)
+    
+    #
+    # URL Encoding of Physical Keys
+    #
 
+    def encoded(self) -> bool:
+        """Return True if Resource keys should be encoded."""
+        return self.cf.get_bool("quilt3/urlencode")
+
+    def encode(self, path: Path) -> str:
+        """Encode path as a string."""
+        key = str(path)
+        return quote(key) if self.encoded() else key
+
+    def decode(self, key: str) -> Path:
+        """Decode string into a Path."""
+        if not self.encoded():
+            return UPath(key)
+        decoded = unquote(key)
+        return UPath(decoded)
     #
     # Abstract HTTP Methods
     #
