@@ -1,6 +1,7 @@
 from pytest import fixture
-from quiltcore import Spec
+from quiltcore import Entry, Manifest, Namespace, Registry, Resource, Spec, Volume
 from quilt3 import Package  # type: ignore
+from upath import UPath
 
 @fixture
 def spec():
@@ -19,7 +20,13 @@ def test_spec_read(spec: Spec):
     - physical key
     - package-level metadata
     """
-    pass
+    reg = UPath(spec.registry())
+    registry = Registry(reg)
+    namespace = registry.get(spec.namespace())
+    manifest = namespace.get(spec.tag())
+    assert manifest
+    assert isinstance(manifest, Manifest)
+    assert hasattr(manifest, "user_meta")
 
 
 def test_spec_write():

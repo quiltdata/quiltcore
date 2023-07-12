@@ -6,12 +6,13 @@ _yaml:
   doc: quiltspec
   doc_version: 0.1.0
 config:
-  registry: s3://quilt-example
+  registry: s3://udp-spec
   namespace: spec/catalog
-  hash: 5745ba2d16b49a385d2aa4a187e74ebf440d82e6f9e633bffa165890fc80034a
+  tag: 1689200152
+  hash: 124225d173a046212950e5bde7a84f365abef2e969e6f7b2a808c5f7322aa6e9
 files:
-  READ ME.md: This is a README file.
-  timestamp.txt: 2018-01-01T00:00:00Z
+  READ ME.md: This is the README for QuiltSpec.
+  timestamp.txt: 2023-07-12T20:12:07+0000
 metadata:
   Author: Ernie
   Count: 1

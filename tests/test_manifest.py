@@ -14,6 +14,7 @@ def man():
 def test_man(man: Manifest):
     assert man
     assert man.version == "v0"  # type: ignore
+    assert len(man.message) > 0  # type: ignore
     assert "manifest" in man.args
 
 

@@ -33,7 +33,7 @@ class Manifest(ResourceKey):
         return list(headers.keys())
 
     def header_dict(self) -> dict:
-        return {k: getattr(self, k) for k in self.header_keys()}
+        return {k: getattr(self, k) for k in self.cols}
 
     def setup_table(self) -> pa.Table:
         """
@@ -44,10 +44,12 @@ class Manifest(ResourceKey):
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         first = self.table.take([0]).to_pydict()
-        keys = self.header_keys()
-        for header in keys:
-            setattr(self, header, first[header][0])
-        return self.table.drop_columns(keys).slice(1)
+        self.cols = []
+        for header in self.header_keys():
+            if header in first:
+                self.cols.append(header)
+                setattr(self, header, first[header][0])
+        return self.table.drop_columns(self.cols).slice(1)
 
     #
     # Private Methods for child resources

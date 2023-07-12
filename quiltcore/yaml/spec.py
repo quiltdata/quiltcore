@@ -4,11 +4,10 @@ from .config import Config
 
 
 class Spec(Config):
+    """Manage quiltspec parameters"""
+
     CONFIG_FILE = "quiltspec.yaml"
     K_PKG = "config"
-
-    def __init__(self) -> None:
-        super().__init__()
 
     def pkg(self, key: str) -> str:
         _pkg = self.get_dict(self.K_PKG)
@@ -25,6 +24,9 @@ class Spec(Config):
 
     def hash(self) -> str:
         return self.pkg("hash")
+    
+    def tag(self) -> str:
+        return str(self.pkg("tag"))
     
     # Contents
 
