@@ -20,15 +20,15 @@ class Registry(ResourcePath):
         self.manifests = self.setup_dir(self.base, "quilt3/dirs/manifests")
 
     def setup_dir(self, path: Path, key: str) -> Path:
-        """ Form dir and create if it does not exist."""
+        """Form dir and create if it does not exist."""
         dir = path / self.cf.get_path(key)
         if not dir.exists():
             dir.mkdir(parents=True, exist_ok=True)
         return dir
 
-    def child_args(self, key: str) -> dict:
+    def _child_args(self, key: str) -> dict:
         return {"manifests": self.manifests}
-    
+
     def put(self, res: Resource, **kwargs) -> "Resource":
         """Link manifest into namespace"""
         if not isinstance(res, Manifest):
@@ -47,5 +47,3 @@ class Registry(ResourcePath):
         latest_file.write_text(hash)
 
         return res
-
-

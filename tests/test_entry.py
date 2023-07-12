@@ -72,9 +72,22 @@ def test_entry_digest_verify(entry: Entry):
     entry.multihash = HASH_HW
     assert entry.verify(DATA_HW)
 
+
 def test_entry_verify(entry: Entry, dir: UPath):
     assert entry.hash
     clone = entry.get(str(dir))
     assert clone.path.exists()
     bstring = clone.path.read_bytes()
     assert entry.verify(bstring)
+
+
+def test_entry_quote(entry: Entry):
+    key = "s3://uri/with spaces"
+    path = UPath(key)
+    assert str(path) == key
+    assert entry.encoded()
+    encoded = entry.encode(path)
+    assert encoded != key
+    assert encoded == "s3://uri/with%20spaces"
+    decoded = entry.decode(encoded)
+    assert str(decoded) == str(path)

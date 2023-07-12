@@ -1,9 +1,9 @@
 import logging
 from copy import copy
 from pathlib import Path
-from upath import UPath
 
 from multiformats import multihash
+from upath import UPath
 
 from .resource import Resource
 from .resource_key import ResourceKey
@@ -52,14 +52,12 @@ class Entry(ResourceKey):
     def to_row(self) -> dict:
         return {
             self.kName: self.name,
-            self.kPlaces: [str(self.path)],
+            self.kPlaces: [self.encode(self.path)],
             self.kSize: self.size,
-            self.kHash: {
-                "value": self.hash,
-                "type": self.DEFAULT_HASH_TYPE
-            },
-            self.kMeta: self.meta,                
+            self.kHash: {"value": self.hash, "type": self.DEFAULT_HASH_TYPE},
+            self.kMeta: self.meta,
         }
+
     #
     # Calculate and verify hash
     #
@@ -97,11 +95,11 @@ class Entry(ResourceKey):
         dir = UPath(key)
         dir.mkdir(parents=True, exist_ok=True)
         path = dir / self.name
-        print(path)
+        logging.debug(f"path: {path}")
         path.write_bytes(self.path.read_bytes())  # for binary files
         clone = copy(self)
         clone.path = path.resolve()
         clone.args = kwargs
-        print("clone", clone)
+        logging.debug(f"clone: {clone}")
 
         return clone

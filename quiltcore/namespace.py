@@ -17,7 +17,7 @@ class Namespace(ResourcePath):
         hash_file = self.path / tag
         return hash_file.read_text()
 
-    def child_path(self, key: str) -> Path:
+    def _child_path(self, key: str) -> Path:
         """Return the path for a child resource."""
         hash = self.hash(key)
         return self.manifests / hash

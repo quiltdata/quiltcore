@@ -4,7 +4,6 @@ from pytest import fixture, raises
 from quiltcore import Changes, Delta, Entry
 from upath import UPath
 
-
 FILENAME = "filename.txt"
 FILETEXT = "hello world"
 

@@ -21,5 +21,8 @@ class Config(UnYaml):
         str_path = self.get_str(key, ".")
         return Path(str_path)
 
+    def get_bool(self, key: str) -> bool:
+        return self.get(key) or False
+
     def get_dict(self, key: str) -> dict:
         return self.get(key) or {}

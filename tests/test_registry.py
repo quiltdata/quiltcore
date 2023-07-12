@@ -2,7 +2,7 @@ from pytest import fixture, raises
 from quiltcore import Manifest, Namespace, Registry
 from upath import UPath
 
-from .conftest import TEST_VOL, TEST_HASH, TEST_PKG, TEST_TAG
+from .conftest import TEST_HASH, TEST_PKG, TEST_TAG, TEST_VOL
 
 
 @fixture
@@ -63,8 +63,8 @@ def test_reg_name(reg):
     assert "namespace" in man.args
     assert ns_key in man.args
 
+
 def test_reg_name_latest(reg):
     name = reg.get(TEST_PKG)
     latest = name.get("latest")
     assert isinstance(latest, Manifest)
-
