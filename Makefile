@@ -41,7 +41,7 @@ tag:
 	git tag `poetry version | awk '{print $$2}'`
 	git push --tags
 
-pypi: clean tag
+pypi: clean tag clean-git
 	poetry version
 	poetry build
 	poetry publish --dry-run

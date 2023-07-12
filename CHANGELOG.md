@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 0.2.1 (2023-07-12)
+
+- urlencode physical keys
+- rename "child" methods to "_child"
+
 ## 0.2.0 (2023-07-06)
 
 - rename schema to quilt3
