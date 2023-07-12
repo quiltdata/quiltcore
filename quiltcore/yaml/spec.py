@@ -11,7 +11,6 @@ class Spec(Config):
 
     def pkg(self, key: str) -> str:
         _pkg = self.get_dict(self.K_PKG)
-        print(f"pkg: {_pkg.keys()}")
         return _pkg.get(key, "<missing>")
 
     # Configuration
