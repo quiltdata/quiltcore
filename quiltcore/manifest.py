@@ -46,6 +46,7 @@ class Manifest(ResourceKey):
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         first = self.table.take([0]).to_pydict()
+        print(f"first: {first}")
         self.cols = []
         for header in self.header_keys():
             if header in first:

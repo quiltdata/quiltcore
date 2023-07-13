@@ -28,6 +28,7 @@ class Entry(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
+        print(f"Entry.kwargs: {kwargs}")
         self._setup(kwargs)
 
     #

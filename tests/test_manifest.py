@@ -10,10 +10,12 @@ def man():
     return Manifest(path)
 
 
-def test_man(man: Manifest):
+def test_man_headers(man: Manifest):
     assert man
     assert man.version == "v0"  # type: ignore
     assert len(man.message) > 0  # type: ignore
+    assert len(man.user_meta) > 0  # type: ignore
+    assert man.user_meta["Author"] == "Ernest"  # type: ignore
     assert "manifest" in man.args
 
 

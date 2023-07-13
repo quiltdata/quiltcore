@@ -44,6 +44,7 @@ quilt3:
     version: string
     message: string
     user_meta: dict
+  meta: user_meta
   mime_type: application/ld+json
   name: logical_key
   places: physical_keys
