@@ -78,8 +78,7 @@ class Resource:
         if key is not None:
             self.args[f"{self.class_key}.{self.KEY_KEY}"] = key
         self.cf = Config()
-        if "s3:/udp" in str(path):
-            print(f"ERROR@Resource.__init__: {self}\n\t{self.args}")
+        assert "s3:/udp" not in str(path)
         self._setup_params()
 
     def __repr__(self):

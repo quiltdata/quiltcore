@@ -28,7 +28,6 @@ class Entry(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        print(f"Entry.__init__: {path}\n\t{kwargs}")
         self._setup(kwargs)
 
     #
@@ -57,7 +56,6 @@ class Entry(ResourceKey):
             self.kHash: {"value": self.hash, "type": self.DEFAULT_HASH_TYPE},
             self.kMeta: self.meta,
         }
-        print(f"to_row: {row}")
         return row
 
     #

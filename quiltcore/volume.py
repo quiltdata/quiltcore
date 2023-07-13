@@ -76,13 +76,11 @@ class Volume(ResourceKey):
         """
         if key in self.keystore:
             opts = self.keystore[key]
-            print(f"Volume.get({key}) opts: {opts.keys()}")
             return opts["manifest"]
 
         manifest = self.get_manifest(key, **kwargs)
         args = manifest.args.copy()
         args[self.KEY_PATH] = str(manifest.path)
-        print(f"Volume.get({self.KEY_PATH}) args: {args[self.KEY_PATH]}")
         self.keystore[key] = args
         return manifest
 
@@ -141,7 +139,6 @@ class Volume(ResourceKey):
         dest = str(self.path / name)
         entries = [entry.get(dest) for entry in man.list()]
         rows = [entry.to_row() for entry in entries]  # type: ignore
-        print(f"write_entries: {rows}")
         table = pa.Table.from_pylist(rows)
         with path.open(mode="wb") as fo:
             with Writer(fo) as writer:

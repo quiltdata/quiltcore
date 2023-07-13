@@ -97,10 +97,7 @@ class Manifest(ResourceKey):
         if rows.num_rows == 0:
             raise KeyError(f"Key [{key}] not found in {self.name_key} of {self.path}")
         row = rows.to_pydict()
-        print(f"Manifest._child_dict: {self.places_key}")
-        print(f"places {row['places']} kPlaces {row[self.kPlaces]}")
         places = row[self.places_key][0]
         place = places[0] if isinstance(places, list) else places
-        print(f"Manifest._child_dict.place: {place}")
         row[self.KEY_PATH] = place
         return row

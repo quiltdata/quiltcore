@@ -35,7 +35,6 @@ def entry(man: Manifest) -> Entry:
 def test_entry_init(entry: Entry):
     assert entry
     assert isinstance(entry, Entry)
-    print(entry.args.keys())
     assert isinstance(entry.args["manifest"], Manifest)
 
 
