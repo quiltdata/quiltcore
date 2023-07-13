@@ -52,6 +52,20 @@ class Resource:
     def Timestamp() -> str:
         "Return integer timestamp."
         return str(int(time()))
+    
+    @staticmethod
+    def AsPath(key: str) -> UPath:
+        """Return a Path from a string."""
+        if not isinstance(key, str):
+            raise TypeError(f"[{key}]Expected str, got {type(key)}")
+        return UPath(key)
+    
+    @staticmethod
+    def AsStr(object) -> str:
+        """Return a string from a simple object."""
+        if not isinstance(object, str):
+            raise TypeError(f"Expected str, got {type(object)}:{object}")
+        return object
 
     def __init__(self, path: Path, **kwargs):
         self.path = path
@@ -64,6 +78,8 @@ class Resource:
         if key is not None:
             self.args[f"{self.class_key}.{self.KEY_KEY}"] = key
         self.cf = Config()
+        if "s3:/udp" in str(path):
+            print(f"ERROR@Resource.__init__: {self}\n\t{self.args}")
         self._setup_params()
 
     def __repr__(self):
@@ -96,9 +112,13 @@ class Resource:
 
     def encode(self, object) -> str:
         """Encode object as a string."""
-        key = str(object)
+        key = self.AsStr(object)
         return quote(key, safe=self.UNQUOTED) if self.encoded() else key
 
+    def decode(self, object) -> str:
+        """Decode object as a string."""
+        key = self.AsStr(object)
+        return unquote(key) if self.encoded() else key
     #
     # Abstract HTTP Methods
     #

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from upath import UPath
-
 from .resource import Resource
 
 
@@ -42,7 +40,7 @@ class ResourceKey(Resource):
         if self.KEY_PATH not in args:
             raise KeyError(f"Missing {self.KEY_PATH} in {args.keys()}")
         place = args[self.KEY_PATH]
-        return UPath(place)
+        return self.AsPath(place)
 
     def child(self, key: str, **kwargs):
         """Return a child resource."""

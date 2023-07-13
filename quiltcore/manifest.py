@@ -1,7 +1,5 @@
 import logging
 from pathlib import Path
-from urllib.parse import quote, unquote
-
 
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
@@ -62,7 +60,7 @@ class Manifest(ResourceKey):
         """
         encoded = self.cf.get_dict("quilt3/encoded")
         for old_col, new_col in encoded.items():
-            #self.decoded = True
+            self.decoded = True
             if old_col in body.column_names:
                 body = body.append_column(
                     new_col,
@@ -74,11 +72,13 @@ class Manifest(ResourceKey):
     def decode_item(self, item):
         item_type = type(item)
         if isinstance(item, str):
-            return unquote(item)
+            return self.decode(item)
+        if isinstance(item, list):
+            return [self.decode_item(item[0])]
         if isinstance(item, pa.ChunkedArray):
             return pa.chunked_array([self.decode_item(chunk) for chunk in item.chunks])
         if issubclass(item_type, pa.Array):
-            return [unquote(str(chunk)) for chunk in item.to_pylist()]
+            return [self.decode_item(chunk) for chunk in item.to_pylist()]
         raise TypeError(f"Unexpected type: {item_type}")
         
     #
@@ -97,6 +97,10 @@ class Manifest(ResourceKey):
         if rows.num_rows == 0:
             raise KeyError(f"Key [{key}] not found in {self.name_key} of {self.path}")
         row = rows.to_pydict()
-        place = row[self.places_key][0][0]
+        print(f"Manifest._child_dict: {self.places_key}")
+        print(f"places {row['places']} kPlaces {row[self.kPlaces]}")
+        places = row[self.places_key][0]
+        place = places[0] if isinstance(places, list) else places
+        print(f"Manifest._child_dict.place: {place}")
         row[self.KEY_PATH] = place
         return row

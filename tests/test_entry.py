@@ -19,13 +19,15 @@ def dir():
 
 @fixture
 def man() -> Manifest:
-    man = Manifest(UPath(TEST_TABLE))
+    path = Manifest.AsPath(TEST_TABLE)
+    man = Manifest(path)
     return man
 
 
 @fixture
 def entry(man: Manifest) -> Entry:
-    man = Manifest(UPath(TEST_TABLE))
+    path = Manifest.AsPath(TEST_TABLE)
+    man = Manifest(path)
     entry: Entry = man.get(TEST_KEY)  # type: ignore
     return entry
 
@@ -83,9 +85,7 @@ def test_entry_verify(entry: Entry, dir: UPath):
 
 def test_entry_quote(entry: Entry):
     key = "s3://uri/with spaces"
-    path = UPath(key)
-    assert str(path) == key
     assert entry.encoded()
-    encoded = entry.encode(path)
+    encoded = entry.encode(key)
     assert encoded != key
     assert encoded == "s3://uri/with%20spaces"

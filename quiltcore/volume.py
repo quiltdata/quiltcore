@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pyarrow as pa  # type: ignore
 from jsonlines import Writer  # type: ignore
-from upath import UPath
 
 from .entry import Entry
 from .manifest import Manifest
@@ -28,7 +27,7 @@ class Volume(ResourceKey):
     @staticmethod
     def FromURI(uri: str, **kwargs) -> "Volume":
         """Create a Volume from a URI"""
-        path = UPath(uri)
+        path = Volume.AsPath(uri)
         return Volume(path, **kwargs)
 
     def __init__(self, path: Path, **kwargs):
@@ -82,7 +81,8 @@ class Volume(ResourceKey):
 
         manifest = self.get_manifest(key, **kwargs)
         args = manifest.args.copy()
-        args[self.KEY_PATH] = manifest.path
+        args[self.KEY_PATH] = str(manifest.path)
+        print(f"Volume.get({self.KEY_PATH}) args: {args[self.KEY_PATH]}")
         self.keystore[key] = args
         return manifest
 

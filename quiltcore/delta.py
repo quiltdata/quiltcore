@@ -22,7 +22,7 @@ class Delta(ResourceKey):
         self.name = args.get("name", self.path.name)
         self.prefix = args.get("prefix")
         if self.prefix:
-            ppath = Path(self.prefix) / self.name
+            ppath = self.AsPath(self.prefix) / self.name
             self.name = str(ppath.as_posix())
 
     def __repr__(self):

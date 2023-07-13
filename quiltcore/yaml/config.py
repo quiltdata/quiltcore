@@ -1,4 +1,4 @@
-from pathlib import Path
+from upath import UPath
 
 from un_yaml import UnYaml  # type: ignore
 
@@ -17,9 +17,9 @@ class Config(UnYaml):
     def get_str(self, key: str, default="") -> str:
         return super().get(key) or default
 
-    def get_path(self, key: str) -> Path:
+    def get_path(self, key: str) -> UPath:
         str_path = self.get_str(key, ".")
-        return Path(str_path)
+        return UPath(str_path)
 
     def get_bool(self, key: str) -> bool:
         return self.get(key) or False

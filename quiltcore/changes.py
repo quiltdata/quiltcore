@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from upath import UPath
 from yaml import dump
 
 from .delta import Delta
@@ -64,7 +63,7 @@ class Changes(ResourceKey):
                 * prefix: pre-pended to key if non-empty
         .
         """
-        path = UPath(key)
+        path = self.AsPath(key)
         delta = Delta(path, **kwargs)
         self.keystore[delta.name] = delta
         return delta

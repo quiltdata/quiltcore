@@ -28,7 +28,7 @@ class Entry(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.args = kwargs
+        print(f"Entry.__init__: {path}\n\t{kwargs}")
         self._setup(kwargs)
 
     #
@@ -50,13 +50,15 @@ class Entry(ResourceKey):
             self.size = self.path.stat().st_size
 
     def to_row(self) -> dict:
-        return {
+        row = {
             self.kName: self.encode(self.name),
-            self.kPlaces: [self.encode(self.path)],
+            self.kPlaces: [self.encode(str(self.path))],
             self.kSize: self.size,
             self.kHash: {"value": self.hash, "type": self.DEFAULT_HASH_TYPE},
             self.kMeta: self.meta,
         }
+        print(f"to_row: {row}")
+        return row
 
     #
     # Calculate and verify hash
@@ -92,7 +94,7 @@ class Entry(ResourceKey):
 
     def get(self, key: str, **kwargs) -> Resource:
         """Copy contents of resource's path into _key_ directory."""
-        dir = UPath(key)
+        dir = self.AsPath(key)
         dir.mkdir(parents=True, exist_ok=True)
         path = dir / self.name
         logging.debug(f"path: {path}")
