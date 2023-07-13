@@ -78,7 +78,7 @@ def test_entry_verify(entry: Entry, dir: UPath):
     assert entry.hash
     clone = entry.get(str(dir))
     assert clone.path.exists()
-    bstring = clone.path.read_bytes()
+    bstring = clone.to_bytes()
     assert entry.verify(bstring)
 
 

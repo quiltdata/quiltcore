@@ -102,6 +102,19 @@ class Resource:
         self.klass = Resource.ClassFromName(_child)
 
     #
+    # Read Bytes/Text
+    # 
+
+    def to_bytes(self) -> bytes:
+        """Return bytes from path."""
+        return self.path.read_bytes()
+
+    def to_text(self, strip=True) -> str:
+        """Return text from path."""
+        text = self.to_bytes().decode("utf-8")
+        return text.strip() if strip else text
+
+    #
     # URL Encoding of Physical Keys
     #
 
@@ -118,6 +131,7 @@ class Resource:
         """Decode object as a string."""
         key = self.AsStr(object)
         return unquote(key) if self.encoded() else key
+    
     #
     # Abstract HTTP Methods
     #

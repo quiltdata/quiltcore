@@ -76,8 +76,7 @@ class Entry(ResourceKey):
 
     def source_hash(self) -> str:
         """Return the hash of the source file."""
-        bytes = self.path.read_bytes()
-        return self.digest(bytes)
+        return self.digest(self.to_bytes())
 
     def digest(self, bstring: bytes) -> str:
         """Return the multihash digest of `bstring`"""
@@ -97,7 +96,7 @@ class Entry(ResourceKey):
         dir.mkdir(parents=True, exist_ok=True)
         path = dir / self.name
         logging.debug(f"path: {path}")
-        path.write_bytes(self.path.read_bytes())  # for binary files
+        path.write_bytes(self.to_bytes())  # for binary files
         clone = copy(self)
         clone.path = path.resolve()
         clone.args = kwargs
