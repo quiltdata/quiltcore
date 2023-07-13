@@ -35,3 +35,12 @@ types-tzlocal = "^5.0.1.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest-watcher]
+now = true
+delay = 0.5
+runner = "pytest"
+runner_args = []
+patterns = ["*.py", "*.yaml", "Makefile", "pyproject.toml", "poetry.lock"]
+ignore_patterns = []

@@ -35,7 +35,7 @@ coverage:
 	open coverage_html/index.html
 
 watch:
-	poetry run ptw --now .
+	poetry run ptw .
 
 tag:
 	git tag `poetry version | awk '{print $$2}'`
