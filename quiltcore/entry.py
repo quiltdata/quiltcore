@@ -51,7 +51,7 @@ class Entry(ResourceKey):
 
     def to_row(self) -> dict:
         return {
-            self.kName: self.name,
+            self.kName: self.encode(self.name),
             self.kPlaces: [self.encode(self.path)],
             self.kSize: self.size,
             self.kHash: {"value": self.hash, "type": self.DEFAULT_HASH_TYPE},

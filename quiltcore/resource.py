@@ -92,19 +92,12 @@ class Resource:
 
     def encoded(self) -> bool:
         """Return True if Resource keys should be encoded."""
-        return self.cf.get_bool("quilt3/urlencode")
+        return len(self.cf.get_dict("quilt3/encoded")) > 0
 
-    def encode(self, path: Path) -> str:
-        """Encode path as a string."""
-        key = str(path)
+    def encode(self, object) -> str:
+        """Encode object as a string."""
+        key = str(object)
         return quote(key, safe=self.UNQUOTED) if self.encoded() else key
-
-    def decode(self, key: str) -> Path:
-        """Decode string into a Path."""
-        if not self.encoded():
-            return UPath(key)
-        decoded = unquote(key)
-        return UPath(decoded)
 
     #
     # Abstract HTTP Methods

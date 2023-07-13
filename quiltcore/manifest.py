@@ -17,10 +17,13 @@ class Manifest(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
+        self.decoded = False
         try:
             self.body = self._setup_table()
         except FileNotFoundError:
             logging.warning(f"Manifest not found: {path}")
+        self.name_key = "name" if self.decoded else self.kName
+        self.places_key = "places" if self.decoded else self.kPlaces
 
     def hash(self) -> str:
         return self.name
@@ -59,6 +62,7 @@ class Manifest(ResourceKey):
         """
         encoded = self.cf.get_dict("quilt3/encoded")
         for old_col, new_col in encoded.items():
+            #self.decoded = True
             if old_col in body.column_names:
                 body = body.append_column(
                     new_col,
@@ -83,16 +87,16 @@ class Manifest(ResourceKey):
 
     def _child_names(self, **kwargs) -> list[str]:
         """List all child resources."""
-        names = self.body.column(self.kName).to_pylist()
+        names = self.body.column(self.name_key).to_pylist()
         return names
 
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         # TODO: cache to avoid continually re-calcluating
-        rows = self.body.filter(pc.field(self.kName) == key)
+        rows = self.body.filter(pc.field(self.name_key) == key)
         if rows.num_rows == 0:
-            raise KeyError(f"Key [{key}] not found in {self.kName} of {self.path}")
+            raise KeyError(f"Key [{key}] not found in {self.name_key} of {self.path}")
         row = rows.to_pydict()
-        place = row[self.kPlaces][0][0]
+        place = row[self.places_key][0][0]
         row[self.KEY_PATH] = place
         return row

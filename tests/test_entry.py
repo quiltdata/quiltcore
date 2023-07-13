@@ -89,5 +89,3 @@ def test_entry_quote(entry: Entry):
     encoded = entry.encode(path)
     assert encoded != key
     assert encoded == "s3://uri/with%20spaces"
-    decoded = entry.decode(encoded)
-    assert str(decoded) == str(path)
