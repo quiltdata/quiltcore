@@ -1,4 +1,4 @@
-from pytest import fixture
+from pytest import fixture, mark
 from quiltcore import Entry, Manifest, Namespace, Registry, Resource, Spec, Volume
 from quilt3 import Package  # type: ignore
 from upath import UPath
@@ -35,6 +35,9 @@ def test_spec_read(spec: Spec):
         entry = manifest.get(key)
         assert entry
         assert isinstance(entry, Entry)
+        opts = entry.read_opts()
+        assert opts
+        assert entry.KEY_S3VER in opts
         assert entry.to_text() == value
 
 

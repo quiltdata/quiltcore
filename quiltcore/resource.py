@@ -4,10 +4,11 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from time import time
 from typing import Generator
-from urllib.parse import quote, unquote
+from upath import UPath
+from urllib.parse import quote, unquote, urlparse, parse_qs
 
 import quiltcore
-from upath import UPath
+import logging
 
 from .yaml.config import Config
 
@@ -24,6 +25,8 @@ class Resource:
     KEY_KEY = "_key"
     KEY_NAME = f"namespace.{KEY_KEY}"
     KEY_PATH = "_path"
+    KEY_VER = "versionId"
+    KEY_S3VER = "version_id"
     MANIFEST = "_manifest"
     TAG_DEFAULT = "latest"
     UNQUOTED = "/:"
@@ -58,7 +61,7 @@ class Resource:
         """Return a Path from a string."""
         if not isinstance(key, str):
             raise TypeError(f"[{key}]Expected str, got {type(key)}")
-        return UPath(key)
+        return UPath(key, version_aware=True)
     
     @staticmethod
     def AsStr(object) -> str:
@@ -66,6 +69,17 @@ class Resource:
         if not isinstance(object, str):
             raise TypeError(f"Expected str, got {type(object)}:{object}")
         return object
+    
+    @staticmethod
+    def GetVersion(uri: str) -> str:
+        """Extract `versionId` from query."""
+        query = urlparse(uri).query
+        if not query:
+            return ""
+        qs = parse_qs(query)
+        vlist = qs.get(Resource.KEY_VER)
+        return vlist[0] if vlist else ""
+
 
     def __init__(self, path: Path, **kwargs):
         self.path = path
@@ -105,8 +119,19 @@ class Resource:
     # Read Bytes/Text
     # 
 
+    def read_opts(self) -> dict:
+        if self.KEY_VER in self.args:
+            opts = {self.KEY_S3VER: self.args[self.KEY_VER]}
+            logging.debug(f"read_opts: {opts}")
+            return opts
+        return {}
+
     def to_bytes(self) -> bytes:
         """Return bytes from path."""
+        opts = self.read_opts()
+        if (len(opts) > 0):
+            with self.path.open(mode="rb", **opts) as fi:
+                return fi.read()
         return self.path.read_bytes()
 
     def to_text(self, strip=True) -> str:

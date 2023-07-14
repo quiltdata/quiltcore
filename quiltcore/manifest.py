@@ -46,7 +46,6 @@ class Manifest(ResourceKey):
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         first = self.table.take([0]).to_pydict()
-        print(f"first: {first}")
         self.cols = []
         for header in self.header_keys():
             if header in first:
@@ -101,4 +100,7 @@ class Manifest(ResourceKey):
         places = row[self.places_key][0]
         place = places[0] if isinstance(places, list) else places
         row[self.KEY_PATH] = place
+        v = self.GetVersion(place)
+        if len(v) > 0:
+            row[self.KEY_VER] = v
         return row
