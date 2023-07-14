@@ -1,2 +1,2 @@
 {"version": "v0", "message": "forced put-update adds ONLYME.", "user_meta":{"Author":"Ernest"}}
-{"logical_key": "ONLYME.md", "physical_keys": ["s3://udp-spec/manual/force/ONLYME.md?versionId=VetrR_Vukeiiv.NkXZXpQFKEibsK0QW3"], "size": 30, "hash": {"type": "SHA256", "value": "df3e419dfd21f653651a5131e17bf41d82a9fd72baf2a93f634773353bd9d6c8"}, "meta": {"format":"parquet"}}
+{"logical_key": "ONLYME.md", "physical_keys": ["file:///Users/quilt/Documents/GitHub/quiltcore/tests/example/manual/force/ONLYME.md"], "size": 30, "hash": {"type": "SHA256", "value": "df3e419dfd21f653651a5131e17bf41d82a9fd72baf2a93f634773353bd9d6c8"}, "meta": {"user_meta":{"format":"parquet"}}}

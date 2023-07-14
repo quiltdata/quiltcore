@@ -31,5 +31,5 @@ class Spec(Config):
     def files(self) -> dict:
         return self.get_dict("files")
 
-    def metadata(self) -> dict:
-        return self.get_dict("metadata")
+    def metadata(self, key="_package") -> dict:
+        return self.get_dict(f"metadata/{key}")

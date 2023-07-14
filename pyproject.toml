@@ -42,5 +42,5 @@ now = true
 delay = 0.5
 runner = "pytest"
 runner_args = []
-patterns = ["*.py", "*.yaml", "Makefile", "pyproject.toml", "poetry.lock"]
+patterns = ["*.py", "*.yaml", "Makefile", "pyproject.toml", "poetry.lock", "3210f808ac0467726439191eea3bd0a66ab261122ee55758367620fedc77fe08"]
 ignore_patterns = []

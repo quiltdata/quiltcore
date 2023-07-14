@@ -2,6 +2,7 @@ from pytest import fixture
 from quiltcore import Entry, Registry, Spec
 from upath import UPath
 
+NEW_PRK = "spec/quiltcore"
 
 @fixture
 def spec():
@@ -21,6 +22,8 @@ def test_spec_read(spec: Spec):
 
     - physical key
     - package-level metadata
+    - file-level metadata
+    - package hash (verify)
     """
     reg = UPath(spec.registry())
     registry = Registry(reg)
@@ -44,12 +47,18 @@ def test_spec_read(spec: Spec):
 
 
 def test_spec_write():
-    """Ensure quilt3 can read manifests created by quiltcore"""
+    """
+    Ensure quilt3 can read manifests created by quiltcore
+
+    * create files and metadata
+    * create package
+    * write to bucket
+    * track all of the above
+    * read it all back
+    * TODO: calculate / verify package hash
+    """
     pass
 
-
-def test_spec_verify():
-    """Ensure quilt3 can verify manifests created by quiltcore"""
 
 
 def test_spec_workflow():
