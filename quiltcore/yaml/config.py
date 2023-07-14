@@ -1,6 +1,5 @@
-from upath import UPath
-
 from un_yaml import UnYaml  # type: ignore
+from upath import UPath
 
 
 class Config(UnYaml):

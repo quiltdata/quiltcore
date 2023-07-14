@@ -29,6 +29,7 @@ def test_man_table(man: Manifest):
     for key in columns:
         assert key in schema.names
 
+
 def test_man_child_dict(man: Manifest):
     cd = man._child_dict(TEST_KEY)
     assert cd

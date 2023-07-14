@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from time import time
 from typing import Generator
-from upath import UPath
-from urllib.parse import quote, unquote, urlparse, parse_qs
+from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import quiltcore
-import logging
+from upath import UPath
 
 from .yaml.config import Config
 
@@ -55,21 +55,21 @@ class Resource:
     def Timestamp() -> str:
         "Return integer timestamp."
         return str(int(time()))
-    
+
     @staticmethod
     def AsPath(key: str) -> UPath:
         """Return a Path from a string."""
         if not isinstance(key, str):
             raise TypeError(f"[{key}]Expected str, got {type(key)}")
         return UPath(key, version_aware=True)
-    
+
     @staticmethod
     def AsStr(object) -> str:
         """Return a string from a simple object."""
         if not isinstance(object, str):
             raise TypeError(f"Expected str, got {type(object)}:{object}")
         return object
-    
+
     @staticmethod
     def GetVersion(uri: str) -> str:
         """Extract `versionId` from query."""
@@ -79,7 +79,6 @@ class Resource:
         qs = parse_qs(query)
         vlist = qs.get(Resource.KEY_VER)
         return vlist[0] if vlist else ""
-
 
     def __init__(self, path: Path, **kwargs):
         self.path = path
@@ -117,7 +116,7 @@ class Resource:
 
     #
     # Read Bytes/Text
-    # 
+    #
 
     def read_opts(self) -> dict:
         if self.KEY_VER in self.args:
@@ -129,7 +128,7 @@ class Resource:
     def to_bytes(self) -> bytes:
         """Return bytes from path."""
         opts = self.read_opts()
-        if (len(opts) > 0):
+        if len(opts) > 0:
             with self.path.open(mode="rb", **opts) as fi:
                 return fi.read()
         return self.path.read_bytes()
@@ -156,7 +155,7 @@ class Resource:
         """Decode object as a string."""
         key = self.AsStr(object)
         return unquote(key) if self.encoded() else key
-    
+
     #
     # Abstract HTTP Methods
     #

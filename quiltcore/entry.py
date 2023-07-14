@@ -3,7 +3,6 @@ from copy import copy
 from pathlib import Path
 
 from multiformats import multihash
-from upath import UPath
 
 from .resource import Resource
 from .resource_key import ResourceKey

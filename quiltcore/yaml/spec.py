@@ -1,4 +1,3 @@
-from pathlib import Path
 
 from .config import Config
 
@@ -23,10 +22,10 @@ class Spec(Config):
 
     def hash(self) -> str:
         return self.pkg("hash")
-    
+
     def tag(self) -> str:
         return str(self.pkg("tag"))
-    
+
     # Contents
 
     def files(self) -> dict:

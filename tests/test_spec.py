@@ -1,11 +1,12 @@
-from pytest import fixture, mark
-from quiltcore import Entry, Manifest, Namespace, Registry, Resource, Spec, Volume
-from quilt3 import Package  # type: ignore
+from pytest import fixture
+from quiltcore import Entry, Registry, Spec
 from upath import UPath
+
 
 @fixture
 def spec():
     return Spec()
+
 
 def test_spec(spec: Spec):
     assert spec
@@ -13,10 +14,11 @@ def test_spec(spec: Spec):
     assert "quilt" in Spec.CONFIG_FILE
     assert "s3://" in spec.registry()
 
+
 def test_spec_read(spec: Spec):
     """
     Ensure quiltcore can read manifests created by quilt3
-    
+
     - physical key
     - package-level metadata
     """

@@ -7,6 +7,7 @@ import pyarrow.json as pj  # type: ignore
 
 from .resource_key import ResourceKey
 
+
 class Manifest(ResourceKey):
     """
     In-memory representation of a serialized package manifest.
@@ -68,7 +69,7 @@ class Manifest(ResourceKey):
                 )
 
         return body
-    
+
     def decode_item(self, item):
         item_type = type(item)
         if isinstance(item, str):
@@ -80,7 +81,7 @@ class Manifest(ResourceKey):
         if issubclass(item_type, pa.Array):
             return [self.decode_item(chunk) for chunk in item.to_pylist()]
         raise TypeError(f"Unexpected type: {item_type}")
-        
+
     #
     # Private Methods for child resources
     #
