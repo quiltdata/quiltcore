@@ -24,7 +24,7 @@ TEST_VER = "VetrR_Vukeiiv.NkXZXpQFKEibsK0QW3"
 TEST_OBJ = f"{TEST_VOL}/{TEST_PKG}/{TEST_KEY}?versionId={TEST_VER}"
 TEST_OBJ_HASH = "df3e419dfd21f653651a5131e17bf41d82a9fd72baf2a93f634773353bd9d6c8"
 
-TEST_TABLE = f"{TEST_VOL}/.quilt/packages/{TEST_HASH}"
+TEST_MAN = f"{TEST_VOL}/.quilt/packages/{TEST_HASH}"
 TEST_S3VER = f"{TEST_BKT}/{TEST_PKG}/{TEST_KEY}?versionId={TEST_VER}"
 
 TEST_ROW = {

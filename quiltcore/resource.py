@@ -30,6 +30,7 @@ class Resource:
     MANIFEST = "_manifest"
     TAG_DEFAULT = "latest"
     UNQUOTED = "/:"
+    LOCAL = "file://./"
 
     @staticmethod
     def TempGen(filename: str = "") -> Generator[Path, None, None]:

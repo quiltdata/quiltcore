@@ -1,10 +1,11 @@
 from tempfile import TemporaryDirectory
 
+from pathlib import Path
 from pytest import fixture, mark
-from quiltcore import Entry, Manifest
+from quiltcore import Entry, Manifest, Registry
 from upath import UPath
 
-from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_TABLE
+from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_MAN
 
 DATA_HW = b"Hello world!"
 HASH_HW = "1220c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
@@ -12,22 +13,16 @@ HASH_HW = "1220c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
 
 
 @fixture
-def dir():
-    with TemporaryDirectory() as tmpdirname:
-        yield UPath(tmpdirname)
-
-
-@fixture
 def man() -> Manifest:
-    path = Manifest.AsPath(TEST_TABLE)
-    man = Manifest(path)
+    root = Path.cwd() / "tests" / "example"
+    opts = {"registry": Registry(root)}
+    path = Manifest.AsPath(TEST_MAN)
+    man = Manifest(path, **opts)
     return man
 
 
 @fixture
 def entry(man: Manifest) -> Entry:
-    path = Manifest.AsPath(TEST_TABLE)
-    man = Manifest(path)
     entry: Entry = man.get(TEST_KEY)  # type: ignore
     return entry
 
@@ -54,11 +49,12 @@ def test_entry_meta(entry: Entry):
     assert meta["target"] == "parquet"
 
 
-def test_entry_get(entry: Entry, dir: UPath):
-    dest = dir / "data"
+def test_entry_get(entry: Entry, tmpdir: UPath):
+    dest = tmpdir / "data"
     assert not dest.exists()
 
     loc = str(dest)
+    print(loc)
     clone = entry.get(loc)
     assert TEST_KEY in str(clone.path)
     assert entry.path != clone.path
@@ -74,9 +70,9 @@ def test_entry_digest_verify(entry: Entry):
     assert entry.verify(DATA_HW)
 
 
-def test_entry_verify(entry: Entry, dir: UPath):
+def test_entry_verify(entry: Entry, tmpdir: UPath):
     assert entry.hash
-    clone = entry.get(str(dir))
+    clone = entry.get(str(tmpdir))
     assert clone.path.exists()
     bstring = clone.to_bytes()
     assert entry.verify(bstring)

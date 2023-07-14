@@ -90,6 +90,19 @@ class Manifest(ResourceKey):
         """List all child resources."""
         names = self.body.column(self.name_key).to_pylist()
         return names
+    
+    def _child_place(self, places, root="") -> str:
+        """Return the place for a child resource."""
+        place = places[0] if isinstance(places, list) else places
+        if place.startswith(self.LOCAL):
+            if len(root) == 0:
+                registry = self.args.get("registry")
+                print(f"_child_place.registry: {registry} for ->\n\t{self.args.keys()}")
+                if registry:
+                    root = registry.root
+                    logging.debug(f"_child_place.root: {root}")
+            place = place.replace(self.LOCAL, f"file://{root}/")
+        return place
 
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
@@ -99,7 +112,7 @@ class Manifest(ResourceKey):
             raise KeyError(f"Key [{key}] not found in {self.name_key} of {self.path}")
         row = rows.to_pydict()
         places = row[self.places_key][0]
-        place = places[0] if isinstance(places, list) else places
+        place = self._child_place(places)
         row[self.KEY_PATH] = place
         v = self.GetVersion(place)
         if len(v) > 0:

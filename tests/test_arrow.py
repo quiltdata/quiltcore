@@ -7,7 +7,7 @@ import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
 
-from .conftest import TEST_TABLE
+from .conftest import TEST_MAN
 
 test_file = "tests/test.parquet"
 
@@ -32,7 +32,7 @@ def test_arrow_pandas():
 
 
 def test_arrow_s3():
-    s3, path = pa.fs.FileSystem.from_uri(TEST_TABLE)
+    s3, path = pa.fs.FileSystem.from_uri(TEST_MAN)
     assert s3
     assert path
     assert "packages" in str(path)

@@ -1,13 +1,26 @@
-from pytest import fixture
-from quiltcore import Entry, Manifest
+from tempfile import TemporaryDirectory
 
-from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_SIZE, TEST_TABLE
+from pathlib import Path
+from pytest import fixture
+from quiltcore import Entry, Manifest, Registry
+from upath import UPath
+
+from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_S3VER, TEST_SIZE, TEST_MAN
+
+K_REG = "registry"
+
+
+@fixture
+def tmpdir():
+    with TemporaryDirectory() as tmpdirname:
+        yield UPath(tmpdirname)
 
 
 @fixture
 def man():
-    path = Manifest.AsPath(TEST_TABLE)
-    return Manifest(path)
+    opts = {}
+    path = Manifest.AsPath(TEST_MAN)
+    return Manifest(path, **opts)
 
 
 def test_man_headers(man: Manifest):
@@ -29,6 +42,21 @@ def test_man_table(man: Manifest):
     for key in columns:
         assert key in schema.names
 
+
+def test_man_child_place():
+    rootdir = Path.cwd()
+    root = str(rootdir)
+    opts = {K_REG: Registry(rootdir)}
+    path = Manifest.AsPath(TEST_MAN)
+    man = Manifest(path, **opts)
+    assert K_REG in man.args
+
+    assert TEST_S3VER == man._child_place(TEST_S3VER)
+    assert TEST_S3VER == man._child_place([TEST_S3VER])
+    TEST_LOCAL = man.LOCAL+"place"
+    TEST_GLOBAL = "file://" + root + "/place"
+    print(man.args.keys())
+    assert man._child_place(TEST_LOCAL, root) == TEST_GLOBAL
 
 def test_man_child_dict(man: Manifest):
     cd = man._child_dict(TEST_KEY)
