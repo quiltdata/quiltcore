@@ -95,14 +95,15 @@ class Manifest(ResourceKey):
         """Return the place for a child resource."""
         place = places[0] if isinstance(places, list) else places
         if place.startswith(self.LOCAL):
+            stem = place.replace(self.LOCAL, "")
             if len(root) == 0:
                 registry = self.args.get("registry")
                 print(f"_child_place.registry: {registry} for ->\n\t{self.args.keys()}")
                 if registry:
                     root = registry.root
                     logging.debug(f"_child_place.root: {root}")
-            place = place.replace(self.LOCAL, f"file://{root}/")
-        return place
+            place = Path(root) / stem
+        return str(place)
 
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
