@@ -5,6 +5,7 @@ import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
+from .header import Header
 from .resource_key import ResourceKey
 
 
@@ -31,12 +32,6 @@ class Manifest(ResourceKey):
     # Parse Table
     #
 
-    def header_keys(self) -> list[str]:
-        headers = self.cf.get_dict("quilt3/headers")
-        return list(headers.keys())
-
-    def header_dict(self) -> dict:
-        return {k: getattr(self, k) for k in self.cols}
 
     def _setup_table(self) -> pa.Table:
         """
@@ -47,12 +42,8 @@ class Manifest(ResourceKey):
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         first = self.table.take([0]).to_pydict()
-        self.cols = []
-        for header in self.header_keys():
-            if header in first:
-                self.cols.append(header)
-                setattr(self, header, first[header][0])
-        body = self.table.drop_columns(self.cols).slice(1)
+        self.head = Header(self.path, first=first)
+        body = self.head.drop(self.table)
         return self.decode_table(body)
 
     def decode_table(self, body: pa.Table) -> pa.Table:

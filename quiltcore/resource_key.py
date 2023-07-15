@@ -17,6 +17,12 @@ class ResourceKey(Resource):
         "SHA256": "1220",
     }
 
+    @classmethod
+    def RowValue(cls, row: dict, key: str):
+        logging.debug(f"get_value: {key} from {row}")
+        value = row.get(key, None)
+        return value[0] if value else None
+
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.defaultHash = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)

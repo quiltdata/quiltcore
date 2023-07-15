@@ -1,5 +1,5 @@
 from pytest import fixture
-from quiltcore import Entry, Registry, Spec
+from quiltcore import Entry, Header, Manifest, Registry, Spec
 from upath import UPath
 
 NEW_PRK = "spec/quiltcore"
@@ -30,11 +30,15 @@ def test_spec_read(spec: Spec):
     namespace = registry.get(spec.namespace())
     manifest = namespace.get(spec.tag())
     assert manifest
-    assert hasattr(manifest, "user_meta")
-    assert isinstance(manifest.user_meta, dict)  # type: ignore
+    assert isinstance(manifest, Manifest)
+    head = manifest.head
+    assert head
+    assert isinstance(head, Header)
+    assert hasattr(head, "user_meta")
+    assert isinstance(head.user_meta, dict)  # type: ignore
     for key, value in spec.metadata().items():
-        assert key in manifest.user_meta  # type: ignore
-        assert manifest.user_meta[key] == value  # type: ignore
+        assert key in head.user_meta  # type: ignore
+        assert head.user_meta[key] == value  # type: ignore
 
     for key, value in spec.files().items():
         entry = manifest.get(key)

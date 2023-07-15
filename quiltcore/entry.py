@@ -33,11 +33,11 @@ class Entry(ResourceKey):
         return value[0] if value else None
 
     def _setup(self, row: dict):
-        self.name = self.get_value(row, self.kName) or self.path.name
-        self.meta = self.get_value(row, self.kMeta)
-        hash = self.get_value(row, self.kHash) or {}
+        self.name = self.RowValue(row, self.kName) or self.path.name
+        self.meta = self.RowValue(row, self.kMeta)
+        hash = self.RowValue(row, self.kHash) or {}
         self._setup_hash(hash)  # type: ignore
-        self.size = self.get_value(row, self.kSize)
+        self.size = self.RowValue(row, self.kSize)
         if not self.size:
             self.size = self.path.stat().st_size
 

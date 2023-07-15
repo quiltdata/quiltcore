@@ -22,14 +22,17 @@ def man():
     path = Manifest.AsPath(TEST_MAN)
     return Manifest(path, **opts)
 
-
-def test_man_headers(man: Manifest):
+def test_man(man: Manifest):
     assert man
-    assert man.version == "v0"  # type: ignore
-    assert len(man.message) > 0  # type: ignore
-    assert len(man.user_meta) > 0  # type: ignore
-    assert man.user_meta["Author"] == "Ernest"  # type: ignore
     assert "manifest" in man.args
+
+def test_man_head(man: Manifest):
+    head = man.head
+    assert head
+    assert head.version == "v0"  # type: ignore
+    assert len(head.message) > 0  # type: ignore
+    assert len(head.user_meta) > 0  # type: ignore
+    assert head.user_meta["Author"] == "Ernest"  # type: ignore
 
 
 def test_man_table(man: Manifest):

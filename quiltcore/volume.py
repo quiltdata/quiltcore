@@ -142,6 +142,6 @@ class Volume(ResourceKey):
         table = pa.Table.from_pylist(rows)
         with path.open(mode="wb") as fo:
             with Writer(fo) as writer:
-                writer.write(man.header_dict())
+                writer.write(man.head.to_dict())
                 writer.write(table.to_pydict())
         return name
