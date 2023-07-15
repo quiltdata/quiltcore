@@ -53,7 +53,7 @@ jobs:
       run: |
         make test TEST_OS=${{ matrix.os }}
     - name: Get Coverage Report
-      uses: orgoro/coverage@v3
+      uses: orgoro/coverage@v3.1
       with:
           coverageFile: coverage.xml
           token: ${{ secrets.GITHUB_TOKEN }}
