@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
+
+from multiformats import multihash
 
 from .resource import Resource
 
@@ -9,6 +12,10 @@ class ResourceKey(Resource):
     """
     Get/List child resources by key in Manifest
     """
+
+    MH_PREFIX = {
+        "SHA256": "1220",
+    }
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -48,6 +55,38 @@ class ResourceKey(Resource):
         path = self.key_path(key, args)
         merged = {**self.args, **args}
         return self.klass(path, **merged)
+
+
+    #
+    # Calculate and verify hash
+    #
+
+    def _setup_hash(self, opt: dict = {}):
+        """Set or create hash attributes."""
+        type = opt.get("type", self.defaultHash)
+        hash_key = f"multihash/{type}"
+        self.hash_type = self.cf.get_str(hash_key)
+        self.hash_digest = multihash.get(self.hash_type)
+        self.hash_prefix = self.MH_PREFIX[type]
+        value = opt.get("value")
+        self.multihash = self.hash_prefix + value if value else self.source_hash()
+        self.hash = value if value else self.multihash.strip(self.hash_prefix)
+
+    def source_hash(self) -> str:
+        """Return the hash of the source file."""
+        return self.digest(self.to_bytes())
+
+    def digest(self, bstring: bytes) -> str:
+        """Return the multihash digest of `bstring`"""
+        digest = self.hash_digest.digest(bstring)
+        digest.hex()
+        return digest.hex()
+
+    def verify(self, bstring: bytes) -> bool:
+        """Verify that multihash digest of bytes match the multihash"""
+        digest = self.digest(bstring)
+        logging.debug(f"verify.digest: {digest}")
+        return digest == self.multihash
 
     #
     # Concrete HTTP Methods
