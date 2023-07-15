@@ -54,7 +54,7 @@ def test_man_child_place():
     assert TEST_S3VER == man._child_place(TEST_S3VER)
     assert TEST_S3VER == man._child_place([TEST_S3VER])
     TEST_LOCAL = man.LOCAL+"place"
-    TEST_GLOBAL = root + "/place"
+    TEST_GLOBAL = str(rootdir / "place")
     print(man.args.keys())
     assert man._child_place(TEST_LOCAL, root) == TEST_GLOBAL
 
