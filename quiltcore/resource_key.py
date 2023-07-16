@@ -13,9 +13,12 @@ class ResourceKey(Resource):
     Get/List child resources by key in Manifest
     """
 
-    MH_PREFIX = {
+    MH_PREFIXES: dict[str,str] = {
         "SHA256": "1220",
     }
+
+    DEFAULT_HASH_TYPE = "SHA256"
+    DEFAULT_MH_PREFIX = MH_PREFIXES[DEFAULT_HASH_TYPE]
 
     @classmethod
     def RowValue(cls, row: dict, key: str):
@@ -73,7 +76,7 @@ class ResourceKey(Resource):
         hash_key = f"multihash/{type}"
         self.hash_type = self.cf.get_str(hash_key)
         self.hash_digest = multihash.get(self.hash_type)
-        self.hash_prefix = self.MH_PREFIX[type]
+        self.hash_prefix = self.MH_PREFIXES[type]
         value = opt.get("value")
         self.multihash = self.hash_prefix + value if value else self.source_hash()
         self.hash = value if value else self.multihash.strip(self.hash_prefix)

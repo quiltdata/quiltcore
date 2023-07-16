@@ -3,7 +3,6 @@ from pathlib import Path
 import pyarrow as pa  # type: ignore
 from jsonlines import Writer  # type: ignore
 
-from .entry import Entry
 from .manifest import Manifest
 from .registry import Registry
 from .resource import Resource
@@ -22,7 +21,6 @@ class Volume(ResourceKey):
     KEY_HSH = "hash"
     KEY_TAG = "tag"
     KEY_SELF = "."
-    MH_PREFIX = Entry.MH_PREFIX["SHA256"]
 
     @staticmethod
     def FromURI(uri: str, **kwargs) -> "Volume":
@@ -102,7 +100,7 @@ class Volume(ResourceKey):
             return opts[self.KEY_HSH]
         if self.KEY_MH in opts:
             mh = opts[self.KEY_MH]
-            return mh.strip(self.MH_PREFIX)
+            return mh.strip(self.DEFAULT_MH_PREFIX)
         return ""
 
     #

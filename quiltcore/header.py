@@ -23,7 +23,7 @@ class Header(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.cols = []
+        self.cols: list[str] = []
         self._setup(kwargs['first'])
 
     #
@@ -47,7 +47,3 @@ class Header(ResourceKey):
     def drop(self, table) -> pa.Table:
         return table.drop(self.cols).slice(1)
         
-    def to_row(self) -> dict:
-        row = {
-        }
-        return row
