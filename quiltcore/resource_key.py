@@ -19,16 +19,31 @@ class ResourceKey(Resource):
 
     DEFAULT_HASH_TYPE = "SHA256"
     DEFAULT_MH_PREFIX = MH_PREFIXES[DEFAULT_HASH_TYPE]
+    KEY_MH = "multihash"
+    KEY_HSH = "hash"
+    KEY_TAG = "tag"
+    KEY_SELF = "."
 
     @classmethod
     def RowValue(cls, row: dict, key: str):
         logging.debug(f"get_value: {key} from {row}")
         value = row.get(key, None)
         return value[0] if value else None
+    
+
+    @classmethod
+    def GetHash(cls, opts: dict[str, str]) -> str:
+        if cls.KEY_HSH in opts:
+            return opts[cls.KEY_HSH]
+        if cls.KEY_MH in opts:
+            mh = opts[cls.KEY_MH]
+            return mh.strip(cls.DEFAULT_MH_PREFIX)
+        return ""
+ 
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.defaultHash = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)
+        self.kHashType = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)
         self.kHash = self.cf.get_str("quilt3/hash", "hash")
         self.kMeta = self.cf.get_str("quilt3/meta", "meta")
         self.kName = self.cf.get_str("quilt3/name", "logical_key")
@@ -72,7 +87,7 @@ class ResourceKey(Resource):
 
     def _setup_hash(self, opt: dict = {}):
         """Set or create hash attributes."""
-        type = opt.get("type", self.defaultHash)
+        type = opt.get("type", self.kHashType)
         hash_key = f"multihash/{type}"
         self.hash_type = self.cf.get_str(hash_key)
         self.hash_digest = multihash.get(self.hash_type)

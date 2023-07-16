@@ -17,17 +17,12 @@ class Volume(ResourceKey):
     """
 
     ERR_REQUIRE_REGISTRY = "Volume.get requires registry keyword argument"
-    KEY_MH = "multihash"
-    KEY_HSH = "hash"
-    KEY_TAG = "tag"
-    KEY_SELF = "."
-
     @staticmethod
     def FromURI(uri: str, **kwargs) -> "Volume":
         """Create a Volume from a URI"""
         path = Volume.AsPath(uri)
         return Volume(path, **kwargs)
-
+    
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.registry = Registry(path, **self.args)
@@ -87,21 +82,13 @@ class Volume(ResourceKey):
         Create manifest for Namespace `key` and `kwargs`
         """
         opts: dict[str, str] = kwargs
-        hash = self.get_hash(opts)
+        hash = self.GetHash(opts)
         if len(hash) > 0:
             return Manifest(self.registry.manifests / hash, **self.args)
 
         tag = opts.get(self.KEY_TAG, self.TAG_DEFAULT)
         name = self.registry.get(key)
         return name.get(tag)
-
-    def get_hash(self, opts: dict[str, str]) -> str:
-        if self.KEY_HSH in opts:
-            return opts[self.KEY_HSH]
-        if self.KEY_MH in opts:
-            mh = opts[self.KEY_MH]
-            return mh.strip(self.DEFAULT_MH_PREFIX)
-        return ""
 
     #
     # PUT and helpers - upload a Manfiest or other resource
