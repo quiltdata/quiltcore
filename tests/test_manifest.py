@@ -22,9 +22,11 @@ def man():
     path = Manifest.AsPath(TEST_MAN)
     return Manifest(path, **opts)
 
+
 def test_man(man: Manifest):
     assert man
     assert "manifest" in man.args
+
 
 def test_man_head(man: Manifest):
     head = man.head
@@ -33,6 +35,11 @@ def test_man_head(man: Manifest):
     assert len(head.message) > 0  # type: ignore
     assert len(head.user_meta) > 0  # type: ignore
     assert head.user_meta["Author"] == "Ernest"  # type: ignore
+
+    hashable = head.to_hashable()
+    assert hashable
+    assert isinstance(hashable, dict)
+    assert hashable["Author"] == "Ernest"
 
 
 def test_man_table(man: Manifest):

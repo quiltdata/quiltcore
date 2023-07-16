@@ -81,6 +81,9 @@ class ResourceKey(Resource):
         self.multihash = self.hash_prefix + value if value else self.source_hash()
         self.hash = value if value else self.multihash.strip(self.hash_prefix)
 
+    def hashable(self) -> dict:
+        return {}
+    
     def source_hash(self) -> str:
         """Return the hash of the source file."""
         return self.digest(self.to_bytes())

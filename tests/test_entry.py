@@ -65,6 +65,15 @@ def test_entry_digest(entry: Entry):
     assert digest2 == HASH_HW
 
 
+def test_entry_hashable(entry: Entry):
+    hashable = entry.to_hashable()
+    assert hashable
+    assert isinstance(hashable, dict)
+    assert hashable["logical_key"] == TEST_KEY
+    assert hashable["size"] == 30
+    assert hashable["hash"] == TEST_OBJ_HASH
+    assert hashable["meta"] == None
+
 def test_entry_digest_verify(entry: Entry):
     entry.multihash = HASH_HW
     assert entry.verify(DATA_HW)

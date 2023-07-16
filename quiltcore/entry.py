@@ -50,6 +50,16 @@ class Entry(ResourceKey):
             self.kMeta: self.meta,
         }
         return row
+    
+    def to_hashable(self) -> dict:
+        if not self.hash or not self.size:
+            raise ValueError(f"Missing hash or size: {self}")
+        return {
+            self.kHash: self.hash,
+            self.kName: self.encode(self.name),
+            self.kSize: self.size,
+            "meta": self.meta,
+        }
 
     def get(self, key: str, **kwargs) -> Resource:
         """Copy contents of resource's path into _key_ directory."""

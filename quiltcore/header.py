@@ -27,15 +27,12 @@ class Header(ResourceKey):
         self._setup(kwargs['first'])
 
     #
-    # Parse and unparse
+    # Setup
     #
 
     def header_keys(self) -> list[str]:
         headers = self.cf.get_dict("quilt3/headers")
         return list(headers.keys())
-
-    def to_dict(self) -> dict:
-        return {k: getattr(self, k) for k in self.cols}
 
     def _setup(self, first: dict):
         for header in self.header_keys():
@@ -46,4 +43,16 @@ class Header(ResourceKey):
 
     def drop(self, table) -> pa.Table:
         return table.drop(self.cols).slice(1)
+    
+    #
+    # Output
+    #
+
+    def to_dict(self) -> dict:
+        return {k: getattr(self, k) for k in self.cols}
+
+    def to_hashable(self) -> dict:
+        return getattr(self, self.kMeta) if hasattr(self, self.kMeta) else {}
+
+
         
