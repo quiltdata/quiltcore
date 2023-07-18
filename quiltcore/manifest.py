@@ -24,14 +24,28 @@ class Manifest(ResourceKey):
             logging.warning(f"Manifest not found: {path}")
         self.name_key = "name" if self.decoded else self.kName
         self.places_key = "places" if self.decoded else self.kPlaces
+        self._setup_hash()
 
-    def hash(self) -> str:
+
+    #
+    # Hash functions
+    #
+
+    def source_hash(self) -> str:
+        """
+        Return the hash of the contents.
+        """
         return self.name
+
+    def calculate_hash(self) -> str:
+        hashable = self.head.hashable()
+        for entry in self.list():
+            hashable += entry.hashable()  # type: ignore
+        return self.digest(hashable)
 
     #
     # Parse Table
     #
-
 
     def _setup_table(self) -> pa.Table:
         """
@@ -110,3 +124,4 @@ class Manifest(ResourceKey):
         if len(v) > 0:
             row[self.KEY_VER] = v
         return row
+    

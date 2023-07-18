@@ -104,7 +104,7 @@ class Volume(ResourceKey):
         if not isinstance(res, Manifest):
             raise TypeError(f"Volume.put requires a Manifest, not {type(res)}")
         man: Manifest = res
-        hash_path = self.registry.manifests / man.hash()
+        hash_path = self.registry.manifests / man.source_hash()
         if hash_path.exists():
             raise FileExistsError(f"Manifest {hash_path} already exists")
 

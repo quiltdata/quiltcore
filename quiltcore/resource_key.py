@@ -3,6 +3,8 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+from json import JSONEncoder
+
 from multiformats import multihash
 
 from .resource import Resource
@@ -96,8 +98,12 @@ class ResourceKey(Resource):
         self.multihash = self.hash_prefix + value if value else self.source_hash()
         self.hash = value if value else self.multihash.strip(self.hash_prefix)
 
-    def hashable(self) -> dict:
+    def to_hashable(self) -> dict:
         return {}
+
+    def hashable(self) -> bytes:
+        json_encode = JSONEncoder(sort_keys=True, separators=(',', ':'), default=str).encode
+        return json_encode(self.to_hashable()).encode("utf-8")
     
     def source_hash(self) -> str:
         """Return the hash of the source file."""
