@@ -53,11 +53,9 @@ class Header(ResourceKey):
 
     def to_hashable(self) -> dict:
         meta = self.to_dict()
-        print(f"meta: {meta}")
         user_meta = getattr(self, self.kMeta) if hasattr(self, self.kMeta) else None
         if not user_meta:
             user_meta = {}
-        print(f"user_meta: {user_meta}")
         for k, v in user_meta.items():
             if isinstance(v, datetime):
                 fmt = self.cf.get_str("quilt3/format/datetime", "%Y-%m-%d")

@@ -1,3 +1,4 @@
+from json import JSONEncoder
 from pytest import fixture
 from quilt3 import Package
 from quiltcore import Entry, Header, Manifest, Registry, Spec
@@ -41,14 +42,31 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
     2. Encoding / concatenation
     3. Hashing
     """
+    json_encode = JSONEncoder(sort_keys=True, separators=(',', ':')).encode
+
     assert pkg
     q3_hash = pkg.top_hash
     assert q3_hash == spec.hash()
+    assert q3_hash == pkg._calculate_top_hash(pkg._meta, pkg.walk())
+
     man_meta = man.head.to_hashable()
     pkg_user = pkg._meta[man.kMeta]
     man_user = man_meta[man.kMeta]
     assert pkg_user["Date"] == man_user["Date"]  # type: ignore
     assert pkg._meta == man.head.to_hashable()
+    assert json_encode(pkg._meta).encode() == man.head.hashable()
+
+    for part in pkg._get_top_hash_parts(pkg._meta, pkg.walk()):
+        print(f"part: {part}")
+        if 'logical_key' in part:
+            key = part['logical_key']
+            entry = man.get(key)
+            hashable = entry.to_hashable()  # type: ignore
+            print(f"entry[{key}]: {hashable}")
+            assert part == hashable
+            assert json_encode(part).encode() == entry.hashable()  # type: ignore
+
+    assert q3_hash == man.calc_hash()
 
 
 

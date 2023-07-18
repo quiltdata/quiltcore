@@ -21,6 +21,7 @@ class ResourceKey(Resource):
 
     DEFAULT_HASH_TYPE = "SHA256"
     DEFAULT_MH_PREFIX = MH_PREFIXES[DEFAULT_HASH_TYPE]
+    ENCODE = JSONEncoder(sort_keys=True, separators=(',', ':'), default=str).encode
     KEY_MH = "multihash"
     KEY_HSH = "hash"
     KEY_TAG = "tag"
@@ -102,8 +103,9 @@ class ResourceKey(Resource):
         return {}
 
     def hashable(self) -> bytes:
-        json_encode = JSONEncoder(sort_keys=True, separators=(',', ':'), default=str).encode
-        return json_encode(self.to_hashable()).encode("utf-8")
+        source = self.to_hashable()
+        print(f"hashable: {source}")
+        return self.ENCODE(source).encode("utf-8")
     
     def source_hash(self) -> str:
         """Return the hash of the source file."""

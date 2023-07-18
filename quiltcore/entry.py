@@ -55,10 +55,10 @@ class Entry(ResourceKey):
         if not self.hash or not self.size:
             raise ValueError(f"Missing hash or size: {self}")
         return {
-            self.kHash: self.hash,
-            self.kName: self.encode(self.name),
+            self.kName: self.name,
+            self.kHash: {"value": self.hash, "type": self.DEFAULT_HASH_TYPE},
             self.kSize: self.size,
-            "meta": self.meta,
+            "meta": self.meta or {},
         }
 
     def get(self, key: str, **kwargs) -> Resource:

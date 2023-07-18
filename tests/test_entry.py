@@ -41,12 +41,12 @@ def test_entry_setup(entry: Entry):
     assert entry.size == 30
 
 
-@mark.skip
 def test_entry_meta(entry: Entry):
+    # TODO: choose a manifest with object-level metadata
     meta = entry.meta
-    assert meta
-    assert isinstance(meta, dict)
-    assert meta["target"] == "parquet"
+    assert not meta
+    #assert isinstance(meta, dict)
+    #assert meta["target"] == "parquet"
 
 
 def test_entry_get(entry: Entry, tmpdir: UPath):
@@ -71,8 +71,8 @@ def test_entry_hashable(entry: Entry):
     assert isinstance(hashable, dict)
     assert hashable["logical_key"] == TEST_KEY
     assert hashable["size"] == 30
-    assert hashable["hash"] == TEST_OBJ_HASH
-    assert hashable["meta"] == None
+    assert hashable["hash"]["value"] == TEST_OBJ_HASH
+    assert hashable["meta"] == {}
 
 def test_entry_digest_verify(entry: Entry):
     entry.multihash = HASH_HW
