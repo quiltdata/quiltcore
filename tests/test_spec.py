@@ -5,15 +5,12 @@ from quilt3 import Package  # type: ignore
 from quiltcore import Entry, Header, Manifest, Registry, Spec
 from upath import UPath
 
-NEW_PRK = "spec/quiltcore"
-
-
-@fixture
+@fixture(scope="session")
 def spec():
     return Spec()
 
 
-@fixture
+@fixture(scope="session")
 def pkg(spec: Spec) -> Package:
     return Package.browse(
         spec.namespace(), registry=spec.registry(), top_hash=spec.hash()
@@ -25,8 +22,8 @@ def man(spec: Spec) -> Manifest:
     reg = UPath(spec.registry())
     registry = Registry(reg)
     namespace = registry.get(spec.namespace())
-    manifest = namespace.get(spec.tag())
-    return manifest  # type: ignore
+    man = namespace.get(spec.tag())
+    return man  # type: ignore
 
 
 def test_spec(spec: Spec, pkg: Package, man: Manifest):
@@ -88,12 +85,10 @@ def test_spec_read(spec: Spec, man: Manifest):
     - physical key
     - package-level metadata
     - file-level metadata
-    - package hash (verify)
     """
-    manifest = man
-    assert manifest
-    assert isinstance(manifest, Manifest)
-    head = manifest.head
+    assert man
+    assert isinstance(man, Manifest)
+    head = man.head
     assert head
     assert isinstance(head, Header)
     assert hasattr(head, "user_meta")
@@ -102,14 +97,18 @@ def test_spec_read(spec: Spec, man: Manifest):
         assert key in head.user_meta  # type: ignore
         assert head.user_meta[key] == value  # type: ignore
 
+
     for key, value in spec.files().items():
-        entry = manifest.get(key)
+        entry = man.get(key)
         assert entry
         assert isinstance(entry, Entry)
         opts = entry.read_opts()
         assert opts
         assert entry.KEY_S3VER in opts
         assert entry.to_text() == value
+        if hasattr(entry, "user_meta"):
+            meta = spec.metadata(key)
+            assert entry.user_meta == meta  # type: ignore
 
 
 def test_spec_write():
