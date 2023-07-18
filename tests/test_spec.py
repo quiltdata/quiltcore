@@ -1,7 +1,7 @@
 from json import JSONEncoder
 
 from pytest import fixture
-from quilt3 import Package
+from quilt3 import Package  # type: ignore
 from quiltcore import Entry, Header, Manifest, Registry, Spec
 from upath import UPath
 
