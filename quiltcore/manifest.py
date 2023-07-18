@@ -37,7 +37,7 @@ class Manifest(ResourceKey):
         """
         return self.name
 
-    def calculate_hash(self) -> str:
+    def calc_multihash(self) -> str:
         hashable = self.head.hashable()
         for entry in self.list():
             hashable += entry.hashable()  # type: ignore

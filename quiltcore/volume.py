@@ -124,9 +124,9 @@ class Volume(ResourceKey):
         dest = str(self.path / name)
         entries = [entry.get(dest) for entry in man.list()]
         rows = [entry.to_row() for entry in entries]  # type: ignore
-        table = pa.Table.from_pylist(rows)
         with path.open(mode="wb") as fo:
             with Writer(fo) as writer:
                 writer.write(man.head.to_dict())
-                writer.write(table.to_pydict())
+                for row in rows:
+                    writer.write(row)
         return name
