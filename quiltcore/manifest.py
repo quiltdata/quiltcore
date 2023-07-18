@@ -43,6 +43,12 @@ class Manifest(ResourceKey):
             hashable += entry.hashable()  # type: ignore
         return self.digest(hashable)
 
+    def calc_hash(self) -> str:
+        """
+        Return the hash of the manifest.
+        """
+        return self.calc_multihash().strip(self.DEFAULT_MH_PREFIX)
+
     #
     # Parse Table
     #

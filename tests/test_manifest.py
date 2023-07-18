@@ -1,7 +1,7 @@
 from tempfile import TemporaryDirectory
 
 from pathlib import Path
-from pytest import fixture
+from pytest import fixture, mark
 from quiltcore import Entry, Manifest, Registry
 from upath import UPath
 
@@ -39,7 +39,7 @@ def test_man_head(man: Manifest):
     hashable = head.to_hashable()
     assert hashable
     assert isinstance(hashable, dict)
-    assert hashable["Author"] == "Ernest"
+    assert hashable["user_meta"]["Author"] == "Ernest"
 
 
 def test_man_table(man: Manifest):
@@ -104,3 +104,8 @@ def test_man_get(man: Manifest):
     assert isinstance(entry, Entry)
     assert TEST_KEY in str(entry.path)
     # TODO: assert entry.version == TEST_VER
+
+@mark.skip
+def test_man_hash(man: Manifest):
+    hash = man.calc_hash()
+    assert hash == man.name

@@ -38,6 +38,8 @@ quilt3:
   encoded:
     logical_key: name
     physical_keys: places
+  format:
+    datetime: "%Y-%m-%d"
   hash_type: SHA256
   hash: hash
   headers:

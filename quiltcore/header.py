@@ -1,5 +1,5 @@
 import logging
-from copy import copy
+from datetime import datetime
 from pathlib import Path
 
 import pyarrow as pa  # type: ignore
@@ -52,7 +52,19 @@ class Header(ResourceKey):
         return {k: getattr(self, k) for k in self.cols}
 
     def to_hashable(self) -> dict:
-        return getattr(self, self.kMeta) if hasattr(self, self.kMeta) else {}
+        meta = self.to_dict()
+        print(f"meta: {meta}")
+        user_meta = getattr(self, self.kMeta) if hasattr(self, self.kMeta) else None
+        if not user_meta:
+            user_meta = {}
+        print(f"user_meta: {user_meta}")
+        for k, v in user_meta.items():
+            if isinstance(v, datetime):
+                fmt = self.cf.get_str("quilt3/format/datetime", "%Y-%m-%d")
+                user_meta[k] = v.strftime(fmt)
+        meta[self.kMeta] = user_meta
+        return meta
+
 
 
         
