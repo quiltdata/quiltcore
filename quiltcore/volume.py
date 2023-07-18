@@ -1,9 +1,7 @@
 from pathlib import Path
 
-import pyarrow as pa  # type: ignore
 from jsonlines import Writer  # type: ignore
 
-from .entry import Entry
 from .manifest import Manifest
 from .registry import Registry
 from .resource import Resource
@@ -18,11 +16,6 @@ class Volume(ResourceKey):
     """
 
     ERR_REQUIRE_REGISTRY = "Volume.get requires registry keyword argument"
-    KEY_MH = "multihash"
-    KEY_HSH = "hash"
-    KEY_TAG = "tag"
-    KEY_SELF = "."
-    MH_PREFIX = Entry.MH_PREFIX["SHA256"]
 
     @staticmethod
     def FromURI(uri: str, **kwargs) -> "Volume":
@@ -89,21 +82,13 @@ class Volume(ResourceKey):
         Create manifest for Namespace `key` and `kwargs`
         """
         opts: dict[str, str] = kwargs
-        hash = self.get_hash(opts)
+        hash = self.GetHash(opts)
         if len(hash) > 0:
             return Manifest(self.registry.manifests / hash, **self.args)
 
         tag = opts.get(self.KEY_TAG, self.TAG_DEFAULT)
         name = self.registry.get(key)
         return name.get(tag)
-
-    def get_hash(self, opts: dict[str, str]) -> str:
-        if self.KEY_HSH in opts:
-            return opts[self.KEY_HSH]
-        if self.KEY_MH in opts:
-            mh = opts[self.KEY_MH]
-            return mh.strip(self.MH_PREFIX)
-        return ""
 
     #
     # PUT and helpers - upload a Manfiest or other resource
@@ -119,7 +104,7 @@ class Volume(ResourceKey):
         if not isinstance(res, Manifest):
             raise TypeError(f"Volume.put requires a Manifest, not {type(res)}")
         man: Manifest = res
-        hash_path = self.registry.manifests / man.hash()
+        hash_path = self.registry.manifests / man.source_hash()
         if hash_path.exists():
             raise FileExistsError(f"Manifest {hash_path} already exists")
 
@@ -139,9 +124,9 @@ class Volume(ResourceKey):
         dest = str(self.path / name)
         entries = [entry.get(dest) for entry in man.list()]
         rows = [entry.to_row() for entry in entries]  # type: ignore
-        table = pa.Table.from_pylist(rows)
         with path.open(mode="wb") as fo:
             with Writer(fo) as writer:
-                writer.write(man.header_dict())
-                writer.write(table.to_pydict())
+                writer.write(man.head.to_dict())
+                for row in rows:
+                    writer.write(row)
         return name

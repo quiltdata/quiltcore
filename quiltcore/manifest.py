@@ -5,6 +5,7 @@ import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
+from .header import Header
 from .resource_key import ResourceKey
 
 
@@ -23,20 +24,33 @@ class Manifest(ResourceKey):
             logging.warning(f"Manifest not found: {path}")
         self.name_key = "name" if self.decoded else self.kName
         self.places_key = "places" if self.decoded else self.kPlaces
+        self._setup_hash()
 
-    def hash(self) -> str:
+    #
+    # Hash functions
+    #
+
+    def source_hash(self) -> str:
+        """
+        Return the hash of the contents.
+        """
         return self.name
+
+    def calc_multihash(self) -> str:
+        hashable = self.head.hashable()
+        for entry in self.list():
+            hashable += entry.hashable()  # type: ignore
+        return self.digest(hashable)
+
+    def calc_hash(self) -> str:
+        """
+        Return the hash of the manifest.
+        """
+        return self.calc_multihash().removeprefix(self.DEFAULT_MH_PREFIX)
 
     #
     # Parse Table
     #
-
-    def header_keys(self) -> list[str]:
-        headers = self.cf.get_dict("quilt3/headers")
-        return list(headers.keys())
-
-    def header_dict(self) -> dict:
-        return {k: getattr(self, k) for k in self.cols}
 
     def _setup_table(self) -> pa.Table:
         """
@@ -47,12 +61,8 @@ class Manifest(ResourceKey):
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         first = self.table.take([0]).to_pydict()
-        self.cols = []
-        for header in self.header_keys():
-            if header in first:
-                self.cols.append(header)
-                setattr(self, header, first[header][0])
-        body = self.table.drop_columns(self.cols).slice(1)
+        self.head = Header(self.path, first=first)
+        body = self.head.drop(self.table)
         return self.decode_table(body)
 
     def decode_table(self, body: pa.Table) -> pa.Table:
@@ -90,7 +100,7 @@ class Manifest(ResourceKey):
         """List all child resources."""
         names = self.body.column(self.name_key).to_pylist()
         return names
-    
+
     def _child_place(self, places, root="") -> str:
         """Return the place for a child resource."""
         place = places[0] if isinstance(places, list) else places

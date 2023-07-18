@@ -33,7 +33,7 @@ class Registry(ResourcePath):
         """Link manifest into namespace"""
         if not isinstance(res, Manifest):
             raise TypeError(f"Expected Manifest, got {type(res)}")
-        hash = res.hash()
+        hash = res.source_hash()
         name = kwargs[self.KEY_NAME]
         name_dir = self.path / name
         name_dir.mkdir(parents=True, exist_ok=True)

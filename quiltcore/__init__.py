@@ -27,6 +27,7 @@ manages the 'quiltcore.yaml' configuration file.
 from .changes import Changes  # noqa: F401
 from .delta import Delta  # noqa: F401
 from .entry import Entry  # noqa: F401
+from .header import Header  # noqa: F401
 from .manifest import Manifest  # noqa: F401
 from .namespace import Namespace  # noqa: F401
 from .registry import Registry  # noqa: F401

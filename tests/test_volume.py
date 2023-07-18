@@ -67,8 +67,10 @@ def test_vol_put(dir: UPath):  # noqa: F401
 
     man2 = v_tmp.put(man)
     assert pkg_tmp.exists()
-
     assert man2.path.exists()
+
+    hash = man2.calc_multihash()  # type: ignore
+    # assert hash == man2.name
 
     latest = pkg_tmp / Volume.TAG_DEFAULT
     assert latest.exists()

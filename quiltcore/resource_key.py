@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import logging
+from json import JSONEncoder
 from pathlib import Path
+
+from multiformats import multihash
 
 from .resource import Resource
 
@@ -10,9 +14,36 @@ class ResourceKey(Resource):
     Get/List child resources by key in Manifest
     """
 
+    MH_PREFIXES: dict[str, str] = {
+        "SHA256": "1220",
+    }
+
+    DEFAULT_HASH_TYPE = "SHA256"
+    DEFAULT_MH_PREFIX = MH_PREFIXES[DEFAULT_HASH_TYPE]
+    ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
+    KEY_MH = "multihash"
+    KEY_HSH = "hash"
+    KEY_TAG = "tag"
+    KEY_SELF = "."
+
+    @classmethod
+    def RowValue(cls, row: dict, key: str):
+        logging.debug(f"get_value: {key} from {row}")
+        value = row.get(key, None)
+        return value[0] if value else None
+
+    @classmethod
+    def GetHash(cls, opts: dict[str, str]) -> str:
+        if cls.KEY_HSH in opts:
+            return opts[cls.KEY_HSH]
+        if cls.KEY_MH in opts:
+            mh = opts[cls.KEY_MH]
+            return mh.removeprefix(cls.DEFAULT_MH_PREFIX)
+        return ""
+
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.defaultHash = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)
+        self.kHashType = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)
         self.kHash = self.cf.get_str("quilt3/hash", "hash")
         self.kMeta = self.cf.get_str("quilt3/meta", "meta")
         self.kName = self.cf.get_str("quilt3/name", "logical_key")
@@ -48,6 +79,45 @@ class ResourceKey(Resource):
         path = self.key_path(key, args)
         merged = {**self.args, **args}
         return self.klass(path, **merged)
+
+    #
+    # Calculate and verify hash
+    #
+
+    def _setup_hash(self, opt: dict = {}):
+        """Set or create hash attributes."""
+        type = opt.get("type", self.kHashType)
+        hash_key = f"multihash/{type}"
+        self.hash_type = self.cf.get_str(hash_key)
+        self.hash_digest = multihash.get(self.hash_type)
+        self.hash_prefix = self.MH_PREFIXES[type]
+        value = opt.get("value")
+        self.multihash = self.hash_prefix + value if value else self.source_hash()
+        self.hash = value if value else self.multihash.removeprefix(self.hash_prefix)
+
+    def to_hashable(self) -> dict:
+        return {}
+
+    def hashable(self) -> bytes:
+        source = self.to_hashable()
+        print(f"hashable: {source}")
+        return self.ENCODE(source).encode("utf-8")  # type: ignore
+
+    def source_hash(self) -> str:
+        """Return the hash of the source file."""
+        return self.digest(self.to_bytes())
+
+    def digest(self, bstring: bytes) -> str:
+        """Return the multihash digest of `bstring`"""
+        digest = self.hash_digest.digest(bstring)
+        digest.hex()
+        return digest.hex()
+
+    def verify(self, bstring: bytes) -> bool:
+        """Verify that multihash digest of bytes match the multihash"""
+        digest = self.digest(bstring)
+        logging.debug(f"verify.digest: {digest}")
+        return digest == self.multihash
 
     #
     # Concrete HTTP Methods
