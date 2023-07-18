@@ -47,7 +47,7 @@ class Manifest(ResourceKey):
         """
         Return the hash of the manifest.
         """
-        return self.calc_multihash().strip(self.DEFAULT_MH_PREFIX)
+        return self.calc_multihash().removeprefix(self.DEFAULT_MH_PREFIX)
 
     #
     # Parse Table

@@ -40,7 +40,7 @@ class ResourceKey(Resource):
             return opts[cls.KEY_HSH]
         if cls.KEY_MH in opts:
             mh = opts[cls.KEY_MH]
-            return mh.strip(cls.DEFAULT_MH_PREFIX)
+            return mh.removeprefix(cls.DEFAULT_MH_PREFIX)
         return ""
  
 
@@ -97,7 +97,7 @@ class ResourceKey(Resource):
         self.hash_prefix = self.MH_PREFIXES[type]
         value = opt.get("value")
         self.multihash = self.hash_prefix + value if value else self.source_hash()
-        self.hash = value if value else self.multihash.strip(self.hash_prefix)
+        self.hash = value if value else self.multihash.removeprefix(self.hash_prefix)
 
     def to_hashable(self) -> dict:
         return {}

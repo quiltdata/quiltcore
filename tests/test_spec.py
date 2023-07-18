@@ -46,15 +46,16 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
 
     assert pkg
     q3_hash = pkg.top_hash
-    assert q3_hash == spec.hash()
-    assert q3_hash == pkg._calculate_top_hash(pkg._meta, pkg.walk())
+    assert q3_hash == spec.hash(), "q3_hash != spec.hash()"
+    assert q3_hash == pkg._calculate_top_hash(pkg._meta, pkg.walk()), "q3_hash != pkg._calculate_top_hash()"
 
     man_meta = man.head.to_hashable()
     pkg_user = pkg._meta[man.kMeta]
     man_user = man_meta[man.kMeta]
     assert pkg_user["Date"] == man_user["Date"]  # type: ignore
     assert pkg._meta == man.head.to_hashable()
-    assert json_encode(pkg._meta).encode() == man.head.hashable()
+    encoded = json_encode(pkg._meta).encode()
+    assert encoded == man.head.hashable()
 
     for part in pkg._get_top_hash_parts(pkg._meta, pkg.walk()):
         print(f"part: {part}")
@@ -64,10 +65,17 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
             hashable = entry.to_hashable()  # type: ignore
             print(f"entry[{key}]: {hashable}")
             assert part == hashable
-            assert json_encode(part).encode() == entry.hashable()  # type: ignore
+            part_encoded = json_encode(part).encode()
+            assert part_encoded == entry.hashable()  # type: ignore
+            encoded += part_encoded
 
-    assert q3_hash == man.calc_hash()
-
+    man_encoded = man.digest(encoded)
+    man_strip = man_encoded.removeprefix(Manifest.DEFAULT_MH_PREFIX)
+    print(f"q3_hash: {q3_hash}")
+    print(f"digest: {man_encoded}")
+    print(f"{Manifest.DEFAULT_MH_PREFIX} -> {man_strip}")
+    assert q3_hash == man_strip, "q3_hash != digest(encoded).removeprefix"
+    assert q3_hash == man.calc_hash(), "q3_hash != man.calc_hash()"
 
 
 def test_spec_read(spec: Spec, man: Manifest):
