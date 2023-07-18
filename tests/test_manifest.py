@@ -105,7 +105,6 @@ def test_man_get(man: Manifest):
     assert TEST_KEY in str(entry.path)
     # TODO: assert entry.version == TEST_VER
 
-@mark.skip
 def test_man_hash(man: Manifest):
     hash = man.calc_hash()
     assert hash == man.name

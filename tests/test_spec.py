@@ -71,9 +71,6 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
 
     man_encoded = man.digest(encoded)
     man_strip = man_encoded.removeprefix(Manifest.DEFAULT_MH_PREFIX)
-    print(f"q3_hash: {q3_hash}")
-    print(f"digest: {man_encoded}")
-    print(f"{Manifest.DEFAULT_MH_PREFIX} -> {man_strip}")
     assert q3_hash == man_strip, "q3_hash != digest(encoded).removeprefix"
     assert q3_hash == man.calc_hash(), "q3_hash != man.calc_hash()"
 
