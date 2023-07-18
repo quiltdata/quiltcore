@@ -1,11 +1,10 @@
-from tempfile import TemporaryDirectory
-
 from pathlib import Path
-from pytest import fixture, mark
+
+from pytest import fixture
 from quiltcore import Entry, Manifest, Registry
 from upath import UPath
 
-from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_MAN
+from .conftest import TEST_KEY, TEST_MAN, TEST_OBJ_HASH
 
 DATA_HW = b"Hello world!"
 HASH_HW = "1220c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
@@ -45,8 +44,8 @@ def test_entry_meta(entry: Entry):
     # TODO: choose a manifest with object-level metadata
     meta = entry.meta
     assert not meta
-    #assert isinstance(meta, dict)
-    #assert meta["target"] == "parquet"
+    # assert isinstance(meta, dict)
+    # assert meta["target"] == "parquet"
 
 
 def test_entry_get(entry: Entry, tmpdir: UPath):
@@ -73,6 +72,7 @@ def test_entry_hashable(entry: Entry):
     assert hashable["size"] == 30
     assert hashable["hash"]["value"] == TEST_OBJ_HASH
     assert hashable["meta"] == {}
+
 
 def test_entry_digest_verify(entry: Entry):
     entry.multihash = HASH_HW

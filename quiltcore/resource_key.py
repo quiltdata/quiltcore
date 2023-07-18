@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
-
 from json import JSONEncoder
+from pathlib import Path
 
 from multiformats import multihash
 
@@ -15,13 +14,13 @@ class ResourceKey(Resource):
     Get/List child resources by key in Manifest
     """
 
-    MH_PREFIXES: dict[str,str] = {
+    MH_PREFIXES: dict[str, str] = {
         "SHA256": "1220",
     }
 
     DEFAULT_HASH_TYPE = "SHA256"
     DEFAULT_MH_PREFIX = MH_PREFIXES[DEFAULT_HASH_TYPE]
-    ENCODE = JSONEncoder(sort_keys=True, separators=(',', ':'), default=str).encode
+    ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
     KEY_MH = "multihash"
     KEY_HSH = "hash"
     KEY_TAG = "tag"
@@ -32,7 +31,6 @@ class ResourceKey(Resource):
         logging.debug(f"get_value: {key} from {row}")
         value = row.get(key, None)
         return value[0] if value else None
-    
 
     @classmethod
     def GetHash(cls, opts: dict[str, str]) -> str:
@@ -42,7 +40,6 @@ class ResourceKey(Resource):
             mh = opts[cls.KEY_MH]
             return mh.removeprefix(cls.DEFAULT_MH_PREFIX)
         return ""
- 
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -83,7 +80,6 @@ class ResourceKey(Resource):
         merged = {**self.args, **args}
         return self.klass(path, **merged)
 
-
     #
     # Calculate and verify hash
     #
@@ -106,7 +102,7 @@ class ResourceKey(Resource):
         source = self.to_hashable()
         print(f"hashable: {source}")
         return self.ENCODE(source).encode("utf-8")
-    
+
     def source_hash(self) -> str:
         """Return the hash of the source file."""
         return self.digest(self.to_bytes())

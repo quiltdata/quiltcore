@@ -50,7 +50,7 @@ class Entry(ResourceKey):
             self.kMeta: self.meta,
         }
         return row
-    
+
     def to_hashable(self) -> dict:
         if not self.hash or not self.size:
             raise ValueError(f"Missing hash or size: {self}")

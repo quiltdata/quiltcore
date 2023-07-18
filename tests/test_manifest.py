@@ -1,11 +1,11 @@
+from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from pathlib import Path
-from pytest import fixture, mark
+from pytest import fixture
 from quiltcore import Entry, Manifest, Registry
 from upath import UPath
 
-from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_S3VER, TEST_SIZE, TEST_MAN
+from .conftest import TEST_KEY, TEST_MAN, TEST_OBJ_HASH, TEST_S3VER, TEST_SIZE
 
 K_REG = "registry"
 
@@ -63,10 +63,11 @@ def test_man_child_place():
 
     assert TEST_S3VER == man._child_place(TEST_S3VER)
     assert TEST_S3VER == man._child_place([TEST_S3VER])
-    TEST_LOCAL = man.LOCAL+"place"
+    TEST_LOCAL = man.LOCAL + "place"
     TEST_GLOBAL = str(rootdir / "place")
     print(man.args.keys())
     assert man._child_place(TEST_LOCAL, root) == TEST_GLOBAL
+
 
 def test_man_child_dict(man: Manifest):
     cd = man._child_dict(TEST_KEY)
@@ -104,6 +105,7 @@ def test_man_get(man: Manifest):
     assert isinstance(entry, Entry)
     assert TEST_KEY in str(entry.path)
     # TODO: assert entry.version == TEST_VER
+
 
 def test_man_hash(man: Manifest):
     hash = man.calc_hash()

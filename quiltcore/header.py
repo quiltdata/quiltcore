@@ -1,10 +1,8 @@
-import logging
 from datetime import datetime
 from pathlib import Path
 
 import pyarrow as pa  # type: ignore
 
-from .resource import Resource
 from .resource_key import ResourceKey
 
 
@@ -24,7 +22,7 @@ class Header(ResourceKey):
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.cols: list[str] = []
-        self._setup(kwargs['first'])
+        self._setup(kwargs["first"])
 
     #
     # Setup
@@ -43,7 +41,7 @@ class Header(ResourceKey):
 
     def drop(self, table) -> pa.Table:
         return table.drop(self.cols).slice(1)
-    
+
     #
     # Output
     #
@@ -62,7 +60,3 @@ class Header(ResourceKey):
                 user_meta[k] = v.strftime(fmt)
         meta[self.kMeta] = user_meta
         return meta
-
-
-
-        

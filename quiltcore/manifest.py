@@ -26,7 +26,6 @@ class Manifest(ResourceKey):
         self.places_key = "places" if self.decoded else self.kPlaces
         self._setup_hash()
 
-
     #
     # Hash functions
     #
@@ -101,7 +100,7 @@ class Manifest(ResourceKey):
         """List all child resources."""
         names = self.body.column(self.name_key).to_pylist()
         return names
-    
+
     def _child_place(self, places, root="") -> str:
         """Return the place for a child resource."""
         place = places[0] if isinstance(places, list) else places
@@ -130,4 +129,3 @@ class Manifest(ResourceKey):
         if len(v) > 0:
             row[self.KEY_VER] = v
         return row
-    

@@ -24,9 +24,9 @@ workflow:
   version: "1"
   successors:
     s3://udp-spec:
-      title: QuiltSpec for Universal Data Products 
+      title: QuiltSpec for Universal Data Products
   is_workflow_required: False
-  default_workflow: universal 
+  default_workflow: universal
   workflows:
     universal:
       name: Universal

@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pyarrow as pa  # type: ignore
 from jsonlines import Writer  # type: ignore
 
 from .manifest import Manifest
@@ -17,12 +16,13 @@ class Volume(ResourceKey):
     """
 
     ERR_REQUIRE_REGISTRY = "Volume.get requires registry keyword argument"
+
     @staticmethod
     def FromURI(uri: str, **kwargs) -> "Volume":
         """Create a Volume from a URI"""
         path = Volume.AsPath(uri)
         return Volume(path, **kwargs)
-    
+
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.registry = Registry(path, **self.args)

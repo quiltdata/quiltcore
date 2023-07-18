@@ -1,10 +1,12 @@
 from json import JSONEncoder
+
 from pytest import fixture
 from quilt3 import Package
 from quiltcore import Entry, Header, Manifest, Registry, Spec
 from upath import UPath
 
 NEW_PRK = "spec/quiltcore"
+
 
 @fixture
 def spec():
@@ -13,7 +15,9 @@ def spec():
 
 @fixture
 def pkg(spec: Spec) -> Package:
-    return Package.browse(spec.namespace(), registry=spec.registry(), top_hash=spec.hash())
+    return Package.browse(
+        spec.namespace(), registry=spec.registry(), top_hash=spec.hash()
+    )
 
 
 @fixture
@@ -42,12 +46,14 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
     2. Encoding / concatenation
     3. Hashing
     """
-    json_encode = JSONEncoder(sort_keys=True, separators=(',', ':')).encode
+    json_encode = JSONEncoder(sort_keys=True, separators=(",", ":")).encode
 
     assert pkg
     q3_hash = pkg.top_hash
     assert q3_hash == spec.hash(), "q3_hash != spec.hash()"
-    assert q3_hash == pkg._calculate_top_hash(pkg._meta, pkg.walk()), "q3_hash != pkg._calculate_top_hash()"
+    assert q3_hash == pkg._calculate_top_hash(
+        pkg._meta, pkg.walk()
+    ), "q3_hash != pkg._calculate_top_hash()"
 
     man_meta = man.head.to_hashable()
     pkg_user = pkg._meta[man.kMeta]
@@ -59,8 +65,8 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
 
     for part in pkg._get_top_hash_parts(pkg._meta, pkg.walk()):
         print(f"part: {part}")
-        if 'logical_key' in part:
-            key = part['logical_key']
+        if "logical_key" in part:
+            key = part["logical_key"]
             entry = man.get(key)
             hashable = entry.to_hashable()  # type: ignore
             print(f"entry[{key}]: {hashable}")
@@ -118,7 +124,6 @@ def test_spec_write():
     * TODO: calculate / verify package hash
     """
     pass
-
 
 
 def test_spec_workflow():
