@@ -25,9 +25,6 @@ class Delta(ResourceKey):
             ppath = self.AsPath(self.prefix) / self.name
             self.name = str(ppath.as_posix())
 
-    def __repr__(self):
-        return super().__repr__()
-
     def __str__(self):
         return dump(self.to_dict())
 

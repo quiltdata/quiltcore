@@ -55,11 +55,11 @@ class ResourceKey(Resource):
 
     def _child_names(self, **kwargs) -> list[str]:
         """Return names of each child resource."""
-        return []
+        raise NotImplementedError
 
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
-        return {}
+        raise NotImplementedError
 
     #
     # Concrete Methods for child resources
@@ -95,7 +95,7 @@ class ResourceKey(Resource):
         self.hash = value if value else self.multihash.removeprefix(self.hash_prefix)
 
     def to_hashable(self) -> dict:
-        return {}
+        raise NotImplementedError
 
     def hashable(self) -> bytes:
         source = self.to_hashable()

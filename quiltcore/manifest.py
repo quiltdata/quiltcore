@@ -22,7 +22,6 @@ class Manifest(ResourceKey):
         try:
             self.table = Table(path, **kwargs)
             self.head = self.table.head
-            self.body = self.table.body
         except FileNotFoundError:
             logging.warning(f"Manifest not found: {path}")
         self.name_key = "name" if self.encoded() else self.kName
@@ -56,9 +55,8 @@ class Manifest(ResourceKey):
     #
 
     def _child_names(self, **kwargs) -> list[str]:
-        """List all child resources."""
-        names = self.body.column(self.name_key).to_pylist()
-        return names
+        """List all child resource names."""
+        return self.table.column(self.name_key)
 
     def _child_place(self, places, root="") -> str:
         """Return the place for a child resource."""
@@ -77,10 +75,7 @@ class Manifest(ResourceKey):
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         # TODO: cache to avoid continually re-calcluating
-        rows = self.body.filter(pc.field(self.name_key) == key)
-        if rows.num_rows == 0:
-            raise KeyError(f"Key [{key}] not found in {self.name_key} of {self.path}")
-        row = rows.to_pydict()
+        row = self.table.filter(self.name_key, key)
         places = row[self.places_key][0]
         place = self._child_place(places)
         row[self.KEY_PATH] = place

@@ -27,11 +27,6 @@ class Entry(ResourceKey):
     # Parse and unparse
     #
 
-    def get_value(self, row: dict, key: str):
-        logging.debug(f"get_value: {key} from {row}")
-        value = row.get(key, None)
-        return value[0] if value else None
-
     def _setup(self, row: dict):
         self.name = self.RowValue(row, self.kName) or self.path.name
         self.meta = self.RowValue(row, self.kMeta)

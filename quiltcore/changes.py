@@ -33,13 +33,6 @@ class Changes(ResourceKey):
             return path / Changes.MANIFEST_FILE
         return path
 
-    @staticmethod
-    def GetManifest(args: dict) -> Manifest:
-        if Changes.MANIFEST_KEY in args:
-            return args[Changes.MANIFEST_KEY]
-        path = Changes.ScratchFile()
-        return Manifest(path)
-
     def __init__(self, path=None, **kwargs):
         cache = Changes.GetCache(path)
         super().__init__(cache, **kwargs)

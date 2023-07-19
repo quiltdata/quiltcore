@@ -95,3 +95,7 @@ def test_chg_list(changed: Changes):
 def test_chg_str(changed: Changes):
     y = str(changed)
     assert f"{FILENAME}:" in y
+
+def test_chg_manifest(changed: Changes):
+    man = changed.to_manifest()
+    assert man

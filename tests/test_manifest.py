@@ -25,6 +25,7 @@ def man():
 
 def test_man(man: Manifest):
     assert man
+    assert man.table
     assert "manifest" in man.args
 
 
@@ -37,11 +38,6 @@ def test_man_head(man: Manifest):
     assert hashable
     assert isinstance(hashable, dict)
     assert hashable["user_meta"]["Author"] == "Ernest"
-
-
-def test_man_table(man: Manifest):
-    assert man.table
-    assert man.body
 
 
 def test_man_child_place():

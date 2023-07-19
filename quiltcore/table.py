@@ -36,6 +36,10 @@ class Table(Resource):
         body = self.head.drop(self.table)
         return self._decode_table(body)
 
+    #
+    # Decode URIs
+    #
+
     def _decode_table(self, body: pa.Table) -> pa.Table:
         """
         URL-Decode appropriate columns of the manifest.
@@ -62,13 +66,21 @@ class Table(Resource):
             return [self.decode_item(chunk) for chunk in item.to_pylist()]
         raise TypeError(f"Unexpected type: {item_type}")
 
+    #
+    # Query Table
+    #
 
-    def filter(self, col: str, key: str) -> dict:
+    def column(self, col_name: str) -> list:
+        names = self.body.column(col_name).to_pylist()
+        return names
+
+
+    def filter(self, col_name: str, key: str) -> dict:
         """Return the dict for a child resource."""
         # TODO: cache to avoid continually re-calcluating
-        rows = self.body.filter(pc.field(col) == key)
+        rows = self.body.filter(pc.field(col_name) == key)
         if rows.num_rows == 0:
-            raise KeyError(f"Key [{key}] not found in {col} of {self.path}")
+            raise KeyError(f"Key [{key}] not found in {col_name} of {self.path}")
         row = rows.to_pydict()
         return row
    
