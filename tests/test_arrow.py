@@ -21,7 +21,7 @@ def test_arrow_pandas():
             "three": [True, False, True],
         },
         index=list("abc"),
-    )
+    )  # type: ignore
     table = pa.Table.from_pandas(df)
     assert table
     with TemporaryDirectory() as tmpdirname:
@@ -47,4 +47,19 @@ def test_arrow_table():
     path = Table.AsPath(TEST_MAN)
     table = Table(path)
     assert table
+    head = table.head
+    assert head
+    assert head.version == "v0"  # type: ignore
+    assert len(head.message) > 0  # type: ignore
+    assert len(head.user_meta) > 0  # type: ignore
+    assert head.user_meta["Author"] == "Ernest"  # type: ignore
+
+    body = table.body
+    assert body
+    assert body.num_rows == 1
+    schema = body.schema
+    assert schema
+    columns = table.cf.get_dict("quilt3/columns")
+    for key in columns:
+        assert key in schema.names
 

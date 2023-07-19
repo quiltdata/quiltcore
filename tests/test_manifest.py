@@ -2,7 +2,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from pytest import fixture
-from quiltcore import Entry, Manifest, Registry
+from quiltcore import Entry, Header, Manifest, Registry
 from upath import UPath
 
 from .conftest import TEST_KEY, TEST_MAN, TEST_OBJ_HASH, TEST_S3VER, TEST_SIZE
@@ -31,10 +31,7 @@ def test_man(man: Manifest):
 def test_man_head(man: Manifest):
     head = man.head
     assert head
-    assert head.version == "v0"  # type: ignore
-    assert len(head.message) > 0  # type: ignore
-    assert len(head.user_meta) > 0  # type: ignore
-    assert head.user_meta["Author"] == "Ernest"  # type: ignore
+    assert isinstance(head, Header)
 
     hashable = head.to_hashable()
     assert hashable
@@ -45,12 +42,6 @@ def test_man_head(man: Manifest):
 def test_man_table(man: Manifest):
     assert man.table
     assert man.body
-    assert man.body.num_rows == 1
-    schema = man.body.schema
-    assert schema
-    columns = man.cf.get_dict("quilt3/columns")
-    for key in columns:
-        assert key in schema.names
 
 
 def test_man_child_place():
