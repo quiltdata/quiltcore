@@ -24,7 +24,6 @@ class ResourceKey(Resource):
     KEY_MH = "multihash"
     KEY_HSH = "hash"
     KEY_TAG = "tag"
-    KEY_SELF = "."
 
     @classmethod
     def RowValue(cls, row: dict, key: str):

@@ -38,3 +38,12 @@ class Delta(ResourceKey):
             "path": self.path,
             "prefix": self.prefix,
         }
+    
+    def to_row(self, path: Path) -> dict:
+        return {
+            self.kName: self.name,
+            self.KEY_PATH: path
+        }
+    
+    def to_rows(self, path: Path) -> list[dict]:
+        return [self.to_row(path)]

@@ -23,10 +23,13 @@ class Resource:
     DEFAULT_HASH_TYPE = "SHA256"
     KEY_GLOB = "glob"
     KEY_KEY = "_key"
-    KEY_NAME = f"namespace.{KEY_KEY}"
+    KEY_META = "meta"
+    KEY_MSG = "msg"
+    KEY_NS = f"namespace.{KEY_KEY}"
     KEY_PATH = "_path"
     KEY_VER = "versionId"
     KEY_S3VER = "version_id"
+    KEY_SELF = "."
     MANIFEST = "_manifest"
     TAG_DEFAULT = "latest"
     UNQUOTED = "/:"
@@ -47,6 +50,11 @@ class Resource:
         return object
 
     @staticmethod
+    def ClassFromName(name: str) -> type:
+        """Return a class from a string."""
+        return getattr(quiltcore, name)
+
+    @staticmethod
     def TempGen(filename: str = "") -> Generator[Path, None, None]:
         """Return generator to a temporary directory."""
         with TemporaryDirectory() as tmpdirname:
@@ -61,12 +69,7 @@ class Resource:
         return Resource.AsPath(".")  # should never happen
 
     @staticmethod
-    def ClassFromName(name: str) -> type:
-        """Return a class from a string."""
-        return getattr(quiltcore, name)
-
-    @staticmethod
-    def Timestamp() -> str:
+    def Now() -> str:
         "Return integer timestamp."
         return str(int(time()))
 

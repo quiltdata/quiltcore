@@ -19,6 +19,7 @@ class Changes(ResourceKey):
 
     MANIFEST_FILE = "manifest.json"
     MANIFEST_KEY = "manifest"
+    DEFAULT_MSG = f"Updated {ResourceKey.Now()}"
 
     @staticmethod
     def ScratchFile() -> Path:
@@ -97,3 +98,23 @@ class Changes(ResourceKey):
     def _child_names(self, **kwargs) -> list[str]:
         """Return keys for each change."""
         return list(self.keystore.keys())
+    
+    #
+    # Create Manifest
+    #
+
+    def to_manifest(self, **kwargs) -> Manifest:
+        """
+        Return a Manifest for this change set.
+        Options:
+        * meta: package-level metadata
+        * msg: commit message
+
+        1. Get rows from each Delta (multiple if a directory)
+        1. Create Entry for each row
+        2. Create a Manifest from the entries (adding metadata if present)
+
+        """
+        meta = kwargs.get(self.KEY_META, {})
+        msg = kwargs.get(self.KEY_MSG, self.DEFAULT_MSG)
+        return Manifest(self.path, **self.args)

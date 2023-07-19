@@ -112,11 +112,11 @@ class Volume(ResourceKey):
             raise FileExistsError(f"Manifest {hash_path} already exists")
 
         ns_name = (
-            kwargs.get(self.KEY_NAME)
-            or man.args.get(self.KEY_NAME)
-            or f"unknown/{self.Timestamp()}"
+            kwargs.get(self.KEY_NS)
+            or man.args.get(self.KEY_NS)
+            or f"unknown/{self.Now()}"
         )
-        kwargs[self.KEY_NAME] = ns_name
+        kwargs[self.KEY_NS] = ns_name
 
         ns_name = self.write_entries(man, hash_path, ns_name)
         man2 = Manifest(hash_path, **self.args)

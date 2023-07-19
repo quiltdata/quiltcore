@@ -7,7 +7,7 @@ from quilt3 import Package  # type: ignore
 from quiltcore import Changes, Entry, Header, Manifest, Registry, Spec
 from upath import UPath
 
-TIME_NOW = Registry.Timestamp()
+TIME_NOW = Registry.Now()
 
 @fixture#(scope="session")
 def spec():
@@ -161,7 +161,7 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     assert chg
     delta = chg.post(tmpdir)
     assert delta
-    
+
 
 def test_spec_workflow():
     """
