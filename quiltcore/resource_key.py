@@ -26,10 +26,10 @@ class ResourceKey(Resource):
     KEY_TAG = "tag"
 
     @classmethod
-    def RowValue(cls, row: dict, key: str):
+    def RowValue(cls, row: dict, key: str, default = None):
         logging.debug(f"get_value: {key} from {row}")
         value = row.get(key, None)
-        return value[0] if value else None
+        return value[0] if value else default
 
     @classmethod
     def GetHash(cls, opts: dict[str, str]) -> str:
@@ -48,6 +48,7 @@ class ResourceKey(Resource):
         self.kName = self.cf.get_str("quilt3/name", "logical_key")
         self.kPlaces = self.cf.get_str("quilt3/places", "physical_keys")
         self.kSize = self.cf.get_str("quilt3/size", "size")
+        self.headers = self.cf.get_dict("quilt3/headers")
         self._setup_digest(self.kHashType)
         #self._setup_hash()
     #

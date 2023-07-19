@@ -45,9 +45,9 @@ quilt3:
   hash_type: SHA256
   hash: hash
   headers:
-    version: string
-    message: string
-    user_meta: dict
+    version: v0
+    message: commit message
+    user_meta: {}
   meta: user_meta
   mime_type: application/ld+json
   name: logical_key

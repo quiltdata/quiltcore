@@ -22,22 +22,18 @@ class Header(ResourceKey):
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.cols: list[str] = []
-        self._setup(kwargs["first"])
+        self._setup_headers(kwargs["first"])
 
     #
     # Setup
     #
 
-    def header_keys(self) -> list[str]:
-        headers = self.cf.get_dict("quilt3/headers")
-        return list(headers.keys())
-
-    def _setup(self, first: dict):
-        for header in self.header_keys():
+    def _setup_headers(self, first: dict):
+        for header, default in self.headers.items():
+            value = self.RowValue(first, header, default)
+            setattr(self, header, value)
             if header in first:
                 self.cols.append(header)
-                value = self.RowValue(first, header)
-                setattr(self, header, value)
 
     def drop(self, table) -> pa.Table:
         return table.drop(self.cols).slice(1)
