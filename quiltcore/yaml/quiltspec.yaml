@@ -10,6 +10,7 @@ config:
   namespace: spec/catalog
   tag: 1689200152
   hash: 124225d173a046212950e5bde7a84f365abef2e969e6f7b2a808c5f7322aa6e9
+  update: timestamp.txt
 files:
   READ ME.md: This is the README for QuiltSpec.
   timestamp.txt: 2023-07-12T20:12:07+0000

@@ -5,12 +5,14 @@ from quilt3 import Package  # type: ignore
 from quiltcore import Entry, Header, Manifest, Registry, Spec
 from upath import UPath
 
-@fixture(scope="session")
+TIME_NOW = Registry.Timestamp()
+
+@fixture#(scope="session")
 def spec():
     return Spec()
 
 
-@fixture(scope="session")
+@fixture#(scope="session")
 def pkg(spec: Spec) -> Package:
     return Package.browse(
         spec.namespace(), registry=spec.registry(), top_hash=spec.hash()
@@ -26,13 +28,32 @@ def man(spec: Spec) -> Manifest:
     return man  # type: ignore
 
 
+@fixture
+def spec_new():
+    return Spec("spec/quiltcore", TIME_NOW)
+
+
 def test_spec(spec: Spec, pkg: Package, man: Manifest):
     assert spec
     assert isinstance(spec, Spec)
     assert "quilt" in Spec.CONFIG_FILE
     assert "s3://" in spec.registry()
     assert pkg
+    assert isinstance(pkg, Package)
     assert man
+    assert isinstance(man, Manifest)
+
+
+def test_spec_new(spec_new: Spec, spec: Spec):
+    assert spec_new
+    assert spec_new.registry() == spec.registry()
+    assert spec_new.namespace() != spec.namespace()
+    update = spec_new.pkg("update")
+    _files = spec_new.files()
+    assert update in _files
+    updated = _files[update]
+    assert updated == spec_new.update
+    assert updated == TIME_NOW
 
 
 def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
@@ -86,8 +107,6 @@ def test_spec_read(spec: Spec, man: Manifest):
     - package-level metadata
     - file-level metadata
     """
-    assert man
-    assert isinstance(man, Manifest)
     head = man.head
     assert head
     assert isinstance(head, Header)
@@ -111,7 +130,7 @@ def test_spec_read(spec: Spec, man: Manifest):
             assert entry.user_meta == meta  # type: ignore
 
 
-def test_spec_write():
+def test_spec_write(spec_new: Spec):
     """
     Ensure quilt3 can read manifests created by quiltcore
 
@@ -119,8 +138,7 @@ def test_spec_write():
     * create package
     * write to bucket
     * track all of the above
-    * read it all back
-    * TODO: calculate / verify package hash
+    * read it all back with quilt3
     """
     pass
 

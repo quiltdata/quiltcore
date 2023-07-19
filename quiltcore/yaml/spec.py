@@ -7,6 +7,11 @@ class Spec(Config):
     CONFIG_FILE = "quiltspec.yaml"
     K_PKG = "config"
 
+    def __init__(self, name = None, update = None) -> None:
+        super().__init__()
+        self.name = name
+        self.update = update
+
     def pkg(self, key: str) -> str:
         _pkg = self.get_dict(self.K_PKG)
         return _pkg.get(key, "<missing>")
@@ -17,7 +22,7 @@ class Spec(Config):
         return self.pkg("registry")
 
     def namespace(self) -> str:
-        return self.pkg("namespace")
+        return self.name or self.pkg("namespace")
 
     def hash(self) -> str:
         return self.pkg("hash")
@@ -28,7 +33,12 @@ class Spec(Config):
     # Contents
 
     def files(self) -> dict:
-        return self.get_dict("files")
+        _files = self.get_dict("files")
+        update = self.pkg("update")
+        for key in _files:
+            if key in update and self.update:
+                _files[key] = self.update
+        return _files
 
     def metadata(self, key="_package") -> dict:
         return self.get_dict(f"metadata/{key}")
