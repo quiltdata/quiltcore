@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from jsonlines import Writer  # type: ignore
@@ -26,30 +27,32 @@ class Volume(ResourceKey):
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.registry = Registry(path, **self.args)
-        self.uri = self.path.as_uri()
-        self.keystore: dict[str, dict] = {
+        self.uri = str(self.path)
+        self.keycache: dict[str, dict] = {
             self.KEY_SELF: self.args,
         }
 
     def is_local(self) -> bool:
-        return self.uri.startswith("file://")
+        print(f"Volume.is_local: {self.uri}")
+        return self.uri.startswith("file://") or "://" not in self.uri
 
     def _child_names(self, **kwargs) -> list[str]:
         """Return names of each child resource."""
-        names = list(self.keystore.keys())
+        names = list(self.keycache.keys())
         names.remove(self.KEY_SELF)
         return names
 
     #
-    # List/Delete vs keystore
+    # List/Delete vs keycache
     #
 
     def delete(self, key: str, **kwargs) -> None:
-        """Delete the key from this keystore"""
-        if key in self.keystore:
-            del self.keystore[key]
+        """Delete the key from this keycache"""
+        if key in self.keycache:
+            del self.keycache[key]
+            logging.debug(f"Deleted {key} from {self.keycache.keys()}")
             return
-        raise KeyError(f"Key {key} not found in {self.keystore.keys()}")
+        raise KeyError(f"Key {key} not found in {self.keycache.keys()}")
 
     def list(self, **kwargs) -> list["Resource"]:
         """List all child resources."""
@@ -61,25 +64,25 @@ class Volume(ResourceKey):
 
     def get(self, key: str, **kwargs) -> "Resource":
         """
-        Return and keystore manifest for Namespace `key`
+        Return and keycache manifest for Namespace `key`
 
         * hash
         * multihash
         * tag [default: latest]
         """
-        if key in self.keystore:
-            opts = self.keystore[key]
+        if key in self.keycache:
+            opts = self.keycache[key]
             return opts["manifest"]
 
         manifest = self.get_manifest(key, **kwargs)
         args = manifest.args.copy()
         args[self.KEY_PATH] = str(manifest.path)
-        self.keystore[key] = args
+        self.keycache[key] = args
         return manifest
 
     def get_manifest(self, key: str, **kwargs) -> "Resource":
         """
-        Create manifest for Namespace `key` and `kwargs`
+        Get or Create manifest for Namespace `key` and `kwargs`
         """
         opts: dict[str, str] = kwargs
         hash = self.GetHash(opts)
