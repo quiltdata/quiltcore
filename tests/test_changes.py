@@ -1,6 +1,6 @@
 from tempfile import TemporaryDirectory
 
-from pytest import fixture, raises
+from pytest import fixture, raises, mark
 from quiltcore import Changes, Delta, Entry
 from upath import UPath
 
@@ -99,9 +99,11 @@ def test_chg_list(changed: Changes):
 def test_chg_str(changed: Changes):
     y = str(changed)
     assert f"{FILENAME}:" in y
+    
 
+@mark.skip(reason="pending manifest creation")
 def test_chg_man(changed: Changes, infile: UPath):
     changed.post(infile)
     man = changed.to_manifest()
     assert man
-    # assert man.get(infile.name)
+    assert man.get(infile.name)

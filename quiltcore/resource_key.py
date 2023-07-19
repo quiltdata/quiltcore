@@ -20,6 +20,7 @@ class ResourceKey(Resource):
 
     DEFAULT_HASH_TYPE = "SHA256"
     DEFAULT_MH_PREFIX = MH_PREFIXES[DEFAULT_HASH_TYPE]
+    DEFAULT_MSG = f"Updated {Resource.Now()}"
     ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
     KEY_MH = "multihash"
     KEY_HSH = "hash"
@@ -51,7 +52,7 @@ class ResourceKey(Resource):
         self.kSize = self.cf.get_str("quilt3/size", "size")
         self.headers = self.cf.get_dict("quilt3/headers")
         self._setup_digest(self.kHashType)
-        #self._setup_hash()
+
     #
     # Abstract Methods for child resources
     #

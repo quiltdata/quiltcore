@@ -22,9 +22,6 @@ class Changes(ResourceKey):
     Optional: track changes to a directory?
     """
 
-    DEFAULT_MSG = f"Updated {ResourceKey.Now()}"
-
-
 
     def __init__(self, path, **kwargs):
         super().__init__(path, **kwargs)
@@ -107,5 +104,5 @@ class Changes(ResourceKey):
         rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
         grouped = {k: v for k,v in groupby(rows, lambda row: row[Delta.KEY_ACT]) }
         adds = list(grouped.get(Delta.KEY_ADD))  # type: ignore
-        build = Builder(self.path, kwargs, adds, rm=grouped.get(Delta.KEY_RM), **self.args)
+        build = Builder(self.path, adds, kwargs, rm=grouped.get(Delta.KEY_RM), **self.args)
         return build.to_manifest()

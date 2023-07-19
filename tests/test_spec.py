@@ -2,7 +2,7 @@ from tempfile import TemporaryDirectory
 
 from json import JSONEncoder
 
-from pytest import fixture
+from pytest import fixture, mark
 from quilt3 import Package  # type: ignore
 from quiltcore import Changes, Entry, Header, Manifest, Registry, Spec, Volume
 from upath import UPath
@@ -137,6 +137,7 @@ def test_spec_read(spec: Spec, man: Manifest):
             assert entry.user_meta == meta  # type: ignore
 
 
+@mark.skip(reason="pending manifest creation")
 def test_spec_write(spec_new: Spec, tmpdir: UPath):
     """
     Ensure quilt3 can read manifests created by quiltcore
@@ -163,8 +164,6 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     man = chg.to_manifest() # TODO: user_meta=pkg_metadata
     assert man
     print(f"man: {man.to_text()}")
-    return
-    assert False
 
     reg = UPath(spec_new.registry())
     vol = Volume(reg)

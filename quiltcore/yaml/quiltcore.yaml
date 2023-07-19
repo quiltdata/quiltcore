@@ -52,3 +52,14 @@ quilt3:
   mime_type: application/ld+json
   name: logical_key
   places: physical_keys
+  schema:
+    version: string
+    user_meta: null
+    message: string
+    logical_key: string
+    physical_keys: [string]
+    size: int64
+    hash:
+      type: string
+      value: string
+    meta: struct<>

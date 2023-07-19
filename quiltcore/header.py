@@ -43,7 +43,7 @@ class Header(ResourceKey):
     #
 
     def to_dict(self) -> dict:
-        return {k: getattr(self, k) for k in self.cols}
+        return {k: getattr(self, k) for k in self.headers.keys()}
 
     def to_hashable(self) -> dict:
         meta = self.to_dict()

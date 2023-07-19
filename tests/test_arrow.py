@@ -1,4 +1,5 @@
 from pathlib import Path
+from pytest import mark
 from tempfile import TemporaryDirectory
 from quiltcore import Table
 
@@ -40,6 +41,16 @@ def test_arrow_s3():
     with s3.open_input_stream(path) as f:
         table = pj.read_json(f)
         assert table
+
+@mark.skip("Need to understand Arrow schema")
+def test_arrow_schema():
+    path = Table.AsPath(TEST_MAN)
+    table = Table(path)
+    yaml_schema = table.cf.get_dict("quilt3/schema")
+    assert yaml_schema
+    schema = pa.schema(yaml_schema)
+    assert schema
+
 
 def test_arrow_table():
     path = Table.AsPath(TEST_MAN)
