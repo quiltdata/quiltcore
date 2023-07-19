@@ -54,16 +54,15 @@ class Changes(ResourceKey):
     # Mutating Changes
     #
 
-    def post(self, key: str, **kwargs) -> Resource:
+    def post(self, path: Path, **kwargs) -> Resource:
         """
-                Create and track a Delta for this source Path.
+                Create and track a Delta resource for this Path
                 Options:
                 * action: add [default], rm
                 * key: defaults to filename
                 * prefix: pre-pended to key if non-empty
         .
         """
-        path = self.AsPath(key)
         delta = Delta(path, **kwargs)
         self.keystore[delta.name] = delta
         return delta

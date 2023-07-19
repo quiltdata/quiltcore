@@ -33,31 +33,6 @@ class Resource:
     LOCAL = "file://./"
 
     @staticmethod
-    def TempGen(filename: str = "") -> Generator[Path, None, None]:
-        """Return generator to a temporary directory."""
-        with TemporaryDirectory() as tmpdirname:
-            temp_path = (
-                Path(tmpdirname) / filename if len(filename) > 0 else Path(tmpdirname)
-            )
-            yield temp_path
-
-    @staticmethod
-    def TempDir(filename: str = "") -> Path:
-        for path in Resource.TempGen(filename):
-            return path
-        return Path(".")  # should never happen
-
-    @staticmethod
-    def ClassFromName(name: str) -> type:
-        """Return a class from a string."""
-        return getattr(quiltcore, name)
-
-    @staticmethod
-    def Timestamp() -> str:
-        "Return integer timestamp."
-        return str(int(time()))
-
-    @staticmethod
     def AsPath(key: str) -> UPath:
         """Return a Path from a string."""
         if not isinstance(key, str):
@@ -70,6 +45,31 @@ class Resource:
         if not isinstance(object, str):
             raise TypeError(f"Expected str, got {type(object)}:{object}")
         return object
+
+    @staticmethod
+    def TempGen(filename: str = "") -> Generator[Path, None, None]:
+        """Return generator to a temporary directory."""
+        with TemporaryDirectory() as tmpdirname:
+            path = Resource.AsPath(tmpdirname)
+            temp_path = path / filename if len(filename) > 0 else path
+            yield temp_path
+
+    @staticmethod
+    def TempDir(filename: str = "") -> Path:
+        for path in Resource.TempGen(filename):
+            return path
+        return Resource.AsPath(".")  # should never happen
+
+    @staticmethod
+    def ClassFromName(name: str) -> type:
+        """Return a class from a string."""
+        return getattr(quiltcore, name)
+
+    @staticmethod
+    def Timestamp() -> str:
+        "Return integer timestamp."
+        return str(int(time()))
+
 
     @staticmethod
     def GetVersion(uri: str) -> str:
@@ -171,10 +171,6 @@ class Resource:
 
     def patch(self, res: Resource, **kwargs) -> "Resource":
         """Update and return a child resource."""
-        raise NotImplementedError
-
-    def post(self, key: str, **kwargs) -> "Resource":
-        """Create and return a child resource using key."""
         raise NotImplementedError
 
     def put(self, res: Resource, **kwargs) -> "Resource":

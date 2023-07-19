@@ -1,8 +1,10 @@
+from tempfile import TemporaryDirectory
+
 from json import JSONEncoder
 
 from pytest import fixture
 from quilt3 import Package  # type: ignore
-from quiltcore import Entry, Header, Manifest, Registry, Spec
+from quiltcore import Changes, Entry, Header, Manifest, Registry, Spec
 from upath import UPath
 
 TIME_NOW = Registry.Timestamp()
@@ -31,6 +33,12 @@ def man(spec: Spec) -> Manifest:
 @fixture
 def spec_new():
     return Spec("spec/quiltcore", TIME_NOW)
+
+
+@fixture
+def tmpdir():
+    with TemporaryDirectory() as tmpdirname:
+        yield UPath(tmpdirname)
 
 
 def test_spec(spec: Spec, pkg: Package, man: Manifest):
@@ -130,18 +138,30 @@ def test_spec_read(spec: Spec, man: Manifest):
             assert entry.user_meta == meta  # type: ignore
 
 
-def test_spec_write(spec_new: Spec):
+def test_spec_write(spec_new: Spec, tmpdir: UPath):
     """
     Ensure quilt3 can read manifests created by quiltcore
 
+    With QuiltCore:
     * create files and metadata
     * create package
     * write to bucket
     * track all of the above
-    * read it all back with quilt3
-    """
-    pass
 
+    Then with quilt3:
+    * read it all back
+    """
+    for filename, filedata in spec_new.files().items():
+        path = tmpdir / filename
+        path.write_text(filedata)
+    pkg_metadata = spec_new.metadata()
+    # TODO: Object-level Metadata
+    
+    chg = Changes()
+    assert chg
+    delta = chg.post(tmpdir)
+    assert delta
+    
 
 def test_spec_workflow():
     """
