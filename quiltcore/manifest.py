@@ -18,7 +18,6 @@ class Manifest(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.decoded = False
         try:
             self.table = Table(path, **kwargs)
             self.head = self.table.head
@@ -37,18 +36,6 @@ class Manifest(ResourceKey):
         Return the hash of the contents.
         """
         return self.name
-
-    def calc_multihash(self) -> str:
-        hashable = self.head.hashable()
-        for entry in self.list():
-            hashable += entry.hashable()  # type: ignore
-        return self.digest(hashable)
-
-    def calc_hash(self) -> str:
-        """
-        Return the hash of the manifest.
-        """
-        return self.calc_multihash().removeprefix(self.DEFAULT_MH_PREFIX)
 
     #
     # Private Methods for child resources

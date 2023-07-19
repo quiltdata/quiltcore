@@ -102,7 +102,7 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
     man_encoded = man.digest(encoded)
     man_strip = man_encoded.removeprefix(Manifest.DEFAULT_MH_PREFIX)
     assert q3_hash == man_strip, "q3_hash != digest(encoded).removeprefix"
-    assert q3_hash == man.calc_hash(), "q3_hash != man.calc_hash()"
+    assert q3_hash == man.calc_hash(man.head), "q3_hash != man.calc_hash()"
 
 
 def test_spec_read(spec: Spec, man: Manifest):

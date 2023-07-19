@@ -3,6 +3,7 @@ from pathlib import Path
 from yaml import dump
 
 from .delta import Delta
+from .header import Header
 from .manifest import Manifest
 from .resource import Resource
 from .resource_key import ResourceKey
@@ -13,28 +14,24 @@ class Changes(ResourceKey):
     Track Changes to a new or existing Manifest
     Add a file: put(path, action="add", key="filename.txt", prefix="./")
     Use 'get' and 'list' to return the Deltas
+    Create Manifest in scratch directory
 
     Optional: track changes to a directory?
     """
 
-    MANIFEST_FILE = "manifest.json"
-    MANIFEST_KEY = "manifest"
     DEFAULT_MSG = f"Updated {ResourceKey.Now()}"
 
-    @staticmethod
-    def ScratchFile() -> Path:
-        return Changes.TempDir(Changes.MANIFEST_FILE)
 
     @staticmethod
-    def GetCache(path: Path) -> Path:
+    def GetRoot(path: Path) -> Path:
         if not path:
-            return Changes.ScratchFile()
+            return Changes.TempDir()
         if path.exists() and path.is_dir():
-            return path / Changes.MANIFEST_FILE
-        return path
+            return path
+        raise ValueError(f"Non-directory path: {path}")
 
     def __init__(self, path=None, **kwargs):
-        cache = Changes.GetCache(path)
+        cache = Changes.GetRoot(path)
         super().__init__(cache, **kwargs)
         self.keystore = {}
 
@@ -110,4 +107,7 @@ class Changes(ResourceKey):
         """
         meta = kwargs.get(self.KEY_META, {})
         msg = kwargs.get(self.KEY_MSG, self.DEFAULT_MSG)
-        return Manifest(self.path, **self.args)
+        first = {}
+        head = Header(self.path, first=first)
+        hash = self.calc_hash(head)
+        return Manifest(self.path / hash, **self.args)

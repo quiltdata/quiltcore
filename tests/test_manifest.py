@@ -95,5 +95,5 @@ def test_man_get(man: Manifest):
 
 
 def test_man_hash(man: Manifest):
-    hash = man.calc_hash()
+    hash = man.calc_hash(man.head)
     assert hash == man.name

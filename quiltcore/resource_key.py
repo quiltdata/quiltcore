@@ -48,7 +48,8 @@ class ResourceKey(Resource):
         self.kName = self.cf.get_str("quilt3/name", "logical_key")
         self.kPlaces = self.cf.get_str("quilt3/places", "physical_keys")
         self.kSize = self.cf.get_str("quilt3/size", "size")
-
+        self._setup_digest(self.kHashType)
+        #self._setup_hash()
     #
     # Abstract Methods for child resources
     #
@@ -79,16 +80,46 @@ class ResourceKey(Resource):
         merged = {**self.args, **args}
         return self.klass(path, **merged)
 
+
     #
-    # Calculate and verify hash
+    # Hash creation
     #
+
+    def source_hash(self) -> str:
+        """Return the hash of the source file."""
+        return self.digest(self.to_bytes())
+
+    def digest(self, bstring: bytes) -> str:
+        """Return the multihash digest of `bstring`"""
+        digest = self.hash_digest.digest(bstring)
+        digest.hex()
+        return digest.hex()
+
+    def calc_multihash(self, head: ResourceKey) -> str:
+        hashable = head.hashable()
+        for entry in self.list():
+            hashable += entry.hashable()  # type: ignore
+        return self.digest(hashable)
+
+    def calc_hash(self, head: ResourceKey) -> str:
+        """
+        Return the hash of the manifest.
+        """
+        return self.calc_multihash(head).removeprefix(self.DEFAULT_MH_PREFIX)
+
+    #
+    # Hash retreival
+    #
+
+    def _setup_digest(self, type):
+        hash_key = f"multihash/{type}"
+        self.hash_type = self.cf.get_str(hash_key)
+        self.hash_digest = multihash.get(self.hash_type)
 
     def _setup_hash(self, opt: dict = {}):
         """Set or create hash attributes."""
         type = opt.get("type", self.kHashType)
-        hash_key = f"multihash/{type}"
-        self.hash_type = self.cf.get_str(hash_key)
-        self.hash_digest = multihash.get(self.hash_type)
+        self._setup_digest(type)
         self.hash_prefix = self.MH_PREFIXES[type]
         value = opt.get("value")
         self.multihash = self.hash_prefix + value if value else self.source_hash()
@@ -101,15 +132,6 @@ class ResourceKey(Resource):
         source = self.to_hashable()
         return self.ENCODE(source).encode("utf-8")  # type: ignore
 
-    def source_hash(self) -> str:
-        """Return the hash of the source file."""
-        return self.digest(self.to_bytes())
-
-    def digest(self, bstring: bytes) -> str:
-        """Return the multihash digest of `bstring`"""
-        digest = self.hash_digest.digest(bstring)
-        digest.hex()
-        return digest.hex()
 
     def verify(self, bstring: bytes) -> bool:
         """Verify that multihash digest of bytes match the multihash"""

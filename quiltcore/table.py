@@ -46,7 +46,6 @@ class Table(Resource):
         """
         encoding = self.encodings()
         for old_col, new_col in encoding.items():
-            self.decoded = True
             if old_col in body.column_names:
                 body = body.append_column(
                     new_col,
