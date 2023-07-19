@@ -1,7 +1,10 @@
+from itertools import groupby
+
 from pathlib import Path
 
 from yaml import dump
 
+from .builder import Builder
 from .delta import Delta
 from .header import Header
 from .manifest import Manifest
@@ -97,7 +100,7 @@ class Changes(ResourceKey):
         """
         Return a Manifest for this change set.
         Options:
-        * meta: package-level metadata
+        * user_meta: package-level metadata
         * msg: commit message
 
         1. Get rows from each Delta (multiple if a directory)
@@ -105,9 +108,12 @@ class Changes(ResourceKey):
         2. Create a Manifest from the entries (adding metadata if present)
 
         """
-        meta = kwargs.get(self.KEY_META, {})
-        msg = kwargs.get(self.KEY_MSG, self.DEFAULT_MSG)
-        first = {}
-        head = Header(self.path, first=first)
-        hash = self.calc_hash(head)
-        return Manifest(self.path / hash, **self.args)
+        head = Header(self.path, first=kwargs)
+        rows = [delta.to_dict() for delta in self.keystore.values()]
+        rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
+        grouped = {k: v for k,v in groupby(rows, lambda row: row[Delta.KEY_ACT]) }
+        print(f"Grouped: {grouped}")
+        adds = list(grouped.get(Delta.KEY_ADD))  # type: ignore
+        build = Builder(self.path, head, adds, rm=grouped.get(Delta.KEY_RM), **self.args)
+        path = build.manifest_path()
+        return Manifest(path, **self.args)

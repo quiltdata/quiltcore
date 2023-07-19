@@ -13,14 +13,20 @@ class Delta(ResourceKey):
     Optional: track changes to a directory?
     """
 
+    KEY_ACT = "action"
+    KEY_ADD = "add"
+    KEY_NAM = "name"
+    KEY_PRE = "prefix"
+    KEY_RM = "rm"
+
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self._setup(kwargs)
 
     def _setup(self, args: dict):
-        self.action = args.get("action", "add")
-        self.name = args.get("name", self.path.name)
-        self.prefix = args.get("prefix")
+        self.action = args.get(self.KEY_ACT, self.KEY_ADD)
+        self.name = args.get(self.KEY_NAM, self.path.name)
+        self.prefix = args.get(self.KEY_PRE)
         if self.prefix:
             ppath = self.AsPath(self.prefix) / self.name
             self.name = str(ppath.as_posix())
@@ -30,17 +36,9 @@ class Delta(ResourceKey):
 
     def to_dict(self) -> dict:
         return {
-            "action": self.action,
-            "name": self.name,
-            "path": self.path,
-            "prefix": self.prefix,
+            self.KEY_ACT: self.action,
+            self.KEY_NAM: self.name,
+            self.KEY_PATH: self.path,
+            self.KEY_PRE: self.prefix,
         }
     
-    def to_row(self, path: Path) -> dict:
-        return {
-            self.kName: self.name,
-            self.KEY_PATH: path
-        }
-    
-    def to_rows(self, path: Path) -> list[dict]:
-        return [self.to_row(path)]
