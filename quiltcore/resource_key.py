@@ -27,8 +27,9 @@ class ResourceKey(Resource):
 
     @classmethod
     def RowValue(cls, row: dict, key: str, default = None):
-        logging.debug(f"get_value: {key} from {row}")
+        print(f"get_value: {key} from {row}")
         value = row.get(key, None)
+        print(f"get_value.value: {value} of {type(value)}")
         return value[0] if value else default
 
     @classmethod
@@ -49,7 +50,6 @@ class ResourceKey(Resource):
         self.kPlaces = self.cf.get_str("quilt3/places", "physical_keys")
         self.kSize = self.cf.get_str("quilt3/size", "size")
         self.headers = self.cf.get_dict("quilt3/headers")
-        self.head = {}
         self._setup_digest(self.kHashType)
         #self._setup_hash()
     #

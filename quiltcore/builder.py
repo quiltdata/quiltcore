@@ -15,12 +15,14 @@ class Builder(ResourceKey):
     Return the path
     """
 
-    def __init__(self, path: Path, head: Header, rows: list[dict], **kwargs):
+    def __init__(self, path: Path, first: dict, rows: list[dict], **kwargs):
         super().__init__(path, **kwargs)
         if not path.exists() or not path.is_dir():
             raise ValueError(f"Non-directory path: {path}")
-        self.head = head
-        self.keystore = {row[Delta.K_NAM]: row for row in rows} # type: ignore
+
+        self.head = Header(self.path, first=first)
+        self.keystore = {row[Delta.KEY_NAM]: row for row in rows}
+        self.removals = kwargs.get(Delta.KEY_RM)
 
     def _child_names(self, **kwargs) -> list[str]:
         """Return names of each child resource."""

@@ -100,8 +100,8 @@ def test_chg_str(changed: Changes):
     y = str(changed)
     assert f"{FILENAME}:" in y
 
-def test_chg_manifest(changed: Changes, infile: UPath):
+def test_chg_man(changed: Changes, infile: UPath):
     changed.post(infile)
     man = changed.to_manifest()
-    #assert man
-    #assert man.get(infile.name)
+    assert man
+    # assert man.get(infile.name)

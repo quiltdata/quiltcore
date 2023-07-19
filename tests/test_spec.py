@@ -4,7 +4,7 @@ from json import JSONEncoder
 
 from pytest import fixture
 from quilt3 import Package  # type: ignore
-from quiltcore import Changes, Entry, Header, Manifest, Registry, Spec
+from quiltcore import Changes, Entry, Header, Manifest, Registry, Spec, Volume
 from upath import UPath
 
 TIME_NOW = Registry.Now()
@@ -160,6 +160,16 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     assert chg
     delta = chg.post(tmpdir)
     assert delta
+    man = chg.to_manifest() # TODO: user_meta=pkg_metadata
+    assert man
+    print(f"man: {man.to_text()}")
+    return
+    assert False
+
+    reg = UPath(spec_new.registry())
+    vol = Volume(reg)
+    vol.put(man, namespace=spec_new.namespace())
+
 
 
 def test_spec_workflow():

@@ -103,10 +103,9 @@ class Changes(ResourceKey):
 
         """
         print(f"Changes.to_manifest: {self.path} exists: {self.path.exists()}")
-        head = Header(self.path, first=kwargs)
         rows = [delta.to_dict() for delta in self.keystore.values()]
         rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
         grouped = {k: v for k,v in groupby(rows, lambda row: row[Delta.KEY_ACT]) }
         adds = list(grouped.get(Delta.KEY_ADD))  # type: ignore
-        build = Builder(self.path, head, adds, rm=grouped.get(Delta.KEY_RM), **self.args)
+        build = Builder(self.path, kwargs, adds, rm=grouped.get(Delta.KEY_RM), **self.args)
         return build.to_manifest()
