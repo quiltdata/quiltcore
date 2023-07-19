@@ -55,20 +55,6 @@ class Resource:
         return getattr(quiltcore, name)
 
     @staticmethod
-    def TempGen(filename: str = "") -> Generator[Path, None, None]:
-        """Return generator to a temporary directory."""
-        with TemporaryDirectory() as tmpdirname:
-            path = Resource.AsPath(tmpdirname)
-            temp_path = path / filename if len(filename) > 0 else path
-            yield temp_path
-
-    @staticmethod
-    def TempDir(filename: str = "") -> Path:
-        for path in Resource.TempGen(filename):
-            return path
-        return Resource.AsPath(".")  # should never happen
-
-    @staticmethod
     def Now() -> str:
         "Return integer timestamp."
         return str(int(time()))

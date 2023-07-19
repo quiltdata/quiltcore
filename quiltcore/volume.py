@@ -3,6 +3,8 @@ from pathlib import Path
 
 from jsonlines import Writer  # type: ignore
 
+from .entry import Entry
+from .header import Header
 from .manifest import Manifest
 from .registry import Registry
 from .resource import Resource
@@ -23,6 +25,15 @@ class Volume(ResourceKey):
         """Create a Volume from a URI"""
         path = Volume.AsPath(uri)
         return Volume(path, **kwargs)
+
+    @staticmethod
+    def WriteManifest(head: Header, entries: list[Entry], path: Path) -> None:
+        rows = [entry.to_row() for entry in entries]  # type: ignore
+        with path.open(mode="wb") as fo:
+            with Writer(fo) as writer:
+                writer.write(head.to_dict())
+                for row in rows:
+                    writer.write(row)
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -106,9 +117,9 @@ class Volume(ResourceKey):
         if not isinstance(res, Manifest):
             raise TypeError(f"Volume.put requires a Manifest, not {type(res)}")
         man: Manifest = res
-        hash_path = self.registry.manifests / man.source_hash()
-        if hash_path.exists():
-            raise FileExistsError(f"Manifest {hash_path} already exists")
+        new_path = self.registry.manifests / man.source_hash()
+        if new_path.exists():
+            raise FileExistsError(f"Manifest {new_path} already exists")
 
         ns_name = (
             kwargs.get(self.KEY_NS)
@@ -117,18 +128,14 @@ class Volume(ResourceKey):
         )
         kwargs[self.KEY_NS] = ns_name
 
-        ns_name = self.write_entries(man, hash_path, ns_name)
-        man2 = Manifest(hash_path, **self.args)
+        ns_name = self.write_entries(man, new_path, ns_name)
+        man2 = Manifest(new_path, **self.args)
         self.registry.put(man2, **kwargs)
         return man2
 
-    def write_entries(self, man: Manifest, path: Path, name: str) -> str:
+    def write_entries(self, man: ResourceKey, path: Path, name: str) -> str:
         dest = str(self.path / name)
         entries = [entry.get(dest) for entry in man.list()]
-        rows = [entry.to_row() for entry in entries]  # type: ignore
-        with path.open(mode="wb") as fo:
-            with Writer(fo) as writer:
-                writer.write(man.head.to_dict())
-                for row in rows:
-                    writer.write(row)
+        self.WriteManifest(man.head, entries, path)  # type: ignore
         return name
+    

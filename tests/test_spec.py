@@ -156,7 +156,7 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     pkg_metadata = spec_new.metadata()
     # TODO: Object-level Metadata
     
-    chg = Changes()
+    chg = Changes(tmpdir)
     assert chg
     delta = chg.post(tmpdir)
     assert delta

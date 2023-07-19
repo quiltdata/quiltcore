@@ -25,17 +25,11 @@ class Changes(ResourceKey):
     DEFAULT_MSG = f"Updated {ResourceKey.Now()}"
 
 
-    @staticmethod
-    def GetRoot(path: Path) -> Path:
-        if not path:
-            return Changes.TempDir()
-        if path.exists() and path.is_dir():
-            return path
-        raise ValueError(f"Non-directory path: {path}")
 
-    def __init__(self, path=None, **kwargs):
-        cache = Changes.GetRoot(path)
-        super().__init__(cache, **kwargs)
+    def __init__(self, path, **kwargs):
+        super().__init__(path, **kwargs)
+        if not path.exists() or not path.is_dir():
+            raise ValueError(f"Non-directory path: {path}")
         self.keystore = {}
 
     def __str__(self):
@@ -108,12 +102,11 @@ class Changes(ResourceKey):
         2. Create a Manifest from the entries (adding metadata if present)
 
         """
+        print(f"Changes.to_manifest: {self.path} exists: {self.path.exists()}")
         head = Header(self.path, first=kwargs)
         rows = [delta.to_dict() for delta in self.keystore.values()]
         rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
         grouped = {k: v for k,v in groupby(rows, lambda row: row[Delta.KEY_ACT]) }
-        print(f"Grouped: {grouped}")
         adds = list(grouped.get(Delta.KEY_ADD))  # type: ignore
         build = Builder(self.path, head, adds, rm=grouped.get(Delta.KEY_RM), **self.args)
-        path = build.manifest_path()
-        return Manifest(path, **self.args)
+        return build.to_manifest()

@@ -49,6 +49,7 @@ class ResourceKey(Resource):
         self.kPlaces = self.cf.get_str("quilt3/places", "physical_keys")
         self.kSize = self.cf.get_str("quilt3/size", "size")
         self.headers = self.cf.get_dict("quilt3/headers")
+        self.head = {}
         self._setup_digest(self.kHashType)
         #self._setup_hash()
     #

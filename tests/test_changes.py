@@ -15,8 +15,8 @@ def dir():
 
 
 @fixture
-def chg():
-    return Changes()
+def chg(dir: UPath):
+    return Changes(dir)
 
 
 @fixture
@@ -30,6 +30,10 @@ def infile(dir: UPath) -> UPath:
 def changed(chg: Changes, infile: UPath):
     chg.post(infile)
     return chg
+
+
+def test_chg(chg: Changes):
+    assert chg
 
 
 def test_chg_dir(dir: UPath):
