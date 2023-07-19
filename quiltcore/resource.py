@@ -146,9 +146,13 @@ class Resource:
     # URL Encoding of Physical Keys
     #
 
+    def encodings(self) -> dict:
+        """Return a dict of keys to encode, and their mappings."""
+        return self.cf.get_dict("quilt3/encoded")
+
     def encoded(self) -> bool:
         """Return True if Resource keys should be encoded."""
-        return len(self.cf.get_dict("quilt3/encoded")) > 0
+        return len(self.encodings()) > 0
 
     def encode(self, object) -> str:
         """Encode object as a string."""

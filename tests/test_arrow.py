@@ -1,5 +1,6 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from quiltcore import Table
 
 import numpy as np
 import pandas as pd
@@ -41,3 +42,9 @@ def test_arrow_s3():
         assert table
         print(table.schema)
         assert True
+
+def test_arrow_table():
+    path = Table.AsPath(TEST_MAN)
+    table = Table(path)
+    assert table
+
