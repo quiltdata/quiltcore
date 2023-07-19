@@ -48,7 +48,6 @@ class Table(Resource):
                     new_col,
                     self.decode_item(body.column(old_col)),
                 )
-
         return body
 
     def decode_item(self, item):

@@ -99,7 +99,6 @@ class ResourceKey(Resource):
 
     def hashable(self) -> bytes:
         source = self.to_hashable()
-        print(f"hashable: {source}")
         return self.ENCODE(source).encode("utf-8")  # type: ignore
 
     def source_hash(self) -> str:

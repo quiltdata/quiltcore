@@ -33,7 +33,6 @@ class Volume(ResourceKey):
         }
 
     def is_local(self) -> bool:
-        print(f"Volume.is_local: {self.uri}")
         return self.uri.startswith("file://") or "://" not in self.uri
 
     def _child_names(self, **kwargs) -> list[str]:

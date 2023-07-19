@@ -53,7 +53,6 @@ def test_entry_get(entry: Entry, tmpdir: UPath):
     assert not dest.exists()
 
     loc = str(dest)
-    print(loc)
     clone = entry.get(loc)
     assert TEST_KEY in str(clone.path)
     assert entry.path != clone.path

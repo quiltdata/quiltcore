@@ -90,12 +90,10 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
     assert encoded == man.head.hashable()
 
     for part in pkg._get_top_hash_parts(pkg._meta, pkg.walk()):
-        print(f"part: {part}")
         if "logical_key" in part:
             key = part["logical_key"]
             entry = man.get(key)
             hashable = entry.to_hashable()  # type: ignore
-            print(f"entry[{key}]: {hashable}")
             assert part == hashable
             part_encoded = json_encode(part).encode()
             assert part_encoded == entry.hashable()  # type: ignore
@@ -128,6 +126,7 @@ def test_spec_read(spec: Spec, man: Manifest):
     for key, value in spec.files().items():
         entry = man.get(key)
         assert entry
+        assert entry.name in spec.files().keys()
         assert isinstance(entry, Entry)
         opts = entry.read_opts()
         assert opts

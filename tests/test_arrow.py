@@ -40,8 +40,6 @@ def test_arrow_s3():
     with s3.open_input_stream(path) as f:
         table = pj.read_json(f)
         assert table
-        print(table.schema)
-        assert True
 
 def test_arrow_table():
     path = Table.AsPath(TEST_MAN)
@@ -62,4 +60,8 @@ def test_arrow_table():
     columns = table.cf.get_dict("quilt3/columns")
     for key in columns:
         assert key in schema.names
+    cn = schema.names[0]
+    col = body.column(cn)
+    assert col
+    assert col[0].as_py() == "ONLYME.md"
 
