@@ -18,11 +18,11 @@ resources:
     glob: "*"
   Manifest:
     child: Entry
-  Builder:
+  Delta:
     child: Entry
   Changes:
     child: Entry
-  Delta:
+  Builder:
     child: Entry
 quilt3:
   columns:
@@ -65,8 +65,6 @@ quilt3:
       format:
         user_meta: struct
       is_optional: true
-
-
   format:
     datetime: "%Y-%m-%d"
   hash_type: SHA256
