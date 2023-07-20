@@ -1,9 +1,8 @@
 from tempfile import TemporaryDirectory
 
-from pytest import fixture, raises, mark
+from pytest import fixture, raises
 from quiltcore import Builder, Manifest
 from upath import UPath
-
 
 FILENAME = "filename.txt"
 FILETEXT = "hello world"
@@ -20,7 +19,7 @@ def build(dir: UPath) -> Builder:
     """Why does row require a hash? And as a list?"""
     path = dir / FILENAME
     path.write_text(FILETEXT)
-    row = {'name': FILENAME, '_path': str(path), 'meta': {'content': "context"}}
+    row = {"name": FILENAME, "_path": str(path), "meta": {"content": "context"}}
     return Builder(dir, [row])
 
 
@@ -38,12 +37,12 @@ def test_build_raise(dir: UPath):
 
 def test_build_head(build: Builder):
     assert build.head
-    assert build.head.version == 'v0'  # type: ignore
-    assert build.head.message == build.cf.get('quilt3/headers/message')  # type: ignore
+    assert build.head.version == "v0"  # type: ignore
+    assert build.head.message == build.cf.get("quilt3/headers/message")  # type: ignore
     assert build.head.user_meta == {}  # type: ignore
     bd = build.head.to_dict()
     print(bd)
-    assert bd['user_meta'] == {}
+    assert bd["user_meta"] == {}
 
 
 def test_build_man(build: Builder):

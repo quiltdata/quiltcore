@@ -1,13 +1,13 @@
 from pathlib import Path
-from pytest import mark
 from tempfile import TemporaryDirectory
-from quiltcore import Table
 
 import numpy as np
 import pandas as pd
 import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
+from pytest import mark
+from quiltcore import Table
 
 from .conftest import TEST_MAN
 
@@ -42,6 +42,7 @@ def test_arrow_s3():
         table = pj.read_json(f)
         assert table
 
+
 @mark.skip("Need to understand Arrow schema")
 def test_arrow_schema():
     path = Table.AsPath(TEST_MAN)
@@ -75,4 +76,3 @@ def test_arrow_table():
     col = body.column(cn)
     assert col
     assert col[0].as_py() == "ONLYME.md"
-

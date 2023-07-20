@@ -7,7 +7,7 @@ class Spec(Config):
     CONFIG_FILE = "quiltspec.yaml"
     K_PKG = "config"
 
-    def __init__(self, name = None, update = None) -> None:
+    def __init__(self, name=None, update=None) -> None:
         super().__init__()
         self.name = name
         self.update = update

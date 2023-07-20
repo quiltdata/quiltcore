@@ -1,11 +1,7 @@
 import logging
 from pathlib import Path
 
-import pyarrow as pa  # type: ignore
-import pyarrow.compute as pc  # type: ignore
-import pyarrow.json as pj  # type: ignore
 
-from .header import Header
 from .resource_key import ResourceKey
 from .table import Table
 
@@ -52,7 +48,9 @@ class Manifest(ResourceKey):
             stem = place.replace(self.LOCAL, "")
             if len(root) == 0:
                 registry = self.args.get("registry")
-                logging.debug(f"_child_place.registry: {registry} for ->\n\t{self.args.keys()}")
+                logging.debug(
+                    f"_child_place.registry: {registry} for ->\n\t{self.args.keys()}"
+                )
                 if registry:
                     root = registry.root
                     logging.debug(f"_child_place.root: {root}")

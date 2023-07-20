@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 
 import pyarrow as pa  # type: ignore
@@ -73,7 +72,6 @@ class Table(Resource):
         names = self.body.column(col_name).to_pylist()
         return names
 
-
     def filter(self, col_name: str, key: str) -> dict:
         """Return the dict for a child resource."""
         # TODO: cache to avoid continually re-calcluating
@@ -82,4 +80,3 @@ class Table(Resource):
             raise KeyError(f"Key [{key}] not found in {col_name} of {self.path}")
         row = rows.to_pydict()
         return row
-   

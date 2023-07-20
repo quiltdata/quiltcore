@@ -1,6 +1,6 @@
 from tempfile import TemporaryDirectory
 
-from pytest import fixture, raises, mark
+from pytest import fixture, raises
 from quiltcore import Changes, Delta, Entry
 from upath import UPath
 
@@ -99,7 +99,7 @@ def test_chg_list(changed: Changes):
 def test_chg_str(changed: Changes):
     y = str(changed)
     assert f"{FILENAME}:" in y
-    
+
 
 def test_chg_grouped(changed: Changes):
     group = changed.grouped_rows()
@@ -113,7 +113,7 @@ def test_chg_grouped(changed: Changes):
     assert isinstance(item, dict)
     assert item[Delta.KEY_NAM] == FILENAME
     assert FILENAME in item[Delta.KEY_PATH]
-    
+
 
 def test_chg_man(changed: Changes, infile: UPath):
     changed.post(infile)
@@ -122,10 +122,10 @@ def test_chg_man(changed: Changes, infile: UPath):
     assert man.list()
     assert man.get(infile.name)
 
+
 def test_chg_man_dir(chg: Changes):
     subdir = chg.path / "subdir"
     subdir.mkdir()
     subfile = subdir / FILENAME
     subfile.write_text(FILETEXT)
     chg.post(subdir)
-

@@ -111,7 +111,7 @@ class Volume(ResourceKey):
     #   - copies necessary Entries onto Volume (unless --nocopy and non-local)
     #   - calculates hash and creates Namespaced folders
     #   - copies Manifest onto Volume
-    #   
+    #
     #  OPTS:
     #  - pkg="PKG/NAME": namespace to register manifest
     #  - force=True: overwrite any existing manifest
@@ -142,4 +142,3 @@ class Volume(ResourceKey):
         entries = [entry.get(dest) for entry in man.list()]
         self.WriteManifest(man.head, entries, path)  # type: ignore
         return name
-    

@@ -1,20 +1,20 @@
+from json import JSONEncoder
 from tempfile import TemporaryDirectory
 
-from json import JSONEncoder
-
-from pytest import fixture, mark
+from pytest import fixture
 from quilt3 import Package  # type: ignore
 from quiltcore import Changes, Entry, Header, Manifest, Registry, Spec, Volume
 from upath import UPath
 
 TIME_NOW = Registry.Now()
 
-@fixture#(scope="session")
+
+@fixture  # (scope="session")
 def spec():
     return Spec()
 
 
-@fixture#(scope="session")
+@fixture  # (scope="session")
 def pkg(spec: Spec) -> Package:
     return Package.browse(
         spec.namespace(), registry=spec.registry(), top_hash=spec.hash()
@@ -122,7 +122,6 @@ def test_spec_read(spec: Spec, man: Manifest):
         assert key in head.user_meta  # type: ignore
         assert head.user_meta[key] == value  # type: ignore
 
-
     for key, value in spec.files().items():
         entry = man.get(key)
         assert entry
@@ -137,7 +136,7 @@ def test_spec_read(spec: Spec, man: Manifest):
             assert entry.user_meta == meta  # type: ignore
 
 
-#@mark.skip(reason="pending manifest creation")
+# @mark.skip(reason="pending manifest creation")
 def test_spec_write(spec_new: Spec, tmpdir: UPath):
     """
     Ensure quilt3 can read manifests created by quiltcore
@@ -155,16 +154,16 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
         path = tmpdir / filename
         path.write_text(filedata)
         print(f"file[{filename}]: {filedata}")
-    pkg_metadata = spec_new.metadata()
+    spec_new.metadata()
     # TODO: Object-level Metadata
-    
+
     chg = Changes(tmpdir)
     assert chg
     delta = chg.post(tmpdir)
     rows = chg.grouped_rows()
     print(f"rows: {rows}")
     assert delta
-    man = chg.to_manifest() # TODO: user_meta=pkg_metadata
+    man = chg.to_manifest()  # TODO: user_meta=pkg_metadata
     assert man
     print(f"man[{man.name}]: {man.to_text()}")
 
@@ -176,7 +175,6 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     }
     vol.put(man, **opts)
     # assert False
-
 
 
 def test_spec_workflow():

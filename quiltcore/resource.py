@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from time import time
-from typing import Generator
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import quiltcore
@@ -58,7 +56,6 @@ class Resource:
     def Now() -> str:
         "Return integer timestamp."
         return str(int(time()))
-
 
     @staticmethod
     def GetVersion(uri: str) -> str:

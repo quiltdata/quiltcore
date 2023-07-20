@@ -1,12 +1,10 @@
 from itertools import groupby
-
 from pathlib import Path
 
 from yaml import dump
 
 from .builder import Builder
 from .delta import Delta
-from .header import Header
 from .manifest import Manifest
 from .resource import Resource
 from .resource_key import ResourceKey
@@ -21,7 +19,6 @@ class Changes(ResourceKey):
 
     Optional: track changes to a directory?
     """
-
 
     def __init__(self, path, **kwargs):
         super().__init__(path, **kwargs)
@@ -82,7 +79,7 @@ class Changes(ResourceKey):
     def _child_names(self, **kwargs) -> list[str]:
         """Return keys for each change."""
         return list(self.keystore.keys())
-    
+
     #
     # Create Manifest
     #
@@ -90,9 +87,8 @@ class Changes(ResourceKey):
     def grouped_rows(self) -> dict[str, list[dict]]:
         rows = [row for delta in self.keystore.values() for row in delta.to_dicts()]
         rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
-        grouped = {k: list(v) for k,v in groupby(rows, lambda row: row[Delta.KEY_ACT])}
+        grouped = {k: list(v) for k, v in groupby(rows, lambda row: row[Delta.KEY_ACT])}
         return grouped
-
 
     def to_manifest(self, **kwargs) -> Manifest:
         """

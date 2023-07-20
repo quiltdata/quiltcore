@@ -36,9 +36,7 @@ def test_vol_get(vol):
     assert isinstance(man, Manifest)
     vol.delete(TEST_PKG)
 
-    opts = {
-        vol.KEY_HSH: TEST_HASH
-    }
+    opts = {vol.KEY_HSH: TEST_HASH}
     man2 = vol.get(TEST_PKG, **opts)
     assert isinstance(man2, Manifest)
     vol.delete(TEST_PKG)

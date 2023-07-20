@@ -32,7 +32,7 @@ class ResourceKey(Resource):
         return multihash.removeprefix(ResourceKey.DEFAULT_MH_PREFIX)
 
     @staticmethod
-    def RowValue(row: dict, key: str, default = None):
+    def RowValue(row: dict, key: str, default=None):
         value = row.get(key, None)
         logging.debug(f"get_value[{key}]: {value} from {row}")
         return value[0] if value else default
@@ -45,7 +45,6 @@ class ResourceKey(Resource):
             mh = opts[cls.KEY_MH]
             return cls.AsHash(mh)
         return ""
-    
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -87,7 +86,6 @@ class ResourceKey(Resource):
         path = self.key_path(key, args)
         merged = {**self.args, **args}
         return self.klass(path, **merged)
-
 
     #
     # Hash creation
@@ -139,7 +137,6 @@ class ResourceKey(Resource):
     def hashable(self) -> bytes:
         source = self.to_hashable()
         return self.ENCODE(source).encode("utf-8")  # type: ignore
-
 
     def verify(self, bstring: bytes) -> bool:
         """Verify that multihash digest of bytes match the multihash"""

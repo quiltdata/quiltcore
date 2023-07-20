@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from pytest import fixture
 
 TEST_BKT = "s3://udp-spec"
 LOCAL_VOL = "tests/example"
