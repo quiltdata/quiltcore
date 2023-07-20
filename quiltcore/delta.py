@@ -38,7 +38,7 @@ class Delta(ResourceKey):
         return {
             self.KEY_ACT: self.action,
             self.KEY_NAM: self.name,
-            self.KEY_PATH: self.path,
+            self.KEY_PATH: str(self.path),
             self.KEY_PRE: self.prefix,
         }
     

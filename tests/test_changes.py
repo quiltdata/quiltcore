@@ -101,9 +101,22 @@ def test_chg_str(changed: Changes):
     assert f"{FILENAME}:" in y
     
 
-@mark.skip(reason="pending manifest creation")
+def test_chg_grouped(changed: Changes):
+    group = changed.grouped_rows()
+    assert isinstance(group, dict)
+    assert len(group) == 1
+    adds = group[Delta.KEY_ADD]
+    assert len(adds) == 1
+    print(adds)
+    item = adds[0]
+    assert isinstance(item, dict)
+    assert item[Delta.KEY_NAM] == FILENAME
+    assert FILENAME in item[Delta.KEY_PATH]
+    
+
 def test_chg_man(changed: Changes, infile: UPath):
     changed.post(infile)
     man = changed.to_manifest()
     assert man
+    assert man.list()
     assert man.get(infile.name)

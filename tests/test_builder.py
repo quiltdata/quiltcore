@@ -17,13 +17,10 @@ def dir():
 
 @fixture
 def build(dir: UPath) -> Builder:
+    """Why does row require a hash? And as a list?"""
     path = dir / FILENAME
     path.write_text(FILETEXT)
-    hash = {
-        'value': 'abc123',
-        'type': Builder.DEFAULT_HASH_TYPE
-    }
-    row = {'name': 'foo', '_path': str(path), 'hash': [hash], 'meta': {'content': "context"}}
+    row = {'name': FILENAME, '_path': str(path), 'meta': {'content': "context"}}
     return Builder(dir, [row])
 
 
@@ -52,7 +49,12 @@ def test_build_head(build: Builder):
 def test_build_man(build: Builder):
     man = build.to_manifest()
     assert isinstance(man, Manifest)
-    print(man.head.to_dict())
     assert man.head.to_dict() == build.head.to_dict()
+
     mlist = man.list()
     assert len(mlist) == 1
+    entry = mlist[0]
+    assert entry.name == FILENAME
+
+    hash = man.calc_hash(man.head)
+    assert hash == man.name

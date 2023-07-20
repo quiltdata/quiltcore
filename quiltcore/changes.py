@@ -87,6 +87,13 @@ class Changes(ResourceKey):
     # Create Manifest
     #
 
+    def grouped_rows(self) -> dict[str, list[dict]]:
+        rows = [delta.to_dict() for delta in self.keystore.values()]
+        rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
+        grouped = {k: list(v) for k,v in groupby(rows, lambda row: row[Delta.KEY_ACT])}
+        return grouped
+
+
     def to_manifest(self, **kwargs) -> Manifest:
         """
         Return a Manifest for this change set.
@@ -99,10 +106,7 @@ class Changes(ResourceKey):
         2. Create a Manifest from the entries (adding metadata if present)
 
         """
-        print(f"Changes.to_manifest: {self.path} exists: {self.path.exists()}")
-        rows = [delta.to_dict() for delta in self.keystore.values()]
-        rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
-        grouped = {k: v for k,v in groupby(rows, lambda row: row[Delta.KEY_ACT]) }
-        adds = list(grouped.get(Delta.KEY_ADD))  # type: ignore
-        build = Builder(self.path, adds, kwargs, rm=grouped.get(Delta.KEY_RM), **self.args)
+        grouped = self.grouped_rows()
+        adds = grouped.get(Delta.KEY_ADD)
+        build = Builder(self.path, adds, kwargs, rm=grouped.get(Delta.KEY_RM), **self.args)  # type: ignore
         return build.to_manifest()
