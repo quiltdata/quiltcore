@@ -161,14 +161,21 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     chg = Changes(tmpdir)
     assert chg
     delta = chg.post(tmpdir)
+    rows = chg.grouped_rows()
+    print(f"rows: {rows}")
     assert delta
     man = chg.to_manifest() # TODO: user_meta=pkg_metadata
     assert man
-    print(f"man: {man.to_text()}")
+    print(f"man[{man.name}]: {man.to_text()}")
 
     reg = UPath(spec_new.registry())
     vol = Volume(reg)
-    #vol.put(man, namespace=spec_new.namespace())
+    opts = {
+        vol.KEY_NS: spec_new.namespace(),
+        vol.KEY_FRC: True,
+    }
+    vol.put(man, **opts)
+    # assert False
 
 
 

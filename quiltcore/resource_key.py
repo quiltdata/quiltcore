@@ -25,6 +25,7 @@ class ResourceKey(Resource):
     KEY_MH = "multihash"
     KEY_HSH = "hash"
     KEY_TAG = "tag"
+    KEY_FRC = "force"
 
     @staticmethod
     def AsHash(multihash: str) -> str:
@@ -32,9 +33,8 @@ class ResourceKey(Resource):
 
     @staticmethod
     def RowValue(row: dict, key: str, default = None):
-        print(f"get_value: {key} from {row}")
         value = row.get(key, None)
-        print(f"get_value.value: {value} of {type(value)}")
+        logging.debug(f"get_value[{key}]: {value} from {row}")
         return value[0] if value else default
 
     @classmethod
