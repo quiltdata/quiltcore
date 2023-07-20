@@ -104,6 +104,7 @@ def test_chg_str(changed: Changes):
 def test_chg_grouped(changed: Changes):
     group = changed.grouped_rows()
     assert isinstance(group, dict)
+    print(group)
     assert len(group) == 1
     adds = group[Delta.KEY_ADD]
     assert len(adds) == 1
@@ -120,3 +121,11 @@ def test_chg_man(changed: Changes, infile: UPath):
     assert man
     assert man.list()
     assert man.get(infile.name)
+
+def test_chg_man_dir(chg: Changes):
+    subdir = chg.path / "subdir"
+    subdir.mkdir()
+    subfile = subdir / FILENAME
+    subfile.write_text(FILETEXT)
+    chg.post(subdir)
+

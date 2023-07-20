@@ -88,7 +88,7 @@ class Changes(ResourceKey):
     #
 
     def grouped_rows(self) -> dict[str, list[dict]]:
-        rows = [delta.to_dict() for delta in self.keystore.values()]
+        rows = [row for delta in self.keystore.values() for row in delta.to_dicts()]
         rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
         grouped = {k: list(v) for k,v in groupby(rows, lambda row: row[Delta.KEY_ACT])}
         return grouped

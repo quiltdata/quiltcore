@@ -37,8 +37,20 @@ class Delta(ResourceKey):
     def to_dict(self) -> dict:
         return {
             self.KEY_ACT: self.action,
-            self.KEY_NAM: self.name,
+            self.KEY_NAM: f"{self.prefix/self.name}" if self.prefix else self.name,
             self.KEY_PATH: str(self.path),
-            self.KEY_PRE: self.prefix,
         }
     
+    def to_dicts(self) -> list[dict]:
+        if not self.path.is_dir():
+            return [self.to_dict()]
+        result = []    
+        for obj in self.path.rglob('*'):
+            row = {
+                self.KEY_ACT: self.action,
+                self.KEY_NAM: self.name,
+                self.KEY_PATH: str(obj),                
+            }
+            result.append(row)
+        return result
+        

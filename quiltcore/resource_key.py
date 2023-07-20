@@ -26,8 +26,12 @@ class ResourceKey(Resource):
     KEY_HSH = "hash"
     KEY_TAG = "tag"
 
-    @classmethod
-    def RowValue(cls, row: dict, key: str, default = None):
+    @staticmethod
+    def AsHash(multihash: str) -> str:
+        return multihash.removeprefix(ResourceKey.DEFAULT_MH_PREFIX)
+
+    @staticmethod
+    def RowValue(row: dict, key: str, default = None):
         print(f"get_value: {key} from {row}")
         value = row.get(key, None)
         print(f"get_value.value: {value} of {type(value)}")
@@ -39,8 +43,9 @@ class ResourceKey(Resource):
             return opts[cls.KEY_HSH]
         if cls.KEY_MH in opts:
             mh = opts[cls.KEY_MH]
-            return mh.removeprefix(cls.DEFAULT_MH_PREFIX)
+            return cls.AsHash(mh)
         return ""
+    
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -108,7 +113,7 @@ class ResourceKey(Resource):
         """
         Return the hash of the manifest.
         """
-        return self.calc_multihash(head).removeprefix(self.DEFAULT_MH_PREFIX)
+        return self.AsHash(self.calc_multihash(head))
 
     #
     # Hash retreival

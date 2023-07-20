@@ -32,9 +32,6 @@ class Builder(ResourceKey):
         """Return the dict for a child resource."""
         return self.keystore[key]
 
-    def manifest_path(self) -> Path:
-        return self.path / self.hash
-
     def to_manifest(self, **kwargs) -> Manifest:
         """Create manifest file and return Manifest"""
         hash = self.calc_hash(self.head)

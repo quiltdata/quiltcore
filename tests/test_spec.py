@@ -100,7 +100,7 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
             encoded += part_encoded
 
     man_encoded = man.digest(encoded)
-    man_strip = man_encoded.removeprefix(Manifest.DEFAULT_MH_PREFIX)
+    man_strip = Manifest.AsHash(man_encoded)
     assert q3_hash == man_strip, "q3_hash != digest(encoded).removeprefix"
     assert q3_hash == man.calc_hash(man.head), "q3_hash != man.calc_hash()"
 
@@ -137,7 +137,7 @@ def test_spec_read(spec: Spec, man: Manifest):
             assert entry.user_meta == meta  # type: ignore
 
 
-@mark.skip(reason="pending manifest creation")
+#@mark.skip(reason="pending manifest creation")
 def test_spec_write(spec_new: Spec, tmpdir: UPath):
     """
     Ensure quilt3 can read manifests created by quiltcore
@@ -154,6 +154,7 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     for filename, filedata in spec_new.files().items():
         path = tmpdir / filename
         path.write_text(filedata)
+        print(f"file[{filename}]: {filedata}")
     pkg_metadata = spec_new.metadata()
     # TODO: Object-level Metadata
     
@@ -167,7 +168,7 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
 
     reg = UPath(spec_new.registry())
     vol = Volume(reg)
-    vol.put(man, namespace=spec_new.namespace())
+    #vol.put(man, namespace=spec_new.namespace())
 
 
 
