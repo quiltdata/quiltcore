@@ -4,7 +4,7 @@ from pytest import fixture, raises
 from quiltcore import Manifest, Volume
 from upath import UPath
 
-from .conftest import TEST_BKT, TEST_PKG, TEST_VOL
+from .conftest import TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL
 
 
 @fixture
@@ -22,6 +22,7 @@ def test_vol(vol):
     assert vol
     assert vol.cf
     assert "volume" in vol.args
+    assert vol.is_local()
 
 
 def test_vol_reg(vol):
@@ -33,9 +34,18 @@ def test_vol_reg(vol):
 def test_vol_get(vol):
     man = vol.get(TEST_PKG)
     assert isinstance(man, Manifest)
+    vol.delete(TEST_PKG)
+
+    opts = {vol.KEY_HSH: TEST_HASH}
+    man2 = vol.get(TEST_PKG, **opts)
+    assert isinstance(man2, Manifest)
+    vol.delete(TEST_PKG)
 
     with raises(KeyError):
         vol.get("invalid")
+
+    with raises(KeyError):
+        vol.delete(TEST_PKG)
 
 
 def test_vol_list(vol):
@@ -56,6 +66,7 @@ def test_vol_man_latest(vol):
 
 def test_vol_put(dir: UPath):  # noqa: F401
     v_s3 = Volume.FromURI(TEST_BKT)
+    assert not v_s3.is_local()
     pkg_s3 = v_s3.registry.path / TEST_PKG
     assert pkg_s3.exists()
     man = v_s3.get(TEST_PKG)
@@ -67,8 +78,10 @@ def test_vol_put(dir: UPath):  # noqa: F401
 
     man2 = v_tmp.put(man)
     assert pkg_tmp.exists()
-
     assert man2.path.exists()
+
+    hash = man2.calc_multihash(man2.head)  # type: ignore
+    # assert hash == man2.name
 
     latest = pkg_tmp / Volume.TAG_DEFAULT
     assert latest.exists()

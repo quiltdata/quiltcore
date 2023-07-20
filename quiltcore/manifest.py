@@ -1,11 +1,9 @@
 import logging
 from pathlib import Path
 
-import pyarrow as pa  # type: ignore
-import pyarrow.compute as pc  # type: ignore
-import pyarrow.json as pj  # type: ignore
 
 from .resource_key import ResourceKey
+from .table import Table
 
 
 class Manifest(ResourceKey):
@@ -17,54 +15,56 @@ class Manifest(ResourceKey):
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         try:
-            self.body = self.setup_table()
+            self.table = Table(path, **kwargs)
+            self.head = self.table.head
         except FileNotFoundError:
             logging.warning(f"Manifest not found: {path}")
+        self.name_key = "name" if self.encoded() else self.kName
+        self.places_key = "places" if self.encoded() else self.kPlaces
+        self._setup_hash()
 
-    def hash(self) -> str:
+    #
+    # Hash functions
+    #
+
+    def source_hash(self) -> str:
+        """
+        Return the hash of the contents.
+        """
         return self.name
-
-    #
-    # Parse Table
-    #
-
-    def header_keys(self) -> list[str]:
-        headers = self.cf.get_dict("quilt3/headers")
-        return list(headers.keys())
-
-    def header_dict(self) -> dict:
-        return {k: getattr(self, k) for k in self.header_keys()}
-
-    def setup_table(self) -> pa.Table:
-        """
-        Read the manifest into a pyarrow Table.
-        Extract header values into attributes.
-        Return the Table without header row and columns
-        """
-        with self.path.open(mode="rb") as fi:
-            self.table = pj.read_json(fi)
-        first = self.table.take([0]).to_pydict()
-        keys = self.header_keys()
-        for header in keys:
-            setattr(self, header, first[header][0])
-        return self.table.drop_columns(keys).slice(1)
 
     #
     # Private Methods for child resources
     #
 
     def _child_names(self, **kwargs) -> list[str]:
-        """List all child resources."""
-        names = self.body.column(self.kName).to_pylist()
-        return names
+        """List all child resource names."""
+        return self.table.column(self.name_key)
+
+    def _child_place(self, places, root="") -> str:
+        """Return the place for a child resource."""
+        place = places[0] if isinstance(places, list) else places
+        if place.startswith(self.LOCAL):
+            stem = place.replace(self.LOCAL, "")
+            if len(root) == 0:
+                registry = self.args.get("registry")
+                logging.debug(
+                    f"_child_place.registry: {registry} for ->\n\t{self.args.keys()}"
+                )
+                if registry:
+                    root = registry.root
+                    logging.debug(f"_child_place.root: {root}")
+            place = Path(root) / stem
+        return str(place)
 
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         # TODO: cache to avoid continually re-calcluating
-        rows = self.body.filter(pc.field(self.kName) == key)
-        if rows.num_rows == 0:
-            raise KeyError(f"Key [{key}] not found in {self.kName} of {self.path}")
-        row = rows.to_pydict()
-        place = row[self.kPlaces][0][0]
+        row = self.table.filter(self.name_key, key)
+        places = row[self.places_key][0]
+        place = self._child_place(places)
         row[self.KEY_PATH] = place
+        v = self.GetVersion(place)
+        if len(v) > 0:
+            row[self.KEY_VER] = v
         return row

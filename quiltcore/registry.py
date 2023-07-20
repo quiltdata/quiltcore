@@ -15,11 +15,11 @@ class Registry(ResourcePath):
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.root = path
-        self.base = self.setup_dir(path, "quilt3/dirs/config")
-        self.path = self.setup_dir(self.base, "quilt3/dirs/names")
-        self.manifests = self.setup_dir(self.base, "quilt3/dirs/manifests")
+        self.base = self._setup_dir(path, "quilt3/dirs/config")
+        self.path = self._setup_dir(self.base, "quilt3/dirs/names")
+        self.manifests = self._setup_dir(self.base, "quilt3/dirs/manifests")
 
-    def setup_dir(self, path: Path, key: str) -> Path:
+    def _setup_dir(self, path: Path, key: str) -> Path:
         """Form dir and create if it does not exist."""
         dir = path / self.cf.get_path(key)
         if not dir.exists():
@@ -33,12 +33,12 @@ class Registry(ResourcePath):
         """Link manifest into namespace"""
         if not isinstance(res, Manifest):
             raise TypeError(f"Expected Manifest, got {type(res)}")
-        hash = res.hash()
-        name = kwargs[self.KEY_NAME]
+        hash = res.source_hash()
+        name = kwargs[self.KEY_NS]
         name_dir = self.path / name
         name_dir.mkdir(parents=True, exist_ok=True)
 
-        tag = self.Timestamp()
+        tag = self.Now()
         tag_file = name_dir / tag
         tag_file.write_text(hash)
 

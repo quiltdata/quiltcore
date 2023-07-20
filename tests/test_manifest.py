@@ -1,30 +1,59 @@
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
 from pytest import fixture
-from quiltcore import Entry, Manifest
+from quiltcore import Entry, Header, Manifest, Registry
 from upath import UPath
 
-from .conftest import TEST_KEY, TEST_OBJ_HASH, TEST_SIZE, TEST_TABLE
+from .conftest import TEST_KEY, TEST_MAN, TEST_OBJ_HASH, TEST_S3VER, TEST_SIZE
+
+K_REG = "registry"
+
+
+@fixture
+def tmpdir():
+    with TemporaryDirectory() as tmpdirname:
+        yield UPath(tmpdirname)
 
 
 @fixture
 def man():
-    path = UPath(TEST_TABLE)
-    return Manifest(path)
+    opts = {}
+    path = Manifest.AsPath(TEST_MAN)
+    return Manifest(path, **opts)
 
 
 def test_man(man: Manifest):
     assert man
-    assert man.version == "v0"  # type: ignore
+    assert man.table
     assert "manifest" in man.args
 
 
-def test_man_table(man: Manifest):
-    assert man.table
-    assert man.body
-    assert man.body.num_rows == 1
-    schema = man.body.schema
-    assert schema
-    columns = man.cf.get_dict("quilt3/columns")
-    assert list(columns.keys()) == schema.names
+def test_man_head(man: Manifest):
+    head = man.head
+    assert head
+    assert isinstance(head, Header)
+
+    hashable = head.to_hashable()
+    assert hashable
+    assert isinstance(hashable, dict)
+    assert hashable["user_meta"]["Author"] == "Ernest"
+
+
+def test_man_child_place():
+    rootdir = Path.cwd()
+    root = str(rootdir)
+    opts = {K_REG: Registry(rootdir)}
+    path = Manifest.AsPath(TEST_MAN)
+    man = Manifest(path, **opts)
+    assert K_REG in man.args
+
+    assert TEST_S3VER == man._child_place(TEST_S3VER)
+    assert TEST_S3VER == man._child_place([TEST_S3VER])
+    TEST_LOCAL = man.LOCAL + "place"
+    TEST_GLOBAL = str(rootdir / "place")
+    print(man.args.keys())
+    assert man._child_place(TEST_LOCAL, root) == TEST_GLOBAL
 
 
 def test_man_child_dict(man: Manifest):
@@ -63,3 +92,8 @@ def test_man_get(man: Manifest):
     assert isinstance(entry, Entry)
     assert TEST_KEY in str(entry.path)
     # TODO: assert entry.version == TEST_VER
+
+
+def test_man_hash(man: Manifest):
+    hash = man.calc_hash(man.head)
+    assert hash == man.name

@@ -15,8 +15,8 @@ def dir():
 
 
 @fixture
-def chg():
-    return Changes()
+def chg(dir: UPath):
+    return Changes(dir)
 
 
 @fixture
@@ -28,19 +28,23 @@ def infile(dir: UPath) -> UPath:
 
 @fixture
 def changed(chg: Changes, infile: UPath):
-    chg.post(str(infile))
+    chg.post(infile)
     return chg
+
+
+def test_chg(chg: Changes):
+    assert chg
 
 
 def test_chg_dir(dir: UPath):
     chg = Changes(dir)
-    assert chg.path == dir / Changes.MANIFEST_FILE
+    assert chg.path == dir
 
 
 def test_chg_file(dir: UPath):
     outfile = dir / "outfile.json"
-    chg = Changes(outfile)
-    assert chg.path == outfile
+    with raises(ValueError):
+        Changes(outfile)
 
 
 def test_chg_infile(infile: UPath):
@@ -65,9 +69,9 @@ def test_chg_delta_rm(infile: UPath):
     assert delta.name == "bar/foo.md"
 
 
-def test_chg_put(chg: Changes, infile: UPath):
+def test_chg_post(chg: Changes, infile: UPath):
     test_key = "largo"
-    chg.post(str(infile), name=test_key)
+    chg.post(infile, name=test_key)
     delta = chg.get_delta(test_key)
     assert delta.name == test_key
 
@@ -95,3 +99,33 @@ def test_chg_list(changed: Changes):
 def test_chg_str(changed: Changes):
     y = str(changed)
     assert f"{FILENAME}:" in y
+
+
+def test_chg_grouped(changed: Changes):
+    group = changed.grouped_rows()
+    assert isinstance(group, dict)
+    print(group)
+    assert len(group) == 1
+    adds = group[Delta.KEY_ADD]
+    assert len(adds) == 1
+    print(adds)
+    item = adds[0]
+    assert isinstance(item, dict)
+    assert item[Delta.KEY_NAM] == FILENAME
+    assert FILENAME in item[Delta.KEY_PATH]
+
+
+def test_chg_man(changed: Changes, infile: UPath):
+    changed.post(infile)
+    man = changed.to_manifest()
+    assert man
+    assert man.list()
+    assert man.get(infile.name)
+
+
+def test_chg_man_dir(chg: Changes):
+    subdir = chg.path / "subdir"
+    subdir.mkdir()
+    subfile = subdir / FILENAME
+    subfile.write_text(FILETEXT)
+    chg.post(subdir)

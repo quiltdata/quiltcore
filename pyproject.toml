@@ -14,11 +14,12 @@ un-yaml = ">=0.3.1"
 pyarrow = "^12.0.0"
 pandas = "^2.0.2"
 pytest-codeblocks = "^0.16.1"
-universal-pathlib = "^0.0.23"
+universal-pathlib = "^0.0.24"
 s3fs = "^2023.6.0"
 pandas-stubs = "^2.0.2.230605"
 multiformats = "^0.2.1"
-jsonlines = "^3.1.0"
+jsonlines = "1.2.0"
+quilt3 = "^5.3.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -34,3 +35,12 @@ types-tzlocal = "^5.0.1.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest-watcher]
+now = true
+delay = 0.5
+runner = "pytest"
+runner_args = []
+patterns = ["*.py", "*.yaml", "Makefile", "pyproject.toml", "poetry.lock", "3210f808ac0467726439191eea3bd0a66ab261122ee55758367620fedc77fe08"]
+ignore_patterns = []

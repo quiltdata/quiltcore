@@ -1,10 +1,9 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from time import time
-from typing import Generator
-from urllib.parse import quote, unquote
+from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import quiltcore
 from upath import UPath
@@ -22,26 +21,31 @@ class Resource:
     DEFAULT_HASH_TYPE = "SHA256"
     KEY_GLOB = "glob"
     KEY_KEY = "_key"
-    KEY_NAME = f"namespace.{KEY_KEY}"
+    KEY_META = "meta"
+    KEY_MSG = "msg"
+    KEY_NS = f"namespace.{KEY_KEY}"
     KEY_PATH = "_path"
+    KEY_VER = "versionId"
+    KEY_S3VER = "version_id"
+    KEY_SELF = "."
     MANIFEST = "_manifest"
     TAG_DEFAULT = "latest"
     UNQUOTED = "/:"
+    LOCAL = "file://./"
 
     @staticmethod
-    def TempGen(filename: str = "") -> Generator[Path, None, None]:
-        """Return generator to a temporary directory."""
-        with TemporaryDirectory() as tmpdirname:
-            temp_path = (
-                Path(tmpdirname) / filename if len(filename) > 0 else Path(tmpdirname)
-            )
-            yield temp_path
+    def AsPath(key: str) -> UPath:
+        """Return a Path from a string."""
+        if not isinstance(key, str):
+            raise TypeError(f"[{key}]Expected str, got {type(key)}")
+        return UPath(key, version_aware=True)
 
     @staticmethod
-    def TempDir(filename: str = "") -> Path:
-        for path in Resource.TempGen(filename):
-            return path
-        return Path(".")  # should never happen
+    def AsStr(object) -> str:
+        """Return a string from a simple object."""
+        if not isinstance(object, str):
+            raise TypeError(f"Expected str, got {type(object)}:{object}")
+        return object
 
     @staticmethod
     def ClassFromName(name: str) -> type:
@@ -49,9 +53,19 @@ class Resource:
         return getattr(quiltcore, name)
 
     @staticmethod
-    def Timestamp() -> str:
+    def Now() -> str:
         "Return integer timestamp."
         return str(int(time()))
+
+    @staticmethod
+    def GetVersion(uri: str) -> str:
+        """Extract `versionId` from query."""
+        query = urlparse(uri).query
+        if not query:
+            return ""
+        qs = parse_qs(query)
+        vlist = qs.get(Resource.KEY_VER)
+        return vlist[0] if vlist else ""
 
     def __init__(self, path: Path, **kwargs):
         self.path = path
@@ -64,7 +78,8 @@ class Resource:
         if key is not None:
             self.args[f"{self.class_key}.{self.KEY_KEY}"] = key
         self.cf = Config()
-        self.setup_params()
+        assert "s3:/udp" not in str(path)
+        self._setup_params()
 
     def __repr__(self):
         return f"<{self.class_name}({self.path}, {self.args})>"
@@ -79,7 +94,7 @@ class Resource:
         """Return a param."""
         return self.params[key] if key in self.params else default  # type: ignore
 
-    def setup_params(self):
+    def _setup_params(self):
         """Load Resource-specific params from config file."""
         self.params = self.cf.get_dict(f"resources/{self.class_name}")
         self.glob = self.param("glob", "*")
@@ -87,24 +102,50 @@ class Resource:
         self.klass = Resource.ClassFromName(_child)
 
     #
+    # Read Bytes/Text
+    #
+
+    def read_opts(self) -> dict:
+        if self.KEY_VER in self.args:
+            opts = {self.KEY_S3VER: self.args[self.KEY_VER]}
+            logging.debug(f"read_opts: {opts}")
+            return opts
+        return {}
+
+    def to_bytes(self) -> bytes:
+        """Return bytes from path."""
+        opts = self.read_opts()
+        if len(opts) > 0:
+            with self.path.open(mode="rb", **opts) as fi:
+                return fi.read()
+        return self.path.read_bytes()
+
+    def to_text(self, strip=True) -> str:
+        """Return text from path."""
+        text = self.to_bytes().decode("utf-8")
+        return text.strip() if strip else text
+
+    #
     # URL Encoding of Physical Keys
     #
 
+    def encodings(self) -> dict:
+        """Return a dict of keys to encode, and their mappings."""
+        return self.cf.get_dict("quilt3/encoded")
+
     def encoded(self) -> bool:
         """Return True if Resource keys should be encoded."""
-        return self.cf.get_bool("quilt3/urlencode")
+        return len(self.encodings()) > 0
 
-    def encode(self, path: Path) -> str:
-        """Encode path as a string."""
-        key = str(path)
+    def encode(self, object) -> str:
+        """Encode object as a string."""
+        key = self.AsStr(object)
         return quote(key, safe=self.UNQUOTED) if self.encoded() else key
 
-    def decode(self, key: str) -> Path:
-        """Decode string into a Path."""
-        if not self.encoded():
-            return UPath(key)
-        decoded = unquote(key)
-        return UPath(decoded)
+    def decode(self, object) -> str:
+        """Decode object as a string."""
+        key = self.AsStr(object)
+        return unquote(key) if self.encoded() else key
 
     #
     # Abstract HTTP Methods
@@ -120,10 +161,6 @@ class Resource:
 
     def patch(self, res: Resource, **kwargs) -> "Resource":
         """Update and return a child resource."""
-        raise NotImplementedError
-
-    def post(self, key: str, **kwargs) -> "Resource":
-        """Create and return a child resource using key."""
         raise NotImplementedError
 
     def put(self, res: Resource, **kwargs) -> "Resource":

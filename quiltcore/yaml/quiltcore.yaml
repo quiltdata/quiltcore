@@ -18,6 +18,8 @@ resources:
     glob: "*"
   Manifest:
     child: Entry
+  Builder:
+    child: Entry
   Changes:
     child: Entry
   Delta:
@@ -35,12 +37,29 @@ quilt3:
     config: .quilt
     names: named_packages
     manifests: packages
+  encoded:
+    logical_key: name
+    physical_keys: places
+  format:
+    datetime: "%Y-%m-%d"
   hash_type: SHA256
   hash: hash
   headers:
-    version: string
-    message: string
+    version: v0
+    message: commit message
+    user_meta: {}
+  meta: user_meta
   mime_type: application/ld+json
   name: logical_key
   places: physical_keys
-  urlencode: True
+  schema:
+    version: string
+    user_meta: null
+    message: string
+    logical_key: string
+    physical_keys: [string]
+    size: int64
+    hash:
+      type: string
+      value: string
+    meta: struct<>

@@ -1,8 +1,9 @@
+from itertools import groupby
 from pathlib import Path
 
-from upath import UPath
 from yaml import dump
 
+from .builder import Builder
 from .delta import Delta
 from .manifest import Manifest
 from .resource import Resource
@@ -14,35 +15,15 @@ class Changes(ResourceKey):
     Track Changes to a new or existing Manifest
     Add a file: put(path, action="add", key="filename.txt", prefix="./")
     Use 'get' and 'list' to return the Deltas
+    Create Manifest in scratch directory
 
     Optional: track changes to a directory?
     """
 
-    MANIFEST_FILE = "manifest.json"
-    MANIFEST_KEY = "manifest"
-
-    @staticmethod
-    def ScratchFile() -> Path:
-        return Changes.TempDir(Changes.MANIFEST_FILE)
-
-    @staticmethod
-    def GetCache(path: Path) -> Path:
-        if not path:
-            return Changes.ScratchFile()
-        if path.exists() and path.is_dir():
-            return path / Changes.MANIFEST_FILE
-        return path
-
-    @staticmethod
-    def GetManifest(args: dict) -> Manifest:
-        if Changes.MANIFEST_KEY in args:
-            return args[Changes.MANIFEST_KEY]
-        path = Changes.ScratchFile()
-        return Manifest(path)
-
-    def __init__(self, path=None, **kwargs):
-        cache = Changes.GetCache(path)
-        super().__init__(cache, **kwargs)
+    def __init__(self, path, **kwargs):
+        super().__init__(path, **kwargs)
+        if not path.exists() or not path.is_dir():
+            raise ValueError(f"Non-directory path: {path}")
         self.keystore = {}
 
     def __str__(self):
@@ -55,16 +36,15 @@ class Changes(ResourceKey):
     # Mutating Changes
     #
 
-    def post(self, key: str, **kwargs) -> Resource:
+    def post(self, path: Path, **kwargs) -> Resource:
         """
-                Create and track a Delta for this source Path.
+                Create and track a Delta resource for this Path
                 Options:
                 * action: add [default], rm
                 * key: defaults to filename
                 * prefix: pre-pended to key if non-empty
         .
         """
-        path = UPath(key)
         delta = Delta(path, **kwargs)
         self.keystore[delta.name] = delta
         return delta
@@ -99,3 +79,31 @@ class Changes(ResourceKey):
     def _child_names(self, **kwargs) -> list[str]:
         """Return keys for each change."""
         return list(self.keystore.keys())
+
+    #
+    # Create Manifest
+    #
+
+    def grouped_rows(self) -> dict[str, list[dict]]:
+        rows = [row for delta in self.keystore.values() for row in delta.to_dicts()]
+        rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
+        grouped = {k: list(v) for k, v in groupby(rows, lambda row: row[Delta.KEY_ACT])}
+        return grouped
+
+    def to_manifest(self, **kwargs) -> Manifest:
+        """
+        Return a Manifest for this change set.
+        Options:
+        * user_meta: package-level metadata
+        * msg: commit message
+
+        1. Get rows from each Delta (multiple if a directory)
+        1. Create Entry for each row
+        2. Create a Manifest from the entries (adding metadata if present)
+
+        """
+        grouped = self.grouped_rows()
+        adds: list[dict] = grouped.get(Delta.KEY_ADD)  # type: ignore
+        rms = grouped.get(Delta.KEY_RM)
+        build = Builder(self.path, adds, kwargs, rm=rms, **self.args)
+        return build.to_manifest()
