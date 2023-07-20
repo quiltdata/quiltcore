@@ -1,18 +1,20 @@
 from json import JSONEncoder
+from tempfile import TemporaryDirectory
 
 from pytest import fixture
 from quilt3 import Package  # type: ignore
-from quiltcore import Entry, Header, Manifest, Registry, Spec
+from quiltcore import Changes, Entry, Header, Manifest, Registry, Spec, Volume
 from upath import UPath
 
-TIME_NOW = Registry.Timestamp()
+TIME_NOW = Registry.Now()
 
-@fixture#(scope="session")
+
+@fixture  # (scope="session")
 def spec():
     return Spec()
 
 
-@fixture#(scope="session")
+@fixture  # (scope="session")
 def pkg(spec: Spec) -> Package:
     return Package.browse(
         spec.namespace(), registry=spec.registry(), top_hash=spec.hash()
@@ -31,6 +33,12 @@ def man(spec: Spec) -> Manifest:
 @fixture
 def spec_new():
     return Spec("spec/quiltcore", TIME_NOW)
+
+
+@fixture
+def tmpdir():
+    with TemporaryDirectory() as tmpdirname:
+        yield UPath(tmpdirname)
 
 
 def test_spec(spec: Spec, pkg: Package, man: Manifest):
@@ -82,21 +90,19 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
     assert encoded == man.head.hashable()
 
     for part in pkg._get_top_hash_parts(pkg._meta, pkg.walk()):
-        print(f"part: {part}")
         if "logical_key" in part:
             key = part["logical_key"]
             entry = man.get(key)
             hashable = entry.to_hashable()  # type: ignore
-            print(f"entry[{key}]: {hashable}")
             assert part == hashable
             part_encoded = json_encode(part).encode()
             assert part_encoded == entry.hashable()  # type: ignore
             encoded += part_encoded
 
     man_encoded = man.digest(encoded)
-    man_strip = man_encoded.removeprefix(Manifest.DEFAULT_MH_PREFIX)
+    man_strip = Manifest.AsHash(man_encoded)
     assert q3_hash == man_strip, "q3_hash != digest(encoded).removeprefix"
-    assert q3_hash == man.calc_hash(), "q3_hash != man.calc_hash()"
+    assert q3_hash == man.calc_hash(man.head), "q3_hash != man.calc_hash()"
 
 
 def test_spec_read(spec: Spec, man: Manifest):
@@ -116,10 +122,10 @@ def test_spec_read(spec: Spec, man: Manifest):
         assert key in head.user_meta  # type: ignore
         assert head.user_meta[key] == value  # type: ignore
 
-
     for key, value in spec.files().items():
         entry = man.get(key)
         assert entry
+        assert entry.name in spec.files().keys()
         assert isinstance(entry, Entry)
         opts = entry.read_opts()
         assert opts
@@ -130,17 +136,45 @@ def test_spec_read(spec: Spec, man: Manifest):
             assert entry.user_meta == meta  # type: ignore
 
 
-def test_spec_write(spec_new: Spec):
+# @mark.skip(reason="pending manifest creation")
+def test_spec_write(spec_new: Spec, tmpdir: UPath):
     """
     Ensure quilt3 can read manifests created by quiltcore
 
+    With QuiltCore:
     * create files and metadata
     * create package
     * write to bucket
     * track all of the above
-    * read it all back with quilt3
+
+    Then with quilt3:
+    * read it all back
     """
-    pass
+    for filename, filedata in spec_new.files().items():
+        path = tmpdir / filename
+        path.write_text(filedata)
+        print(f"file[{filename}]: {filedata}")
+    spec_new.metadata()
+    # TODO: Object-level Metadata
+
+    chg = Changes(tmpdir)
+    assert chg
+    delta = chg.post(tmpdir)
+    rows = chg.grouped_rows()
+    print(f"rows: {rows}")
+    assert delta
+    man = chg.to_manifest()  # TODO: user_meta=pkg_metadata
+    assert man
+    print(f"man[{man.name}]: {man.to_text()}")
+
+    reg = UPath(spec_new.registry())
+    vol = Volume(reg)
+    opts = {
+        vol.KEY_NS: spec_new.namespace(),
+        vol.KEY_FRC: True,
+    }
+    vol.put(man, **opts)
+    # assert False
 
 
 def test_spec_workflow():

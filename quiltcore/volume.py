@@ -3,6 +3,8 @@ from pathlib import Path
 
 from jsonlines import Writer  # type: ignore
 
+from .entry import Entry
+from .header import Header
 from .manifest import Manifest
 from .registry import Registry
 from .resource import Resource
@@ -24,6 +26,15 @@ class Volume(ResourceKey):
         path = Volume.AsPath(uri)
         return Volume(path, **kwargs)
 
+    @staticmethod
+    def WriteManifest(head: Header, entries: list[Entry], path: Path) -> None:
+        rows = [entry.to_row() for entry in entries]  # type: ignore
+        with path.open(mode="wb") as fo:
+            with Writer(fo) as writer:
+                writer.write(head.to_dict())
+                for row in rows:
+                    writer.write(row)
+
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.registry = Registry(path, **self.args)
@@ -33,7 +44,6 @@ class Volume(ResourceKey):
         }
 
     def is_local(self) -> bool:
-        print(f"Volume.is_local: {self.uri}")
         return self.uri.startswith("file://") or "://" not in self.uri
 
     def _child_names(self, **kwargs) -> list[str]:
@@ -96,40 +106,39 @@ class Volume(ResourceKey):
     #
     # PUT and helpers - upload a Manfiest or other resource
     #
-    # - PUT Entry: copies individual file onto Volume
+    # - PUT Entry: copies individual file onto Volume (TBD)
     # - PUT Manifest:
     #   - copies necessary Entries onto Volume (unless --nocopy and non-local)
     #   - calculates hash and creates Namespaced folders
     #   - copies Manifest onto Volume
+    #
+    #  OPTS:
+    #  - pkg="PKG/NAME": namespace to register manifest
+    #  - force=True: overwrite any existing manifest
 
     def put(self, res: Resource, **kwargs) -> "Resource":
         """Insert/Replace and return a child resource."""
         if not isinstance(res, Manifest):
             raise TypeError(f"Volume.put requires a Manifest, not {type(res)}")
         man: Manifest = res
-        hash_path = self.registry.manifests / man.source_hash()
-        if hash_path.exists():
-            raise FileExistsError(f"Manifest {hash_path} already exists")
+        new_path = self.registry.manifests / man.source_hash()
+        if new_path.exists() and not kwargs.get(self.KEY_FRC, False):
+            raise FileExistsError(f"Manifest {new_path} already exists")
 
         ns_name = (
-            kwargs.get(self.KEY_NAME)
-            or man.args.get(self.KEY_NAME)
-            or f"unknown/{self.Timestamp()}"
+            kwargs.get(self.KEY_NS)
+            or man.args.get(self.KEY_NS)
+            or f"unknown/{self.Now()}"
         )
-        kwargs[self.KEY_NAME] = ns_name
+        kwargs[self.KEY_NS] = ns_name
 
-        ns_name = self.write_entries(man, hash_path, ns_name)
-        man2 = Manifest(hash_path, **self.args)
+        ns_name = self.write_entries(man, new_path, ns_name)
+        man2 = Manifest(new_path, **self.args)
         self.registry.put(man2, **kwargs)
         return man2
 
-    def write_entries(self, man: Manifest, path: Path, name: str) -> str:
+    def write_entries(self, man: ResourceKey, path: Path, name: str) -> str:
         dest = str(self.path / name)
         entries = [entry.get(dest) for entry in man.list()]
-        rows = [entry.to_row() for entry in entries]  # type: ignore
-        with path.open(mode="wb") as fo:
-            with Writer(fo) as writer:
-                writer.write(man.head.to_dict())
-                for row in rows:
-                    writer.write(row)
+        self.WriteManifest(man.head, entries, path)  # type: ignore
         return name

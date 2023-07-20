@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from time import time
-from typing import Generator
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import quiltcore
@@ -23,39 +21,17 @@ class Resource:
     DEFAULT_HASH_TYPE = "SHA256"
     KEY_GLOB = "glob"
     KEY_KEY = "_key"
-    KEY_NAME = f"namespace.{KEY_KEY}"
+    KEY_META = "meta"
+    KEY_MSG = "msg"
+    KEY_NS = f"namespace.{KEY_KEY}"
     KEY_PATH = "_path"
     KEY_VER = "versionId"
     KEY_S3VER = "version_id"
+    KEY_SELF = "."
     MANIFEST = "_manifest"
     TAG_DEFAULT = "latest"
     UNQUOTED = "/:"
     LOCAL = "file://./"
-
-    @staticmethod
-    def TempGen(filename: str = "") -> Generator[Path, None, None]:
-        """Return generator to a temporary directory."""
-        with TemporaryDirectory() as tmpdirname:
-            temp_path = (
-                Path(tmpdirname) / filename if len(filename) > 0 else Path(tmpdirname)
-            )
-            yield temp_path
-
-    @staticmethod
-    def TempDir(filename: str = "") -> Path:
-        for path in Resource.TempGen(filename):
-            return path
-        return Path(".")  # should never happen
-
-    @staticmethod
-    def ClassFromName(name: str) -> type:
-        """Return a class from a string."""
-        return getattr(quiltcore, name)
-
-    @staticmethod
-    def Timestamp() -> str:
-        "Return integer timestamp."
-        return str(int(time()))
 
     @staticmethod
     def AsPath(key: str) -> UPath:
@@ -70,6 +46,16 @@ class Resource:
         if not isinstance(object, str):
             raise TypeError(f"Expected str, got {type(object)}:{object}")
         return object
+
+    @staticmethod
+    def ClassFromName(name: str) -> type:
+        """Return a class from a string."""
+        return getattr(quiltcore, name)
+
+    @staticmethod
+    def Now() -> str:
+        "Return integer timestamp."
+        return str(int(time()))
 
     @staticmethod
     def GetVersion(uri: str) -> str:
@@ -143,9 +129,13 @@ class Resource:
     # URL Encoding of Physical Keys
     #
 
+    def encodings(self) -> dict:
+        """Return a dict of keys to encode, and their mappings."""
+        return self.cf.get_dict("quilt3/encoded")
+
     def encoded(self) -> bool:
         """Return True if Resource keys should be encoded."""
-        return len(self.cf.get_dict("quilt3/encoded")) > 0
+        return len(self.encodings()) > 0
 
     def encode(self, object) -> str:
         """Encode object as a string."""
@@ -171,10 +161,6 @@ class Resource:
 
     def patch(self, res: Resource, **kwargs) -> "Resource":
         """Update and return a child resource."""
-        raise NotImplementedError
-
-    def post(self, key: str, **kwargs) -> "Resource":
-        """Create and return a child resource using key."""
         raise NotImplementedError
 
     def put(self, res: Resource, **kwargs) -> "Resource":

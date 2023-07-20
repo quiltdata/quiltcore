@@ -36,9 +36,7 @@ def test_vol_get(vol):
     assert isinstance(man, Manifest)
     vol.delete(TEST_PKG)
 
-    opts = {
-        vol.KEY_HSH: TEST_HASH
-    }
+    opts = {vol.KEY_HSH: TEST_HASH}
     man2 = vol.get(TEST_PKG, **opts)
     assert isinstance(man2, Manifest)
     vol.delete(TEST_PKG)
@@ -82,7 +80,7 @@ def test_vol_put(dir: UPath):  # noqa: F401
     assert pkg_tmp.exists()
     assert man2.path.exists()
 
-    hash = man2.calc_multihash()  # type: ignore
+    hash = man2.calc_multihash(man2.head)  # type: ignore
     # assert hash == man2.name
 
     latest = pkg_tmp / Volume.TAG_DEFAULT

@@ -18,6 +18,8 @@ resources:
     glob: "*"
   Manifest:
     child: Entry
+  Builder:
+    child: Entry
   Changes:
     child: Entry
   Delta:
@@ -43,10 +45,21 @@ quilt3:
   hash_type: SHA256
   hash: hash
   headers:
-    version: string
-    message: string
-    user_meta: dict
+    version: v0
+    message: commit message
+    user_meta: {}
   meta: user_meta
   mime_type: application/ld+json
   name: logical_key
   places: physical_keys
+  schema:
+    version: string
+    user_meta: null
+    message: string
+    logical_key: string
+    physical_keys: [string]
+    size: int64
+    hash:
+      type: string
+      value: string
+    meta: struct<>

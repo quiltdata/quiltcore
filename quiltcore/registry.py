@@ -34,11 +34,11 @@ class Registry(ResourcePath):
         if not isinstance(res, Manifest):
             raise TypeError(f"Expected Manifest, got {type(res)}")
         hash = res.source_hash()
-        name = kwargs[self.KEY_NAME]
+        name = kwargs[self.KEY_NS]
         name_dir = self.path / name
         name_dir.mkdir(parents=True, exist_ok=True)
 
-        tag = self.Timestamp()
+        tag = self.Now()
         tag_file = name_dir / tag
         tag_file.write_text(hash)
 

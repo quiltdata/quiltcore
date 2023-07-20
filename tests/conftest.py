@@ -1,14 +1,4 @@
 from pathlib import Path
-from tempfile import TemporaryDirectory
-
-from pytest import fixture
-from upath import UPath
-
-
-@fixture
-def dir():
-    with TemporaryDirectory() as tmpdirname:
-        yield UPath(tmpdirname)
 
 
 TEST_BKT = "s3://udp-spec"

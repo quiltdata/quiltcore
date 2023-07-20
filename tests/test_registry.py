@@ -47,19 +47,18 @@ def test_reg_get(reg):
 
 
 def test_reg_name(reg):
-    name = reg.get(TEST_PKG)
-    assert isinstance(name, Namespace)
-    assert "registry" in name.args
-    ns_key = "namespace._key"
-    assert ns_key in name.args.keys()
-    assert name.args[ns_key] == TEST_PKG
+    names = reg.get(TEST_PKG)
+    assert isinstance(names, Namespace)
+    assert "registry" in names.args
+    assert reg.KEY_NS in names.args.keys()
+    assert names.args[reg.KEY_NS] == TEST_PKG
 
-    man = name.get(TEST_TAG)
+    man = names.get(TEST_TAG)
     assert isinstance(man, Manifest)
     assert TEST_HASH in str(man)
     assert "registry" in man.args
     assert "namespace" in man.args
-    assert ns_key in man.args
+    assert reg.KEY_NS in man.args
 
 
 def test_reg_name_latest(reg):
