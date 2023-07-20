@@ -40,6 +40,33 @@ quilt3:
   encoded:
     logical_key: name
     physical_keys: places
+  encoder:
+    logical_key:
+      name: name
+      type: str
+      format: path
+    physical_keys:
+      name: place
+      type: str
+      format: uri
+      is_list: true
+    size: 
+      name: size
+      type: int64
+    hash:
+      name: multihash
+      type: struct
+      format:
+        type: string
+        value: string
+    meta:
+      name: metadata
+      type: struct
+      format:
+        user_meta: struct
+      is_optional: true
+
+
   format:
     datetime: "%Y-%m-%d"
   hash_type: SHA256
