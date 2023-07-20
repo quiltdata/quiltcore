@@ -103,6 +103,7 @@ class Changes(ResourceKey):
 
         """
         grouped = self.grouped_rows()
-        adds = grouped.get(Delta.KEY_ADD)
-        build = Builder(self.path, adds, kwargs, rm=grouped.get(Delta.KEY_RM), **self.args)  # type: ignore
+        adds: list[dict] = grouped.get(Delta.KEY_ADD)  # type: ignore
+        rms = grouped.get(Delta.KEY_RM)
+        build = Builder(self.path, adds, kwargs, rm=rms, **self.args)
         return build.to_manifest()
