@@ -19,6 +19,8 @@ def test_res(res):
     assert res.cf
     assert res.path.is_dir()
     assert "resource" in res.args
+    assert "Resource" in str(res)
+    assert TEST_VOL in repr(res)
 
 
 def test_res_version():
@@ -31,12 +33,3 @@ def test_res_version():
     assert res.read_opts()[Resource.KEY_S3VER] == v
 
     assert res == Resource.FromURI(S3_URI)
-
-
-@mark.skip(reason="Not implemented")
-def test_res_path():
-    assert Resource.PathIfLocal(S3_URI) is None
-    key = TEST_PKG
-    root = Path.cwd() / LOCAL_VOL
-    abs_path = root / TEST_PKG
-    assert Resource.PathIfLocal(key) == abs_path

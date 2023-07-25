@@ -35,9 +35,9 @@ class ResourcePath(Resource):
         """Return the path for a child resource."""
         return self.path / key
 
-    def _child_list(self) -> Generator[Path, None, None]:
+    def _child_list(self) -> list[Path]:
         """List/generator of valid child paths; defaults to self.glob"""
-        return self.path.glob(self.glob)
+        return sorted(self.path.glob(self.glob))
 
     #
     # Public HTTP-like Methods

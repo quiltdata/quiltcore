@@ -38,11 +38,7 @@ class ResourceKey(Resource):
 
     def key_path(self, key: str, args: dict = {}) -> Path:
         """Return the Path for a child resource."""
-        if self.cf.K_PLC in args:
-            return self.AsPath(args[self.cf.K_PLC])
-        if self.KEY_PATH not in args:
-            raise KeyError(f"Missing {self.KEY_PATH} in {args.keys()}")
-        return args[self.KEY_PATH]
+        return self.AsPath(args[self.cf.K_PLC])
 
     def child(self, key: str, **kwargs):
         """Return a child resource."""

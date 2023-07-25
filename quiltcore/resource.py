@@ -56,14 +56,6 @@ class Resource:
         return str(int(time()))
 
     @classmethod
-    def PathIfLocal(cls, key: str) -> Path | None:
-        is_file_uri: bool = cls.IS_LOCAL.match(key) is not None
-        is_other_uri: bool = cls.IS_URI in key
-        if is_other_uri and not is_file_uri:
-            return None
-        return Path(key).absolute()
-
-    @classmethod
     def AsPath(cls, key: str) -> Path:
         """Return a Path from a string."""
         if not isinstance(key, str):
