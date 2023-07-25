@@ -49,6 +49,7 @@ class ResourceKey(Resource):
         args = self._child_dict(key)
         path = self.key_path(key, args)
         merged = {**self.args, **args}
+        self.CheckPath(path)
         return self.klass(path, **merged)
 
     #

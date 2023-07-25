@@ -50,7 +50,6 @@ def test_man_child_place(man: Manifest):
 def test_man_child_dict(man: Manifest):
     cd = man._child_dict(TEST_KEY)
     assert cd
-    print(cd)
     assert isinstance(cd, dict)
     assert cd[man.cf.K_NAM] == TEST_KEY
     assert cd[man.KEY_SZ] == TEST_SIZE

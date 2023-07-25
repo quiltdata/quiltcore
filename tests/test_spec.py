@@ -98,8 +98,6 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
             key = part["logical_key"]
             entry = man.get(key)
             hashable = entry.to_hashable()  # type: ignore
-            print(f"part[{key}]: {part}")
-            print(f"hashable[{key}]: {hashable}")
             assert part == hashable
             part_encoded = json_encode(part).encode()
             assert part_encoded == entry.hashable()  # type: ignore
@@ -159,7 +157,6 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     for filename, filedata in spec_new.files().items():
         path = tmpdir / filename
         path.write_text(filedata)
-        print(f"file[{filename}]: {filedata}")
     spec_new.metadata()
     # TODO: Object-level Metadata
 
@@ -167,11 +164,9 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     assert chg
     delta = chg.post(tmpdir)
     rows = chg.grouped_row3s()
-    print(f"rows: {rows}")
     assert delta
     man = chg.to_manifest()  # TODO: user_meta=pkg_metadata
     assert man
-    print(f"man[{man.name}]: {man.to_text()}")
 
     reg = UPath(spec_new.registry())
     vol = Volume(reg)

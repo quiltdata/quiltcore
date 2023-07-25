@@ -175,9 +175,8 @@ class Decoder(Config):
                 key4 = "path"
             if hasattr(obj, key4):
                 value = getattr(obj, key4)
-                print(f"encode[{key4}] -> {key3}: {value}")
                 row[key3] = self.encode_value(value)
-        print(f"encode: {obj} -> {row}")
+        logging.debug(f"encode: {obj} -> {row}")
         d3 = Dict3(**row)
         return d3
 

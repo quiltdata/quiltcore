@@ -38,7 +38,6 @@ class Manifest(ResourceKey):
         return self.table.names()
 
     def _child_place(self, place: str) -> str:
-        print(f"_child_place[{place}]")
         if not self.IS_REL in place:
             return place
         if self.IS_LOCAL.match(place) != None:
@@ -46,10 +45,8 @@ class Manifest(ResourceKey):
         if not self.ARG_REG in self.args:
             raise KeyError(f"No registry root available in {self.args.keys()}")
         reg = self.args[self.ARG_REG]
-        print(f"reg.root[{reg.root}]")
         path = reg.root / place
-        print(f"{place} -> {path} [{path.absolute()}]")
-
+        logging.debug(f"{place} -> {path} [{path.absolute()}]")
         return str(path) # .as_uri()
 
     def _child_dict(self, key: str) -> dict:
@@ -60,6 +57,5 @@ class Manifest(ResourceKey):
         drow[self.codec.K_PLC] = self._child_place(place)
         v = self.GetVersion(place)
         if len(v) > 0:
-            print(f"{self.KEY_VER}[{v}] for {place}")
             drow[self.KEY_VER] = v
         return drow

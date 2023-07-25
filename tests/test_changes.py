@@ -104,15 +104,13 @@ def test_chg_str(changed: Changes):
 def test_chg_grouped(changed: Changes):
     group = changed.grouped_row3s()
     assert isinstance(group, dict)
-    print(group)
     assert len(group) == 1
     adds = group[Delta.KEY_ADD]
     assert len(adds) == 1
-    print(adds)
     item = adds[0]
     assert isinstance(item, dict)
     assert item[Delta.KEY_NAM] == FILENAME
-    assert FILENAME in item[Delta.KEY_PATH]
+    assert FILENAME in item[changed.cf.K_PLC]
 
 
 def test_chg_man(changed: Changes, infile: UPath):

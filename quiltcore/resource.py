@@ -69,6 +69,13 @@ class Resource:
         if not isinstance(key, str):
             raise TypeError(f"[{key}]Expected str, got {type(key)}")
         return UPath(key, version_aware=True)
+    
+    @classmethod
+    def CheckPath(cls, path) -> Path:
+        if not isinstance(path, Path):
+            raise TypeError(f"[{path}]Expected Path, got {type(path)}")
+        return path
+
 
     @classmethod
     def GetVersion(cls, uri: str) -> str:
@@ -88,7 +95,7 @@ class Resource:
         return cls(path, **opts)
 
     def __init__(self, path: Path, **kwargs):
-        self.path = path
+        self.path = self.CheckPath(path)
         self.args = kwargs
         self.name = path.name
         self.class_name = self.__class__.__name__

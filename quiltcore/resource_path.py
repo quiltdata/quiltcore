@@ -28,6 +28,7 @@ class ResourcePath(Resource):
         args = self._child_args(key)
         args[self.KEY_KEY] = key
         merged = {**self.args, **args}
+        self.CheckPath(path)
         return self.klass(path, **merged)
 
     def _child_path(self, key: str) -> Path:

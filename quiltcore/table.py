@@ -1,3 +1,4 @@
+import logging 
 from pathlib import Path
 
 import pyarrow as pa  # type: ignore
@@ -57,6 +58,6 @@ class Table(ResourceKey):
         pa_dict = pa_list[0]
         del pa_dict[self.codec.K_NAM]
 
-        print(f"pa_dict: {pa_dict}")
+        logging.debug(f"pa_dict: {pa_dict}")
         pa_dict3 = Dict3(**pa_dict)
         return self.codec.decode_dict(pa_dict3)
