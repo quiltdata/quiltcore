@@ -100,10 +100,10 @@ class Resource:
         self._setup_params()
 
     def __repr__(self):
-        return f"<{self.class_name}({self.path}, {self.args})>"
+        return f"<{self.class_name}({self.path.as_posix()}, {self.args})>"
 
     def __str__(self):
-        return f"<{self.class_name}({self.path})>"
+        return f"<{self.class_name}({self.path.as_posix()})>"
 
     def __eq__(self, other):
         return str(self) == str(other)

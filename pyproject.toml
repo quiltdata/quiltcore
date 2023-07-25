@@ -8,7 +8,6 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-aiohttp = ">=3.8.5"
 jsonlines = "1.2.0"
 multiformats = "^0.2.1"
 pandas = "^2.0.2"
