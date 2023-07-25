@@ -1,33 +1,34 @@
-from .config import Config
-
 import logging
 from dataclasses import asdict, dataclass
-from multiformats import multihash
 from pathlib import Path
 from typing import Optional
-from typing_extensions import Any
-from upath import UPath
 from urllib.parse import quote, unquote
 
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
-import pyarrow.json as pj  # type: ignore
+from multiformats import multihash
+from typing_extensions import Any
+
+from .config import Config
+
 
 @dataclass
-class Hash3():
+class Hash3:
     type: str
     value: str
 
+
 @dataclass
-class Dict3():
+class Dict3:
     logical_key: str
     physical_keys: list[str]
     size: int
     hash: Hash3
     meta: Optional[dict] = None
 
+
 @dataclass
-class Dict4():
+class Dict4:
     name: str
     place: str
     size: int
@@ -96,7 +97,7 @@ class Decoder(Config):
     def config(self, value="schema") -> dict:
         """Return a dict of values to encode, and their mappings."""
         return self.get_dict(f"{self.scheme}/{value}")
-    
+
     #
     # Table Operations
     #
@@ -133,7 +134,7 @@ class Decoder(Config):
         mh_config = self.get_dict("multihash")
         logging.debug(f"hash_config[{key}]: {mh_config}")
         return mh_config[key]
-    
+
     def digester(self, hash_type=None):
         """return method for calculating digests"""
         ht = hash_type or self.config("hash_type")
@@ -199,7 +200,7 @@ class Decoder(Config):
             value = quote(value, safe=self.UNQUOTED)
 
         if self.check(self.T_LST):
-            value = [value]            
+            value = [value]
 
         return value
 
@@ -230,7 +231,7 @@ class Decoder(Config):
             return [self.decode_item(chunk, opts) for chunk in item.to_pylist()]
         raise TypeError(f"Unexpected type: {item_type}")
 
-    def decode_value(self, value, opts = {}):
+    def decode_value(self, value, opts={}):
         """Decode a single value from quilt3 manifest into quiltcore schema."""
         self.check_opts(opts)
         if self.check(self.T_LST):
@@ -238,7 +239,7 @@ class Decoder(Config):
                 value = value[0]
             else:
                 raise TypeError(f"Expected list, got {type(value)}: {value}")
-            
+
         if self.check(self.T_QTD):
             value = self.AsStr(value)
             value = unquote(value)

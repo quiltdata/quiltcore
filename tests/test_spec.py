@@ -13,6 +13,7 @@ TIME_NOW = Registry.Now()
 if LOCAL_ONLY:
     skip(allow_module_level=True)
 
+
 @fixture  # (scope="session")
 def spec():
     return Spec()
@@ -163,7 +164,7 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     chg = Changes(tmpdir)
     assert chg
     delta = chg.post(tmpdir)
-    rows = chg.grouped_row3s()
+    chg.grouped_row3s()
     assert delta
     man = chg.to_manifest()  # TODO: user_meta=pkg_metadata
     assert man

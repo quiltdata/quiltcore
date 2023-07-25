@@ -54,7 +54,7 @@ quilt3:
       is_quoted: true
       name: place
       type: str
-    size: 
+    size:
       name: size
       type: int64
     hash:
@@ -70,4 +70,3 @@ quilt3:
       format:
         user_meta: struct
       is_optional: true
-

@@ -1,10 +1,12 @@
 from pathlib import Path
+
 from pytest import fixture, mark
 from quiltcore import Resource
 
 from .conftest import LOCAL_VOL, TEST_PKG, TEST_VOL
 
 S3_URI = "s3://bkt?versionId=123"
+
 
 @fixture
 def res():
@@ -30,12 +32,11 @@ def test_res_version():
 
     assert res == Resource.FromURI(S3_URI)
 
+
 @mark.skip(reason="Not implemented")
 def test_res_path():
-    LOCAL_KEY = "file://./manual/force/ONLYME.md"
-    assert Resource.PathIfLocal(S3_URI) == None
+    assert Resource.PathIfLocal(S3_URI) is None
     key = TEST_PKG
     root = Path.cwd() / LOCAL_VOL
     abs_path = root / TEST_PKG
     assert Resource.PathIfLocal(key) == abs_path
-

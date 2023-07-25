@@ -4,8 +4,8 @@ import logging
 from json import JSONEncoder
 from pathlib import Path
 
-from .yaml.decoder import Decoder
 from .resource import Resource
+from .yaml.decoder import Decoder
 
 
 class ResourceKey(Resource):
@@ -14,7 +14,7 @@ class ResourceKey(Resource):
     """
 
     ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
-    
+
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.codec = Decoder()
@@ -74,13 +74,13 @@ class ResourceKey(Resource):
         return self.digest(self.to_bytes())
 
     def _hash_manifest(self) -> str:
-        hashable = b''
+        hashable = b""
         if hasattr(self, "head"):
             self.head.hashable()  # type: ignore
         for entry in self.list():
             hashable += entry.hashable()  # type: ignore
         return self.digest(hashable)
-        
+
     #
     # Hash retreival
     #

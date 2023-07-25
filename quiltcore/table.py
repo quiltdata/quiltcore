@@ -1,8 +1,7 @@
-import logging 
+import logging
 from pathlib import Path
 
 import pyarrow as pa  # type: ignore
-import pyarrow.compute as pc  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
 from .header import Header
@@ -47,7 +46,7 @@ class Table(ResourceKey):
         if self.codec.name_col:
             return self.codec.name_col.to_pylist()
         return []
-        
+
     def get_row4(self, key: str) -> Dict4:
         """Return the dict for a child resource."""
         # TODO: cache to avoid continually re-calcluating

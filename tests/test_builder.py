@@ -19,7 +19,11 @@ def build(dir: UPath) -> Builder:
     """Why does row require a hash? And as a list?"""
     path = dir / FILENAME
     path.write_text(FILETEXT)
-    row = {Decoder.K_NAM: FILENAME, Decoder.K_PLC: str(path), Builder.KEY_META: {"content": "context"}}
+    row = {
+        Decoder.K_NAM: FILENAME,
+        Decoder.K_PLC: str(path),
+        Builder.KEY_META: {"content": "context"},
+    }
     return Builder(dir, [row])
 
 

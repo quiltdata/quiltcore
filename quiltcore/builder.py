@@ -31,7 +31,7 @@ class Builder(ResourceKey):
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         return self.keystore[key]
-    
+
     def _hash_multihash(self) -> str:
         return self._hash_manifest()
 

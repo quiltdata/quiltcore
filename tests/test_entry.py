@@ -68,7 +68,7 @@ def test_entry_hashable(entry: Entry):
     assert hashable["logical_key"] == TEST_KEY
     assert hashable["size"] == 30
     assert hashable["hash"]["value"] == TEST_OBJ_HASH
-    assert hashable["meta"] == {} 
+    assert hashable["meta"] == {}
 
 
 def test_entry_digest_verify(entry: Entry):

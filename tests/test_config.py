@@ -25,7 +25,7 @@ def test_cf_hash():
     assert mh[codec.MH_PRE][ht] == "1220"
     assert codec.hash_config(codec.MH_DIG)[ht] == "sha2-256"
     assert codec.digester()
-    mhash = codec.digest(b'Hello World')
+    mhash = codec.digest(b"Hello World")
     assert mhash
 
     prefixes = codec.hash_config(codec.MH_PRE)
@@ -50,14 +50,9 @@ def test_cf_encode():
     assert codec.encode_value(TEST_STR) == TEST_STR
 
     codec.check_opts({codec.T_QTD: True})
-    result =  codec.encode_value(TEST_STR)
+    result = codec.encode_value(TEST_STR)
     assert result != TEST_STR
     assert isinstance(result, str)
 
     codec.check_opts({codec.T_LST: True})
     assert codec.encode_value(TEST_STR) == [TEST_STR]
-
-
-
-
-

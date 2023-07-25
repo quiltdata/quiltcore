@@ -1,12 +1,17 @@
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 from pytest import fixture
 from quiltcore import Entry, Header, Manifest, Registry
 
 from .conftest import (
-    TEST_KEY, TEST_MAN, TEST_OBJ, TEST_S3VER, TEST_SIZE, TEST_VER, TEST_VOL
+    TEST_KEY,
+    TEST_MAN,
+    TEST_OBJ,
+    TEST_SIZE,
+    TEST_VER,
+    TEST_VOL,
 )
+
 
 @fixture
 def opts() -> dict:
@@ -45,8 +50,8 @@ def test_man_child_place(man: Manifest):
     place = man._child_place(plc)
     assert place != plc
     assert f"{place}?versionId={TEST_VER}" == TEST_OBJ
-    
-    
+
+
 def test_man_child_dict(man: Manifest):
     cd = man._child_dict(TEST_KEY)
     assert cd
@@ -55,8 +60,8 @@ def test_man_child_dict(man: Manifest):
     assert cd[man.KEY_SZ] == TEST_SIZE
     mhash = cd[man.KEY_MH]
     assert isinstance(mhash, str)
-    #assert cd[man.cf.K_PLC] == TEST_OBJ
-    #assert cd[man.KEY_S3VER] == TEST_S3VER
+    # assert cd[man.cf.K_PLC] == TEST_OBJ
+    # assert cd[man.KEY_S3VER] == TEST_S3VER
 
 
 def test_man_entry(man: Manifest):

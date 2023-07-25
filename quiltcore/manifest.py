@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 
-
 from .resource_key import ResourceKey
 from .table import Table
 from .yaml.decoder import asdict
@@ -38,16 +37,16 @@ class Manifest(ResourceKey):
         return self.table.names()
 
     def _child_place(self, place: str) -> str:
-        if not self.IS_REL in place:
+        if self.IS_REL not in place:
             return place
-        if self.IS_LOCAL.match(place) != None:
+        if self.IS_LOCAL.match(place) is not None:
             place = self.IS_LOCAL.sub("", place)
-        if not self.ARG_REG in self.args:
+        if self.ARG_REG not in self.args:
             raise KeyError(f"No registry root available in {self.args.keys()}")
         reg = self.args[self.ARG_REG]
         path = reg.root / place
         logging.debug(f"{place} -> {path} [{path.absolute()}]")
-        return str(path) # .as_uri()
+        return str(path)
 
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""

@@ -1,5 +1,4 @@
 import logging
-from copy import copy
 from pathlib import Path
 
 from .resource import Resource
@@ -29,13 +28,14 @@ class Entry(ResourceKey):
 
     def _hash_multihash(self) -> str:
         return self.multihash
+
     #
     # Parse and unparse
     #
 
     def to_row3(self) -> Dict3:
         row = self.codec.encode(self)
-        #row[self.KEY_PATH] = self.path
+        # row[self.KEY_PATH] = self.path
         return row
 
     def to_hashable(self) -> dict:

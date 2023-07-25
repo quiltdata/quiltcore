@@ -36,7 +36,7 @@ class Delta(ResourceKey):
         if self.prefix:
             relative = self.AsPath(self.prefix) / relative
         return str(relative)
-        
+
     def __str__(self):
         return dump(self.to_dict())
 
@@ -56,7 +56,7 @@ class Delta(ResourceKey):
                 self.KEY_ACT: self.action,
                 self.cf.K_NAM: self.prefixed(obj),
                 self.cf.K_PLC: str(obj),
-                #self.KEY_PATH: obj,
+                # self.KEY_PATH: obj,
             }
             result.append(row)
         return result

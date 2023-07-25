@@ -9,7 +9,6 @@ class Config(UnYaml):
     K_PLC = "place"
     K_HSH = "hash"
 
-
     @classmethod
     def DefaultConfig(cls) -> dict:
         return UnYaml.LoadYaml(cls.CONFIG_FILE, __package__)

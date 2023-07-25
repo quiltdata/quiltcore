@@ -19,10 +19,10 @@ class Resource:
     Subclasses override child* to customize get/list behavior
     """
 
-    ARG_REG="registry"
-    ARG_MAN="manifest"
-    ARG_NS="namespace"
-    
+    ARG_REG = "registry"
+    ARG_MAN = "manifest"
+    ARG_NS = "namespace"
+
     KEY_FRC = "force"
     KEY_GLOB = "glob"
     KEY_KEY = "_key"
@@ -56,8 +56,8 @@ class Resource:
         return str(int(time()))
 
     @classmethod
-    def PathIfLocal(cls, key: str) -> Path|None:
-        is_file_uri: bool = cls.IS_LOCAL.match(key) != None
+    def PathIfLocal(cls, key: str) -> Path | None:
+        is_file_uri: bool = cls.IS_LOCAL.match(key) is not None
         is_other_uri: bool = cls.IS_URI in key
         if is_other_uri and not is_file_uri:
             return None
@@ -69,13 +69,12 @@ class Resource:
         if not isinstance(key, str):
             raise TypeError(f"[{key}]Expected str, got {type(key)}")
         return UPath(key, version_aware=True)
-    
+
     @classmethod
     def CheckPath(cls, path) -> Path:
         if not isinstance(path, Path):
             raise TypeError(f"[{path}]Expected Path, got {type(path)}")
         return path
-
 
     @classmethod
     def GetVersion(cls, uri: str) -> str:
