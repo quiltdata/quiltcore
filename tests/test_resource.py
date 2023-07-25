@@ -1,9 +1,8 @@
-from pathlib import Path
 
-from pytest import fixture, mark
+from pytest import fixture
 from quiltcore import Resource
 
-from .conftest import LOCAL_VOL, TEST_PKG, TEST_VOL
+from .conftest import TEST_VOL
 
 S3_URI = "s3://bkt?versionId=123"
 

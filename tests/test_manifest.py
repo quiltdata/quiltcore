@@ -3,14 +3,7 @@ from pathlib import Path
 from pytest import fixture
 from quiltcore import Entry, Header, Manifest, Registry
 
-from .conftest import (
-    TEST_KEY,
-    TEST_MAN,
-    TEST_OBJ,
-    TEST_SIZE,
-    TEST_VER,
-    TEST_VOL,
-)
+from .conftest import TEST_KEY, TEST_MAN, TEST_OBJ, TEST_SIZE, TEST_VER, TEST_VOL
 
 
 @fixture
