@@ -1,10 +1,12 @@
+from os import environ
 from pathlib import Path
 
+LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 
 TEST_BKT = "s3://udp-spec"
 LOCAL_VOL = "tests/example"
 
-TEST_VOL = (Path.cwd() / LOCAL_VOL).as_uri()
+TEST_VOL = str(Path.cwd() / LOCAL_VOL)#.as_uri()
 TEST_PKG = "manual/force"
 TEST_TAG = "1689722104"
 TEST_HASH = "5f1b1e4928dbb5d700cfd37ed5f5180134d1ad93a0a700f17e43275654c262f4"

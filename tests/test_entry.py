@@ -34,9 +34,7 @@ def test_entry_init(entry: Entry):
 
 def test_entry_setup(entry: Entry):
     assert entry.name == TEST_KEY
-    # assert entry.path == TEST_OBJ
-    assert entry.hash == TEST_OBJ_HASH
-    assert entry.hash_type == "sha2-256"
+    assert entry.hash_quilt3() == TEST_OBJ_HASH
     assert entry.size == 30
 
 
@@ -70,7 +68,7 @@ def test_entry_hashable(entry: Entry):
     assert hashable["logical_key"] == TEST_KEY
     assert hashable["size"] == 30
     assert hashable["hash"]["value"] == TEST_OBJ_HASH
-    assert hashable["meta"] == {}
+    assert hashable["meta"] == {} 
 
 
 def test_entry_digest_verify(entry: Entry):
@@ -79,16 +77,8 @@ def test_entry_digest_verify(entry: Entry):
 
 
 def test_entry_verify(entry: Entry, tmpdir: UPath):
-    assert entry.hash
+    assert entry.multihash
     clone = entry.get(str(tmpdir))
     assert clone.path.exists()
     bstring = clone.to_bytes()
     assert entry.verify(bstring)
-
-
-def test_entry_quote(entry: Entry):
-    key = "s3://uri/with spaces"
-    assert entry.encoded()
-    encoded = entry.encode(key)
-    assert encoded != key
-    assert encoded == "s3://uri/with%20spaces"

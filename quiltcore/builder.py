@@ -31,10 +31,13 @@ class Builder(ResourceKey):
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         return self.keystore[key]
+    
+    def _hash_multihash(self) -> str:
+        return self._hash_manifest()
 
     def to_manifest(self, **kwargs) -> Manifest:
         """Create manifest file and return Manifest"""
-        hash = self.calc_hash(self.head)
+        hash = self.hash_quilt3()
         path = self.path / hash
         Volume.WriteManifest(self.head, self.list(), path)  # type: ignore
         return Manifest(path, **self.args)

@@ -1,13 +1,17 @@
 from json import JSONEncoder
 from tempfile import TemporaryDirectory
 
-from pytest import fixture
+from pytest import fixture, skip
 from quilt3 import Package  # type: ignore
 from quiltcore import Changes, Entry, Header, Manifest, Registry, Spec, Volume
 from upath import UPath
 
+from .conftest import LOCAL_ONLY
+
 TIME_NOW = Registry.Now()
 
+if LOCAL_ONLY:
+    skip(allow_module_level=True)
 
 @fixture  # (scope="session")
 def spec():
@@ -23,7 +27,7 @@ def pkg(spec: Spec) -> Package:
 
 @fixture
 def man(spec: Spec) -> Manifest:
-    reg = UPath(spec.registry())
+    reg = Registry.AsPath(spec.registry())
     registry = Registry(reg)
     namespace = registry.get(spec.namespace())
     man = namespace.get(spec.tag())
@@ -82,8 +86,8 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
     ), "q3_hash != pkg._calculate_top_hash()"
 
     man_meta = man.head.to_hashable()
-    pkg_user = pkg._meta[man.kMeta]
-    man_user = man_meta[man.kMeta]
+    pkg_user = pkg._meta[man.KEY_USER]
+    man_user = man_meta[man.KEY_USER]
     assert pkg_user["Date"] == man_user["Date"]  # type: ignore
     assert pkg._meta == man.head.to_hashable()
     encoded = json_encode(pkg._meta).encode()
@@ -94,15 +98,17 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
             key = part["logical_key"]
             entry = man.get(key)
             hashable = entry.to_hashable()  # type: ignore
+            print(f"part[{key}]: {part}")
+            print(f"hashable[{key}]: {hashable}")
             assert part == hashable
             part_encoded = json_encode(part).encode()
             assert part_encoded == entry.hashable()  # type: ignore
             encoded += part_encoded
 
-    man_encoded = man.digest(encoded)
-    man_strip = Manifest.AsHash(man_encoded)
-    assert q3_hash == man_strip, "q3_hash != digest(encoded).removeprefix"
-    assert q3_hash == man.calc_hash(man.head), "q3_hash != man.calc_hash()"
+    multihash = man.digest(encoded)
+    man_struct = man.codec.encode_hash(multihash)
+    assert q3_hash == man_struct["value"], "q3_hash != digest(encoded).removeprefix"
+    assert q3_hash == man.hash_quilt3(), "q3_hash != man.hash_quilt3()"
 
 
 def test_spec_read(spec: Spec, man: Manifest):
@@ -160,7 +166,7 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     chg = Changes(tmpdir)
     assert chg
     delta = chg.post(tmpdir)
-    rows = chg.grouped_rows()
+    rows = chg.grouped_row3s()
     print(f"rows: {rows}")
     assert delta
     man = chg.to_manifest()  # TODO: user_meta=pkg_metadata

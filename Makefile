@@ -27,6 +27,9 @@ test: clean typecheck
 test-readme:
 	poetry run pytest $(TEST_README) 
 
+test-local:
+	export LOCAL_ONLY=True; poetry run pytest
+
 typecheck:
 	poetry run mypy $(PROJECT) tests
 

@@ -55,5 +55,5 @@ def test_build_man(build: Builder):
     entry = mlist[0]
     assert entry.name == FILENAME
 
-    hash = man.calc_hash(man.head)
+    hash = man.hash_quilt3()
     assert hash == man.name

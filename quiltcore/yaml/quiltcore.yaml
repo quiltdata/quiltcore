@@ -6,7 +6,10 @@ _yaml:
   doc: quilt3
   doc_version: 0.2.0
 multihash:
-  SHA256: sha2-256
+  prefix:
+    SHA256: "1220"
+  digest:
+    SHA256: sha2-256
 resources:
   Volume:
     child: Manifest
@@ -25,66 +28,46 @@ resources:
   Builder:
     child: Entry
 quilt3:
-  columns:
-    logical_key: string
-    physical_keys: [string]
-    size: int64
-    hash:
-      type: string
-      value: string
-    meta: struct
   dirs:
     config: .quilt
     names: named_packages
     manifests: packages
-  encoded:
-    logical_key: name
-    physical_keys: places
-  encoder:
+  format:
+    datetime: "%Y-%m-%d"
+  hash_type: SHA256
+  headers:
+    version: v0
+    message: commit message
+    user_meta: {}
+  map:
+    name: logical_key
+  mime_type: application/ld+json
+  schema:
     logical_key:
+      format: path
+      is_quoted: true
       name: name
       type: str
-      format: path
     physical_keys:
-      name: place
-      type: str
       format: uri
       is_list: true
+      is_quoted: true
+      name: place
+      type: str
     size: 
       name: size
       type: int64
     hash:
-      name: multihash
-      type: struct
       format:
         type: string
         value: string
+      is_hash: true
+      name: multihash
+      type: struct
     meta:
       name: metadata
       type: struct
       format:
         user_meta: struct
       is_optional: true
-  format:
-    datetime: "%Y-%m-%d"
-  hash_type: SHA256
-  hash: hash
-  headers:
-    version: v0
-    message: commit message
-    user_meta: {}
-  meta: user_meta
-  mime_type: application/ld+json
-  name: logical_key
-  places: physical_keys
-  schema:
-    version: string
-    user_meta: null
-    message: string
-    logical_key: string
-    physical_keys: [string]
-    size: int64
-    hash:
-      type: string
-      value: string
-    meta: struct<>
+

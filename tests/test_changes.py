@@ -102,7 +102,7 @@ def test_chg_str(changed: Changes):
 
 
 def test_chg_grouped(changed: Changes):
-    group = changed.grouped_rows()
+    group = changed.grouped_row3s()
     assert isinstance(group, dict)
     print(group)
     assert len(group) == 1

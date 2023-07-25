@@ -36,4 +36,5 @@ from .resource import Resource  # noqa: F401
 from .table import Table  # noqa: F401
 from .volume import Volume  # noqa: F401
 from .yaml.config import Config  # noqa: F401
+from .yaml.decoder import Decoder, Dict3, Dict4, Hash3  # noqa: F401
 from .yaml.spec import Spec  # noqa: F401

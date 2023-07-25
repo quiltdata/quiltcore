@@ -1,10 +1,10 @@
 from tempfile import TemporaryDirectory
 
-from pytest import fixture, raises
+from pytest import fixture, mark, raises
 from quiltcore import Manifest, Volume
 from upath import UPath
 
-from .conftest import TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL
+from .conftest import LOCAL_ONLY, TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL
 
 
 @fixture
@@ -64,6 +64,7 @@ def test_vol_man_latest(vol):
     assert isinstance(man, Manifest)
 
 
+@mark.skipif(LOCAL_ONLY, reason="skip network tests")
 def test_vol_put(dir: UPath):  # noqa: F401
     v_s3 = Volume.FromURI(TEST_BKT)
     assert not v_s3.is_local()
@@ -76,12 +77,12 @@ def test_vol_put(dir: UPath):  # noqa: F401
     pkg_tmp = v_tmp.registry.path / TEST_PKG
     assert not pkg_tmp.exists()
 
-    man2 = v_tmp.put(man)
+    man2: Manifest = v_tmp.put(man)  # type: ignore
     assert pkg_tmp.exists()
     assert man2.path.exists()
 
-    hash = man2.calc_multihash(man2.head)  # type: ignore
-    # assert hash == man2.name
+    hash = man2.hash_quilt3()
+    assert hash == man2.name
 
     latest = pkg_tmp / Volume.TAG_DEFAULT
     assert latest.exists()
