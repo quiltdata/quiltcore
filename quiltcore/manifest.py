@@ -3,7 +3,7 @@ from pathlib import Path
 
 from .resource_key import ResourceKey
 from .table import Table
-from .yaml.decoder import asdict
+from .yaml.codec import asdict
 
 
 class Manifest(ResourceKey):

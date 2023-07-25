@@ -1,7 +1,7 @@
 from tempfile import TemporaryDirectory
 
 from pytest import fixture, raises
-from quiltcore import Builder, Decoder, Manifest
+from quiltcore import Builder, Codec, Manifest
 from upath import UPath
 
 FILENAME = "filename.txt"
@@ -20,8 +20,8 @@ def build(dir: UPath) -> Builder:
     path = dir / FILENAME
     path.write_text(FILETEXT)
     row = {
-        Decoder.K_NAM: FILENAME,
-        Decoder.K_PLC: str(path),
+        Codec.K_NAM: FILENAME,
+        Codec.K_PLC: str(path),
         Builder.KEY_META: {"content": "context"},
     }
     return Builder(dir, [row])

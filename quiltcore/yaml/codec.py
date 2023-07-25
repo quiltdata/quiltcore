@@ -36,7 +36,7 @@ class Dict4:
     metadata: Optional[dict]
 
 
-class Decoder(Config):
+class Codec(Config):
     """
     Manage manifest encode/decode
 

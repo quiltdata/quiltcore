@@ -1,6 +1,6 @@
 # CHANGELOG.md
 
-## UNRELEASED
+## 0.3.0 (UNRELEASED)
 
 - quiltspec
 - push new packages

@@ -5,7 +5,7 @@ from json import JSONEncoder
 from pathlib import Path
 
 from .resource import Resource
-from .yaml.decoder import Decoder
+from .yaml.codec import Codec
 
 
 class ResourceKey(Resource):
@@ -17,7 +17,7 @@ class ResourceKey(Resource):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.codec = Decoder()
+        self.codec = Codec()
         self.headers = self.cf.get_dict("quilt3/headers")
 
     #

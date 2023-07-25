@@ -6,7 +6,7 @@ import pyarrow.json as pj  # type: ignore
 
 from .header import Header
 from .resource_key import ResourceKey
-from .yaml.decoder import Decoder, Dict3, Dict4
+from .yaml.codec import Codec, Dict3, Dict4
 
 
 class Table(ResourceKey):
@@ -15,7 +15,7 @@ class Table(ResourceKey):
     def __init__(self, path: Path, **kwargs):
         """Read the manifest into a pyarrow Table."""
         super().__init__(path, **kwargs)
-        self.codec = Decoder()
+        self.codec = Codec()
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         self.head = self._get_head()

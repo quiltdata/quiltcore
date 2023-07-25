@@ -9,7 +9,7 @@ from .manifest import Manifest
 from .registry import Registry
 from .resource import Resource
 from .resource_key import ResourceKey
-from .yaml.decoder import asdict
+from .yaml.codec import asdict
 
 
 class Volume(ResourceKey):

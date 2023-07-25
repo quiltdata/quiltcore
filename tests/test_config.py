@@ -1,4 +1,4 @@
-from quiltcore import Config, Decoder, Hash3
+from quiltcore import Config, Codec, Hash3
 
 
 def test_cf_config():
@@ -8,12 +8,12 @@ def test_cf_config():
 
 
 def test_cf_decoder():
-    codec = Decoder()
+    codec = Codec()
     assert isinstance(codec.coding, dict)
 
 
 def test_cf_hash():
-    codec = Decoder()
+    codec = Codec()
     ht = codec.config("hash_type")
     assert ht == "SHA256"
 
@@ -43,7 +43,7 @@ def test_cf_hash():
 
 
 def test_cf_encode():
-    codec = Decoder()
+    codec = Codec()
 
     TEST_STR = "file://READ ME.md"
     codec.check_opts({})
