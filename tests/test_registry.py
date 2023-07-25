@@ -13,8 +13,8 @@ def reg():
 def test_reg(reg):
     assert reg
     assert reg.cf
-    assert ".quilt/named_packages" in str(reg.path)
-    assert ".quilt/packages" in str(reg.manifests)
+    assert ".quilt/named_packages" in str(reg.path.as_posix())
+    assert ".quilt/packages" in str(reg.manifests.as_posix())
     assert reg.manifests.exists()
     assert reg.path.is_dir()
     assert "registry" in reg.args
@@ -33,13 +33,13 @@ def test_reg_list(reg):
     assert len(result) > 0
     first = result[0]
     assert isinstance(first, Namespace)
-    assert TEST_PKG in str(first)
+    assert TEST_PKG in str(first.path.as_posix())
 
 
 def test_reg_get(reg):
     name = reg.get(TEST_PKG)
     assert isinstance(name, Namespace)
-    assert TEST_PKG in str(name)
+    assert TEST_PKG in str(name.path.as_posix())
 
     with raises(KeyError):
         reg.get("invalid")

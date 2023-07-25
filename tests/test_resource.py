@@ -1,8 +1,7 @@
-from sys import platform
 from pytest import fixture
 from quiltcore import Resource
 
-from .conftest import TEST_VOL
+from .conftest import TEST_VOL, not_win
 
 S3_URI = "s3://bkt?versionId=123"
 
@@ -19,7 +18,7 @@ def test_res(res):
     assert res.path.is_dir()
     assert "resource" in res.args
     assert "Resource" in str(res)
-    if not platform.startswith("win"):
+    if not_win():
         assert TEST_VOL in repr(res)
 
 

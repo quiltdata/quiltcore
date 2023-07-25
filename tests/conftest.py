@@ -1,5 +1,6 @@
 from os import environ
 from pathlib import Path
+from sys import platform
 
 LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 
@@ -28,3 +29,6 @@ TEST_ROW = {
         "type": ["SHA256"],
     },
 }
+
+def not_win():
+    return not platform.startswith("win")
