@@ -4,9 +4,8 @@ import logging
 from json import JSONEncoder
 from pathlib import Path
 
-from multiformats import multihash
-
 from .resource import Resource
+from .yaml.codec import Codec
 
 
 class ResourceKey(Resource):
@@ -14,48 +13,12 @@ class ResourceKey(Resource):
     Get/List child resources by key in Manifest
     """
 
-    MH_PREFIXES: dict[str, str] = {
-        "SHA256": "1220",
-    }
-
-    DEFAULT_HASH_TYPE = "SHA256"
-    DEFAULT_MH_PREFIX = MH_PREFIXES[DEFAULT_HASH_TYPE]
-    DEFAULT_MSG = f"Updated {Resource.Now()}"
     ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
-    KEY_MH = "multihash"
-    KEY_HSH = "hash"
-    KEY_TAG = "tag"
-    KEY_FRC = "force"
-
-    @staticmethod
-    def AsHash(multihash: str) -> str:
-        return multihash.removeprefix(ResourceKey.DEFAULT_MH_PREFIX)
-
-    @staticmethod
-    def RowValue(row: dict, key: str, default=None):
-        value = row.get(key, None)
-        logging.debug(f"get_value[{key}]: {value} from {row}")
-        return value[0] if value else default
-
-    @classmethod
-    def GetHash(cls, opts: dict[str, str]) -> str:
-        if cls.KEY_HSH in opts:
-            return opts[cls.KEY_HSH]
-        if cls.KEY_MH in opts:
-            mh = opts[cls.KEY_MH]
-            return cls.AsHash(mh)
-        return ""
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.kHashType = self.cf.get_str("quilt3/hash_type", self.DEFAULT_HASH_TYPE)
-        self.kHash = self.cf.get_str("quilt3/hash", "hash")
-        self.kMeta = self.cf.get_str("quilt3/meta", "meta")
-        self.kName = self.cf.get_str("quilt3/name", "logical_key")
-        self.kPlaces = self.cf.get_str("quilt3/places", "physical_keys")
-        self.kSize = self.cf.get_str("quilt3/size", "size")
+        self.codec = Codec()
         self.headers = self.cf.get_dict("quilt3/headers")
-        self._setup_digest(self.kHashType)
 
     #
     # Abstract Methods for child resources
@@ -75,61 +38,48 @@ class ResourceKey(Resource):
 
     def key_path(self, key: str, args: dict = {}) -> Path:
         """Return the Path for a child resource."""
-        if self.KEY_PATH not in args:
-            raise KeyError(f"Missing {self.KEY_PATH} in {args.keys()}")
-        place = args[self.KEY_PATH]
-        return self.AsPath(place)
+        return self.AsPath(args[self.cf.K_PLC])
 
     def child(self, key: str, **kwargs):
         """Return a child resource."""
         args = self._child_dict(key)
         path = self.key_path(key, args)
         merged = {**self.args, **args}
+        self.CheckPath(path)
         return self.klass(path, **merged)
 
     #
     # Hash creation
     #
 
-    def source_hash(self) -> str:
-        """Return the hash of the source file."""
-        return self.digest(self.to_bytes())
-
     def digest(self, bstring: bytes) -> str:
         """Return the multihash digest of `bstring`"""
-        digest = self.hash_digest.digest(bstring)
-        digest.hex()
-        return digest.hex()
+        return self.codec.digest(bstring)
 
-    def calc_multihash(self, head: ResourceKey) -> str:
-        hashable = head.hashable()
+    def hash_quilt3(self) -> str:
+        """Return the hash of the source file."""
+        mh = self._hash_multihash()
+        hash_struct = self.codec.encode_hash(mh)
+        return hash_struct["value"]
+
+    def _hash_multihash(self) -> str:
+        raise NotImplementedError("subclass must override")
+
+    def _hash_path(self) -> str:
+        """Return the multihash of the source file."""
+        return self.digest(self.to_bytes())
+
+    def _hash_manifest(self) -> str:
+        hashable = b""
+        if hasattr(self, "head"):
+            self.head.hashable()  # type: ignore
         for entry in self.list():
             hashable += entry.hashable()  # type: ignore
         return self.digest(hashable)
 
-    def calc_hash(self, head: ResourceKey) -> str:
-        """
-        Return the hash of the manifest.
-        """
-        return self.AsHash(self.calc_multihash(head))
-
     #
     # Hash retreival
     #
-
-    def _setup_digest(self, type):
-        hash_key = f"multihash/{type}"
-        self.hash_type = self.cf.get_str(hash_key)
-        self.hash_digest = multihash.get(self.hash_type)
-
-    def _setup_hash(self, opt: dict = {}):
-        """Set or create hash attributes."""
-        type = opt.get("type", self.kHashType)
-        self._setup_digest(type)
-        self.hash_prefix = self.MH_PREFIXES[type]
-        value = opt.get("value")
-        self.multihash = self.hash_prefix + value if value else self.source_hash()
-        self.hash = value if value else self.multihash.removeprefix(self.hash_prefix)
 
     def to_hashable(self) -> dict:
         raise NotImplementedError
@@ -142,7 +92,9 @@ class ResourceKey(Resource):
         """Verify that multihash digest of bytes match the multihash"""
         digest = self.digest(bstring)
         logging.debug(f"verify.digest: {digest}")
-        return digest == self.multihash
+        if not hasattr(self, self.KEY_MH):
+            raise ValueError("no hash found for {self}")
+        return digest == getattr(self, self.KEY_MH)
 
     #
     # Concrete HTTP Methods

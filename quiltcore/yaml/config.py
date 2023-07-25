@@ -4,6 +4,10 @@ from upath import UPath
 
 class Config(UnYaml):
     CONFIG_FILE = "quiltcore.yaml"
+    K_MAP = "map"
+    K_NAM = "name"
+    K_PLC = "place"
+    K_HSH = "hash"
 
     @classmethod
     def DefaultConfig(cls) -> dict:

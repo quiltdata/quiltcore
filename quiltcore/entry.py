@@ -1,9 +1,9 @@
 import logging
-from copy import copy
 from pathlib import Path
 
 from .resource import Resource
 from .resource_key import ResourceKey
+from .yaml.codec import Dict3, asdict
 
 
 class Entry(ResourceKey):
@@ -11,61 +11,60 @@ class Entry(ResourceKey):
     Represents a single row in a Manifest.
     Attributes:
 
-    * name: str (logical_key)
     * path: Path (physical_key)
+    * name: str (logical_key)
     * size: int
-    * hash: str[multihash]
-    * metadata: object
+    * multihash: str[multihash]
+    * meta: dict
 
     """
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self._setup(kwargs)
+        self.name = kwargs.get(self.cf.K_NAM, self.path.name)
+        self.multihash: str = kwargs.get(self.KEY_MH, False) or self._hash_path()
+        self.size = kwargs.get(self.KEY_SZ, False) or self.path.stat().st_size
+        self.meta = kwargs.get(self.KEY_META, None)
+
+    def _hash_multihash(self) -> str:
+        return self.multihash
 
     #
     # Parse and unparse
     #
 
-    def _setup(self, row: dict):
-        self.name = self.RowValue(row, self.kName) or self.path.name
-        self.meta = self.RowValue(row, self.kMeta)
-        hash = self.RowValue(row, self.kHash) or {}
-        self._setup_hash(hash)  # type: ignore
-        self.size = self.RowValue(row, self.kSize)
-        if not self.size:
-            self.size = self.path.stat().st_size
-
-    def to_row(self) -> dict:
-        row = {
-            self.kName: self.encode(self.name),
-            self.kPlaces: [self.encode(str(self.path))],
-            self.kSize: self.size,
-            self.kHash: {"value": self.hash, "type": self.DEFAULT_HASH_TYPE},
-            self.kMeta: self.meta,
-        }
+    def to_row3(self) -> Dict3:
+        row = self.codec.encode(self)
+        # row[self.KEY_PATH] = self.path
         return row
 
     def to_hashable(self) -> dict:
-        if not self.hash or not self.size:
+        if not self.multihash or not self.size:
             raise ValueError(f"Missing hash or size: {self}")
-        return {
-            self.kName: self.name,
-            self.kHash: {"value": self.hash, "type": self.DEFAULT_HASH_TYPE},
-            self.kSize: self.size,
-            "meta": self.meta or {},
+        hashable = {
+            self.codec.config("map")["name"]: self.name,
+            self.KEY_HSH: self.codec.encode_hash(self.multihash),
+            self.KEY_SZ: self.size,
         }
+        hashable[self.KEY_META] = self.meta or {}
+        return hashable
 
-    def get(self, key: str, **kwargs) -> Resource:
-        """Copy contents of resource's path into _key_ directory."""
+    def to_path(self, key: str) -> Path:
         dir = self.AsPath(key)
         dir.mkdir(parents=True, exist_ok=True)
         path = dir / self.name
         logging.debug(f"path: {path}")
-        path.write_bytes(self.to_bytes())  # for binary files
-        clone = copy(self)
-        clone.path = path.resolve()
-        clone.args = kwargs
-        logging.debug(f"clone: {clone}")
+        return path
 
+    #
+    # Public Methods
+    #
+
+    def get(self, key: str, **kwargs) -> Resource:
+        """Copy contents of resource's path into _key_ directory."""
+        path = self.to_path(key)
+        path.write_bytes(self.to_bytes())  # for binary files
+        kwargs = asdict(self.to_row3())
+        clone = Entry(path.resolve(), **kwargs)
+        logging.debug(f"clone: {clone}")
         return clone

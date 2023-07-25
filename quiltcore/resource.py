@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from re import compile
 from time import time
-from urllib.parse import parse_qs, quote, unquote, urlparse
+from urllib.parse import parse_qs, urlparse
 
 import quiltcore
 from upath import UPath
@@ -18,34 +19,31 @@ class Resource:
     Subclasses override child* to customize get/list behavior
     """
 
-    DEFAULT_HASH_TYPE = "SHA256"
+    ARG_REG = "registry"
+    ARG_MAN = "manifest"
+    ARG_NS = "namespace"
+
+    KEY_FRC = "force"
     KEY_GLOB = "glob"
     KEY_KEY = "_key"
+    KEY_HSH = "hash"
     KEY_META = "meta"
-    KEY_MSG = "msg"
-    KEY_NS = f"namespace.{KEY_KEY}"
+    KEY_MH = "multihash"
+    KEY_MSG = "message"
+    KEY_NS = f"{ARG_NS}.{KEY_KEY}"
     KEY_PATH = "_path"
-    KEY_VER = "versionId"
     KEY_S3VER = "version_id"
     KEY_SELF = "."
+    KEY_SZ = "size"
+    KEY_TAG = "tag"
+    KEY_USER = "user_meta"
+    KEY_VER = "versionId"
+
     MANIFEST = "_manifest"
     TAG_DEFAULT = "latest"
-    UNQUOTED = "/:"
-    LOCAL = "file://./"
-
-    @staticmethod
-    def AsPath(key: str) -> UPath:
-        """Return a Path from a string."""
-        if not isinstance(key, str):
-            raise TypeError(f"[{key}]Expected str, got {type(key)}")
-        return UPath(key, version_aware=True)
-
-    @staticmethod
-    def AsStr(object) -> str:
-        """Return a string from a simple object."""
-        if not isinstance(object, str):
-            raise TypeError(f"Expected str, got {type(object)}:{object}")
-        return object
+    IS_LOCAL = compile(r"file:\/*")
+    IS_REL = "./"
+    IS_URI = ":/"
 
     @staticmethod
     def ClassFromName(name: str) -> type:
@@ -57,8 +55,21 @@ class Resource:
         "Return integer timestamp."
         return str(int(time()))
 
-    @staticmethod
-    def GetVersion(uri: str) -> str:
+    @classmethod
+    def AsPath(cls, key: str) -> Path:
+        """Return a Path from a string."""
+        if not isinstance(key, str):
+            raise TypeError(f"[{key}]Expected str, got {type(key)}")
+        return UPath(key, version_aware=True)
+
+    @classmethod
+    def CheckPath(cls, path) -> Path:
+        if not isinstance(path, Path):
+            raise TypeError(f"[{path}]Expected Path, got {type(path)}")
+        return path
+
+    @classmethod
+    def GetVersion(cls, uri: str) -> str:
         """Extract `versionId` from query."""
         query = urlparse(uri).query
         if not query:
@@ -67,8 +78,15 @@ class Resource:
         vlist = qs.get(Resource.KEY_VER)
         return vlist[0] if vlist else ""
 
+    @classmethod
+    def FromURI(cls, uri: str) -> "Resource":
+        path = cls.AsPath(uri)
+        ver = cls.GetVersion(uri)
+        opts = {cls.KEY_VER: ver} if len(ver) > 0 else {}
+        return cls(path, **opts)
+
     def __init__(self, path: Path, **kwargs):
-        self.path = path
+        self.path = self.CheckPath(path)
         self.args = kwargs
         self.name = path.name
         self.class_name = self.__class__.__name__
@@ -124,28 +142,6 @@ class Resource:
         """Return text from path."""
         text = self.to_bytes().decode("utf-8")
         return text.strip() if strip else text
-
-    #
-    # URL Encoding of Physical Keys
-    #
-
-    def encodings(self) -> dict:
-        """Return a dict of keys to encode, and their mappings."""
-        return self.cf.get_dict("quilt3/encoded")
-
-    def encoded(self) -> bool:
-        """Return True if Resource keys should be encoded."""
-        return len(self.encodings()) > 0
-
-    def encode(self, object) -> str:
-        """Encode object as a string."""
-        key = self.AsStr(object)
-        return quote(key, safe=self.UNQUOTED) if self.encoded() else key
-
-    def decode(self, object) -> str:
-        """Decode object as a string."""
-        key = self.AsStr(object)
-        return unquote(key) if self.encoded() else key
 
     #
     # Abstract HTTP Methods

@@ -6,7 +6,6 @@ import pandas as pd
 import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
-from pytest import mark
 from quiltcore import Table
 
 from .conftest import TEST_MAN
@@ -43,16 +42,6 @@ def test_arrow_s3():
         assert table
 
 
-@mark.skip("Need to understand Arrow schema")
-def test_arrow_schema():
-    path = Table.AsPath(TEST_MAN)
-    table = Table(path)
-    yaml_schema = table.cf.get_dict("quilt3/schema")
-    assert yaml_schema
-    schema = pa.schema(yaml_schema)
-    assert schema
-
-
 def test_arrow_table():
     path = Table.AsPath(TEST_MAN)
     table = Table(path)
@@ -69,10 +58,10 @@ def test_arrow_table():
     assert body.num_rows == 1
     schema = body.schema
     assert schema
-    columns = table.cf.get_dict("quilt3/columns")
+    columns = table.cf.get_dict("quilt3/schema")
     for key in columns:
         assert key in schema.names
-    cn = schema.names[0]
-    col = body.column(cn)
+
+    col = table.names()
     assert col
-    assert col[0].as_py() == "ONLYME.md"
+    assert col[0] == "ONLYME.md"

@@ -11,6 +11,23 @@ attempts to define a next-generation architecture and primitives
 3. Support alternate manifest serializations (and additional semantics)
 4. Wrap in application-specific "porcelain" (convenience APIs)
 
+## Schema
+
+Streamlined manifest schema:
+
+- name
+- place / path
+- size
+- multihash : quilt3_hash : struct_hash
+- meta / user_meta
+
+### Principles
+
+- Must correctly read and write legacy schema
+- Present only new schema
+- decode dict into dict
+- encode attrs into dict
+
 ## Architecture
 
 ### 1. Cross-Platform Open Source

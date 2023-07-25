@@ -9,6 +9,7 @@ from .manifest import Manifest
 from .registry import Registry
 from .resource import Resource
 from .resource_key import ResourceKey
+from .yaml.codec import asdict
 
 
 class Volume(ResourceKey):
@@ -28,12 +29,12 @@ class Volume(ResourceKey):
 
     @staticmethod
     def WriteManifest(head: Header, entries: list[Entry], path: Path) -> None:
-        rows = [entry.to_row() for entry in entries]  # type: ignore
+        rows = [entry.to_row3() for entry in entries]  # type: ignore
         with path.open(mode="wb") as fo:
             with Writer(fo) as writer:
                 writer.write(head.to_dict())
                 for row in rows:
-                    writer.write(row)
+                    writer.write(asdict(row))
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -86,7 +87,7 @@ class Volume(ResourceKey):
 
         manifest = self.get_manifest(key, **kwargs)
         args = manifest.args.copy()
-        args[self.KEY_PATH] = str(manifest.path)
+        args[self.KEY_PATH] = manifest.path
         self.keycache[key] = args
         return manifest
 
@@ -95,7 +96,7 @@ class Volume(ResourceKey):
         Get or Create manifest for Namespace `key` and `kwargs`
         """
         opts: dict[str, str] = kwargs
-        hash = self.GetHash(opts)
+        hash = opts.get(self.KEY_HSH, "")
         if len(hash) > 0:
             return Manifest(self.registry.manifests / hash, **self.args)
 
@@ -121,7 +122,7 @@ class Volume(ResourceKey):
         if not isinstance(res, Manifest):
             raise TypeError(f"Volume.put requires a Manifest, not {type(res)}")
         man: Manifest = res
-        new_path = self.registry.manifests / man.source_hash()
+        new_path = self.registry.manifests / man.hash_quilt3()
         if new_path.exists() and not kwargs.get(self.KEY_FRC, False):
             raise FileExistsError(f"Manifest {new_path} already exists")
 

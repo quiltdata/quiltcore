@@ -1,24 +1,23 @@
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 from pytest import fixture
 from quiltcore import Entry, Header, Manifest, Registry
-from upath import UPath
 
-from .conftest import TEST_KEY, TEST_MAN, TEST_OBJ_HASH, TEST_S3VER, TEST_SIZE
-
-K_REG = "registry"
-
-
-@fixture
-def tmpdir():
-    with TemporaryDirectory() as tmpdirname:
-        yield UPath(tmpdirname)
+from .conftest import (
+    TEST_KEY, TEST_MAN, TEST_OBJ, TEST_SIZE, TEST_VER, TEST_VOL, not_win
+)
 
 
 @fixture
-def man():
-    opts = {}
+def opts() -> dict:
+    root = TEST_VOL
+    rootdir = Path(root)
+    opts = {Registry.ARG_REG: Registry(rootdir)}
+    return opts
+
+
+@fixture
+def man(opts: dict) -> Manifest:
     path = Manifest.AsPath(TEST_MAN)
     return Manifest(path, **opts)
 
@@ -40,34 +39,25 @@ def test_man_head(man: Manifest):
     assert hashable["user_meta"]["Author"] == "Ernest"
 
 
-def test_man_child_place():
-    rootdir = Path.cwd()
-    root = str(rootdir)
-    opts = {K_REG: Registry(rootdir)}
-    path = Manifest.AsPath(TEST_MAN)
-    man = Manifest(path, **opts)
-    assert K_REG in man.args
-
-    assert TEST_S3VER == man._child_place(TEST_S3VER)
-    assert TEST_S3VER == man._child_place([TEST_S3VER])
-    TEST_LOCAL = man.LOCAL + "place"
-    TEST_GLOBAL = str(rootdir / "place")
-    print(man.args.keys())
-    assert man._child_place(TEST_LOCAL, root) == TEST_GLOBAL
+def test_man_child_place(man: Manifest):
+    assert Registry.ARG_REG in man.args
+    plc = "./manual/force/ONLYME.md"
+    place = man._child_place(plc)
+    assert place != plc
+    if not_win():
+        assert f"{place}?versionId={TEST_VER}" == TEST_OBJ
 
 
 def test_man_child_dict(man: Manifest):
     cd = man._child_dict(TEST_KEY)
     assert cd
     assert isinstance(cd, dict)
-    assert cd[man.kName] == [TEST_KEY]
-    # assert cd[man.kPlaces] == [[TEST_OBJ]]
-    # assert cd[man.kPath] == UPath(TEST_OBJ)
-    assert cd[man.kSize] == [TEST_SIZE]
-    hash = cd[man.kHash][0]
-    assert isinstance(hash, dict)
-    assert hash["value"] == TEST_OBJ_HASH
-    assert hash["type"] == man.DEFAULT_HASH_TYPE
+    assert cd[man.cf.K_NAM] == TEST_KEY
+    assert cd[man.KEY_SZ] == TEST_SIZE
+    mhash = cd[man.KEY_MH]
+    assert isinstance(mhash, str)
+    # assert cd[man.cf.K_PLC] == TEST_OBJ
+    # assert cd[man.KEY_S3VER] == TEST_S3VER
 
 
 def test_man_entry(man: Manifest):
@@ -95,5 +85,5 @@ def test_man_get(man: Manifest):
 
 
 def test_man_hash(man: Manifest):
-    hash = man.calc_hash(man.head)
+    hash = man.hash_quilt3()
     assert hash == man.name

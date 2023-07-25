@@ -1,29 +1,34 @@
 from pytest import fixture
 from quiltcore import Resource
-from upath import UPath
 
-from .conftest import TEST_VOL
+from .conftest import TEST_VOL, not_win
+
+S3_URI = "s3://bkt?versionId=123"
 
 
 @fixture
-def reg():
-    path_bkt = UPath(TEST_VOL)
+def res():
+    path_bkt = Resource.AsPath(TEST_VOL)
     return Resource(path_bkt)
 
 
-def test_reg(reg):
-    assert reg
-    assert reg.cf
-    assert reg.path.is_dir()
-    assert "resource" in reg.args
+def test_res(res):
+    assert res
+    assert res.cf
+    assert res.path.is_dir()
+    assert "resource" in res.args
+    assert "Resource" in str(res)
+    if not_win():
+        assert TEST_VOL in repr(res)
 
 
-def test_reg_version():
-    uri_string = "s3://bkt?versionId=123"
-    v = Resource.GetVersion(uri_string)
+def test_res_version():
+    v = Resource.GetVersion(S3_URI)
     assert v == "123"
-    path = Resource.AsPath(uri_string)
+    path = Resource.AsPath(S3_URI)
     opts = {Resource.KEY_VER: v}
     res = Resource(path, **opts)
     assert res
     assert res.read_opts()[Resource.KEY_S3VER] == v
+
+    assert res == Resource.FromURI(S3_URI)

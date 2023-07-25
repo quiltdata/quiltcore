@@ -1,9 +1,9 @@
 import logging
 from pathlib import Path
 
-
 from .resource_key import ResourceKey
 from .table import Table
+from .yaml.codec import asdict
 
 
 class Manifest(ResourceKey):
@@ -19,18 +19,13 @@ class Manifest(ResourceKey):
             self.head = self.table.head
         except FileNotFoundError:
             logging.warning(f"Manifest not found: {path}")
-        self.name_key = "name" if self.encoded() else self.kName
-        self.places_key = "places" if self.encoded() else self.kPlaces
-        self._setup_hash()
 
     #
     # Hash functions
     #
 
-    def source_hash(self) -> str:
-        """
-        Return the hash of the contents.
-        """
+    def hash_quilt3(self) -> str:
+        """Legacy quilt3 hash of the contents."""
         return self.name
 
     #
@@ -39,32 +34,27 @@ class Manifest(ResourceKey):
 
     def _child_names(self, **kwargs) -> list[str]:
         """List all child resource names."""
-        return self.table.column(self.name_key)
+        return self.table.names()
 
-    def _child_place(self, places, root="") -> str:
-        """Return the place for a child resource."""
-        place = places[0] if isinstance(places, list) else places
-        if place.startswith(self.LOCAL):
-            stem = place.replace(self.LOCAL, "")
-            if len(root) == 0:
-                registry = self.args.get("registry")
-                logging.debug(
-                    f"_child_place.registry: {registry} for ->\n\t{self.args.keys()}"
-                )
-                if registry:
-                    root = registry.root
-                    logging.debug(f"_child_place.root: {root}")
-            place = Path(root) / stem
-        return str(place)
+    def _child_place(self, place: str) -> str:
+        if self.IS_REL not in place:
+            return place
+        if self.IS_LOCAL.match(place) is not None:
+            place = self.IS_LOCAL.sub("", place)
+        if self.ARG_REG not in self.args:
+            raise KeyError(f"No registry root available in {self.args.keys()}")
+        reg = self.args[self.ARG_REG]
+        path = reg.root / place
+        logging.debug(f"{place} -> {path} [{path.absolute()}]")
+        return str(path)
 
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
-        # TODO: cache to avoid continually re-calcluating
-        row = self.table.filter(self.name_key, key)
-        places = row[self.places_key][0]
-        place = self._child_place(places)
-        row[self.KEY_PATH] = place
+        row = self.table.get_row4(key)
+        place = row.place
+        drow = asdict(row)
+        drow[self.codec.K_PLC] = self._child_place(place)
         v = self.GetVersion(place)
         if len(v) > 0:
-            row[self.KEY_VER] = v
-        return row
+            drow[self.KEY_VER] = v
+        return drow

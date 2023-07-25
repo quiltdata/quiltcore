@@ -63,7 +63,7 @@ class Changes(ResourceKey):
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         delta = self.get_delta(key)
-        return {self.kName: [delta.name], self.kPlaces: str(delta.path)}
+        return {self.cf.K_NAM: delta.name, self.cf.K_PLC: str(delta.path)}
 
     def get_delta(self, key: str, **kwargs) -> Delta:
         """Return a Delta by key. Raise KeyError if not found."""
@@ -84,7 +84,7 @@ class Changes(ResourceKey):
     # Create Manifest
     #
 
-    def grouped_rows(self) -> dict[str, list[dict]]:
+    def grouped_row3s(self) -> dict[str, list[dict]]:
         rows = [row for delta in self.keystore.values() for row in delta.to_dicts()]
         rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
         grouped = {k: list(v) for k, v in groupby(rows, lambda row: row[Delta.KEY_ACT])}
@@ -102,7 +102,7 @@ class Changes(ResourceKey):
         2. Create a Manifest from the entries (adding metadata if present)
 
         """
-        grouped = self.grouped_rows()
+        grouped = self.grouped_row3s()
         adds: list[dict] = grouped.get(Delta.KEY_ADD)  # type: ignore
         rms = grouped.get(Delta.KEY_RM)
         build = Builder(self.path, adds, kwargs, rm=rms, **self.args)

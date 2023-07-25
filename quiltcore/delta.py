@@ -31,14 +31,20 @@ class Delta(ResourceKey):
             ppath = self.AsPath(self.prefix) / self.name
             self.name = str(ppath.as_posix())
 
+    def prefixed(self, path: Path) -> str:
+        relative = path.relative_to(self.path)
+        if self.prefix:
+            relative = self.AsPath(self.prefix) / relative
+        return str(relative)
+
     def __str__(self):
         return dump(self.to_dict())
 
     def to_dict(self) -> dict:
         return {
             self.KEY_ACT: self.action,
-            self.KEY_NAM: f"{self.prefix/self.name}" if self.prefix else self.name,
-            self.KEY_PATH: str(self.path),
+            self.cf.K_NAM: self.name,
+            self.cf.K_PLC: str(self.path),
         }
 
     def to_dicts(self) -> list[dict]:
@@ -48,8 +54,9 @@ class Delta(ResourceKey):
         for obj in self.path.rglob("*"):
             row = {
                 self.KEY_ACT: self.action,
-                self.KEY_NAM: self.name,
-                self.KEY_PATH: str(obj),
+                self.cf.K_NAM: self.prefixed(obj),
+                self.cf.K_PLC: str(obj),
+                # self.KEY_PATH: obj,
             }
             result.append(row)
         return result

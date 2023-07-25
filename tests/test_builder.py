@@ -1,7 +1,7 @@
 from tempfile import TemporaryDirectory
 
 from pytest import fixture, raises
-from quiltcore import Builder, Manifest
+from quiltcore import Builder, Codec, Manifest
 from upath import UPath
 
 FILENAME = "filename.txt"
@@ -19,7 +19,11 @@ def build(dir: UPath) -> Builder:
     """Why does row require a hash? And as a list?"""
     path = dir / FILENAME
     path.write_text(FILETEXT)
-    row = {"name": FILENAME, "_path": str(path), "meta": {"content": "context"}}
+    row = {
+        Codec.K_NAM: FILENAME,
+        Codec.K_PLC: str(path),
+        Builder.KEY_META: {"content": "context"},
+    }
     return Builder(dir, [row])
 
 
@@ -41,7 +45,6 @@ def test_build_head(build: Builder):
     assert build.head.message == build.cf.get("quilt3/headers/message")  # type: ignore
     assert build.head.user_meta == {}  # type: ignore
     bd = build.head.to_dict()
-    print(bd)
     assert bd["user_meta"] == {}
 
 
@@ -55,5 +58,5 @@ def test_build_man(build: Builder):
     entry = mlist[0]
     assert entry.name == FILENAME
 
-    hash = man.calc_hash(man.head)
+    hash = man.hash_quilt3()
     assert hash == man.name

@@ -30,7 +30,7 @@ class Header(ResourceKey):
 
     def _setup_headers(self, first: dict):
         for header, default in self.headers.items():
-            value = self.RowValue(first, header, default)
+            value = first.get(header, default)
             setattr(self, header, value)
             if header in first:
                 self.cols.append(header)
@@ -47,12 +47,10 @@ class Header(ResourceKey):
 
     def to_hashable(self) -> dict:
         meta = self.to_dict()
-        user_meta = getattr(self, self.kMeta) if hasattr(self, self.kMeta) else None
-        if not user_meta:
-            user_meta = {}
-        for k, v in user_meta.items():
-            if isinstance(v, datetime):
-                fmt = self.cf.get_str("quilt3/format/datetime", "%Y-%m-%d")
-                user_meta[k] = v.strftime(fmt)
-        meta[self.kMeta] = user_meta
+        if hasattr(self, self.KEY_USER):
+            user_meta = getattr(self, self.KEY_USER)
+            for k, v in user_meta.items():
+                if isinstance(v, datetime):
+                    user_meta[k] = self.codec.encode_date(v)
+            meta[self.KEY_USER] = user_meta
         return meta

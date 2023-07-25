@@ -1,18 +1,21 @@
+import logging
 from pathlib import Path
 
 import pyarrow as pa  # type: ignore
-import pyarrow.compute as pc  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
 from .header import Header
-from .resource import Resource
+from .resource_key import ResourceKey
+from .yaml.codec import Codec, Dict3, Dict4
 
 
-class Table(Resource):
-    """Abstract calls to pyarrow."""
+class Table(ResourceKey):
+    """Abstract away calls to, and encoding of, pyarrow."""
 
     def __init__(self, path: Path, **kwargs):
+        """Read the manifest into a pyarrow Table."""
         super().__init__(path, **kwargs)
+        self.codec = Codec()
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         self.head = self._get_head()
@@ -23,60 +26,37 @@ class Table(Resource):
     #
 
     def _get_head(self) -> pa.Table:
-        """
-        Read the manifest into a pyarrow Table.
-        Extract header values into attributes.
-        Return the Table without header row and columns
-        """
-        first = self.table.take([0]).to_pydict()
+        """Extract header values into attributes."""
+        first = self.table.take([0]).to_pylist()[0]
         return Header(self.path, first=first)
 
     def _get_body(self) -> pa.Table:
+        """
+        Extract header values into attributes.
+        Return the Table without header row and columns
+        """
         body = self.head.drop(self.table)
-        return self._decode_table(body)
-
-    #
-    # Decode URIs
-    #
-
-    def _decode_table(self, body: pa.Table) -> pa.Table:
-        """
-        URL-Decode appropriate columns of the manifest.
-        """
-        encoding = self.encodings()
-        for old_col, new_col in encoding.items():
-            if old_col in body.column_names:
-                body = body.append_column(
-                    new_col,
-                    self.decode_item(body.column(old_col)),
-                )
-        return body
-
-    def decode_item(self, item):
-        item_type = type(item)
-        if isinstance(item, str):
-            return self.decode(item)
-        if isinstance(item, list):
-            return [self.decode_item(item[0])]
-        if isinstance(item, pa.ChunkedArray):
-            return pa.chunked_array([self.decode_item(chunk) for chunk in item.chunks])
-        if issubclass(item_type, pa.Array):
-            return [self.decode_item(chunk) for chunk in item.to_pylist()]
-        raise TypeError(f"Unexpected type: {item_type}")
+        return self.codec.decode_names(body)
 
     #
     # Query Table
     #
 
-    def column(self, col_name: str) -> list:
-        names = self.body.column(col_name).to_pylist()
-        return names
+    def names(self) -> list[str]:
+        if self.codec.name_col:
+            return self.codec.name_col.to_pylist()
+        return []
 
-    def filter(self, col_name: str, key: str) -> dict:
+    def get_row4(self, key: str) -> Dict4:
         """Return the dict for a child resource."""
         # TODO: cache to avoid continually re-calcluating
-        rows = self.body.filter(pc.field(col_name) == key)
-        if rows.num_rows == 0:
-            raise KeyError(f"Key [{key}] not found in {col_name} of {self.path}")
-        row = rows.to_pydict()
-        return row
+        index = self.codec.index_name(key).as_py()  # type: ignore
+        if index < 0:
+            raise ValueError(f"Key[{key}] not found in: {self.names()} ")
+        pa_list = self.body.take([index]).to_pylist()
+        pa_dict = pa_list[0]
+        del pa_dict[self.codec.K_NAM]
+
+        logging.debug(f"pa_dict: {pa_dict}")
+        pa_dict3 = Dict3(**pa_dict)
+        return self.codec.decode_dict(pa_dict3)
