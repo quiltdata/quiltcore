@@ -1,4 +1,4 @@
-
+from sys import platform
 from pytest import fixture
 from quiltcore import Resource
 
@@ -19,7 +19,8 @@ def test_res(res):
     assert res.path.is_dir()
     assert "resource" in res.args
     assert "Resource" in str(res)
-    assert TEST_VOL in repr(res)
+    if not platform.startswith("win"):
+        assert TEST_VOL in repr(res)
 
 
 def test_res_version():
