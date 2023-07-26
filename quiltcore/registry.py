@@ -30,7 +30,7 @@ class Registry(ResourcePath):
         return dir
 
     def _child_args(self, key: str) -> dict:
-        return {"manifests": self.manifests}
+        return {self.KEY_MAN: self.manifests}
 
     def put(self, res: Resource, **kwargs) -> "Resource":
         """Link manifest into namespace"""

@@ -27,6 +27,7 @@ class Resource:
     KEY_GLOB = "glob"
     KEY_KEY = "_key"
     KEY_HSH = "hash"
+    KEY_MAN = "_manifest"
     KEY_META = "meta"
     KEY_MH = "multihash"
     KEY_MSG = "message"
@@ -40,7 +41,6 @@ class Resource:
     KEY_UVER = "VersionId"
     KEY_VER = "versionId"
 
-    MANIFEST = "_manifest"
     TAG_DEFAULT = "latest"
     IS_LOCAL = compile(r"file:\/*")
     IS_REL = "./"

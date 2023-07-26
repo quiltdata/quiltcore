@@ -75,6 +75,7 @@ class Volume(ResourceKey):
 
     def get(self, key: str, **kwargs) -> "Resource":
         """
+        TODO: cache the manifest by hash, not package name
         Return and keycache manifest for Namespace `key`
 
         * hash
