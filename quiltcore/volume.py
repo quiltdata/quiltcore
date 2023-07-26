@@ -47,6 +47,10 @@ class Volume(ResourceKey):
             self.KEY_SELF: self.args,
         }
 
+#
+# Helper Methods
+#
+
     def is_local(self) -> bool:
         return self.uri.startswith("file://") or "://" not in self.uri
 
@@ -55,6 +59,14 @@ class Volume(ResourceKey):
         names = list(self.keycache.keys())
         names.remove(self.KEY_SELF)
         return names
+    
+    def _man_path(self, hash: str) -> Path:
+        """Return path to a manifest"""
+        return self.registry.manifests / hash
+    
+    def _stage_path(self, hash: str) -> Path:
+        """Return path to a manifest"""
+        return self.registry.stage / hash
 
     #
     # List/Delete vs keycache
@@ -97,9 +109,12 @@ class Volume(ResourceKey):
     
     def read_manifest(self, hash: str) -> Manifest:
         """Read a manifest from the registry"""
-        path = self.registry.manifests / hash
-        print(f"read_manifest: {path}")
-        return Manifest(path, **self.args)
+        paths = [self._stage_path(hash), self._man_path(hash)]
+        for path in paths:
+            if path.exists():
+                print(f"read_manifest: {path}")
+                return Manifest(path, **self.args)
+        raise FileNotFoundError(f"Manifest not found: {hash}\n\tin: {paths}")
 
     def get_manifest(self, key: str, **kwargs) -> "Resource":
         """
@@ -137,10 +152,10 @@ class Volume(ResourceKey):
             raise TypeError(f"Volume.put requires a Manifest, not {type(res)}")
         man: Manifest = res
         hash = man.hash_quilt3()
-        stage_path = self.registry.stage / hash
+        stage_path = self._stage_path(hash)
         self.WriteManifest(man.head, man.list(), stage_path)  # type: ignore
 
-        new_path = self.registry.manifests / hash
+        new_path = self._man_path(hash)
         if new_path.exists() and not kwargs.get(self.KEY_FRC, False):
             raise FileExistsError(f"Manifest {new_path} already exists")
 
