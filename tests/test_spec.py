@@ -176,7 +176,6 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
         vol.KEY_FRC: True,
     }
     vol.put(man, **opts)
-    # assert False
 
 
 def test_spec_workflow():

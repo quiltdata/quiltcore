@@ -31,6 +31,7 @@ class Resource:
     KEY_META = "meta"
     KEY_MH = "multihash"
     KEY_MSG = "message"
+    KEY_NCP = "nocopy"
     KEY_NS = f"{ARG_NS}.{KEY_KEY}"
     KEY_PATH = "_path"
     KEY_S3VER = "version_id"

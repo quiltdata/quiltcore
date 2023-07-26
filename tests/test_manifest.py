@@ -72,8 +72,6 @@ def test_man_child_dict(man: Manifest):
     assert cd[man.KEY_SZ] == TEST_SIZE
     mhash = cd[man.KEY_MH]
     assert isinstance(mhash, str)
-    # assert cd[man.cf.K_PLC] == TEST_OBJ
-    # assert cd[man.KEY_S3VER] == TEST_S3VER
 
 
 def test_man_entry(man: Manifest):
@@ -97,7 +95,6 @@ def test_man_get(man: Manifest):
     assert entry
     assert isinstance(entry, Entry)
     assert TEST_KEY in str(entry.path)
-    # TODO: assert entry.version == TEST_VER
 
 
 def test_man_hash(man: Manifest):

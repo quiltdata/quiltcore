@@ -152,10 +152,10 @@ class Volume(ResourceKey):
     #   - copies Manifest onto Volume
     #
     #  OPTS:
-    #  - pkg="PKG/NAME": namespace to register manifest
+    #  - namespace_key="PKG/NAME": namespace to register manifest
     #  - force=True: overwrite any existing manifest
+    #  - nocopy=True: do not copy any files onto new Volume (just copy manifest)
 
-    # TODO: add --nocopy option
     def put(self, res: Resource, **kwargs) -> "Resource":
         """Insert/Replace and return a child resource."""
         logging.debug(f"Volume.put: {res} [{kwargs}]]")
@@ -177,9 +177,10 @@ class Volume(ResourceKey):
         )
         kwargs[self.KEY_NS] = ns_name
 
-        man2 = self.translate_manifest(man, new_path, ns_name)
-        self.registry.put(man2, **kwargs)
-        return man2
+        if not kwargs.get(self.KEY_NCP, False):
+            man = self.translate_manifest(man, new_path, ns_name)
+        self.registry.put(man, **kwargs)
+        return man
 
     def translate_manifest(self, man: ResourceKey, path: Path, name: str) -> Manifest:
         """Translate entries from manifest into this Volume"""
