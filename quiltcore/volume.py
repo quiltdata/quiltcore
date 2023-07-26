@@ -43,7 +43,7 @@ class Volume(ResourceKey):
         super().__init__(path, **kwargs)
         self.registry = Registry(path, **self.args)
         self.uri = str(self.path)
-        self.keycache: dict[str, dict] = {
+        self.pkgcache: dict[str, dict] = {
             self.KEY_SELF: self.args,
         }
 
@@ -56,9 +56,9 @@ class Volume(ResourceKey):
 
     def _child_names(self, **kwargs) -> list[str]:
         """Return names of each child resource."""
-        names = list(self.keycache.keys())
+        names = list(self.pkgcache.keys())
         names.remove(self.KEY_SELF)
-        return names
+        return [n.split(":")[0].split("@")[0] for n in names]
 
     def _man_path(self, hash: str) -> Path:
         """Return path to a manifest"""
@@ -74,11 +74,12 @@ class Volume(ResourceKey):
 
     def delete(self, key: str, **kwargs) -> None:
         """Delete the key from this keycache"""
-        if key in self.keycache:
-            del self.keycache[key]
-            logging.debug(f"Deleted {key} from {self.keycache.keys()}")
-            return
-        raise KeyError(f"Key {key} not found in {self.keycache.keys()}")
+        for pkg in self.pkgcache:
+            if key in pkg:
+                del self.pkgcache[pkg]
+                logging.debug(f"Deleted {pkg} from {self.pkgcache.keys()}")
+                return
+        raise KeyError(f"Key {key} not found in {self.pkgcache.keys()}")
 
     def list(self, **kwargs) -> list["Resource"]:
         """List all child resources."""
@@ -90,21 +91,21 @@ class Volume(ResourceKey):
 
     def get(self, key: str, **kwargs) -> "Resource":
         """
-        TODO: cache the manifest by hash, not package name
         Return and keycache manifest for Namespace `key`
 
         * hash
         * multihash
         * tag [default: latest]
         """
-        if key in self.keycache:
-            opts = self.keycache[key]
+        pkg = self.get_pkg_name(key, **kwargs)
+        if pkg in self.pkgcache:
+            opts = self.pkgcache[pkg]
             return opts["manifest"]
 
         manifest = self.get_manifest(key, **kwargs)
         args = manifest.args.copy()
         args[self.KEY_PATH] = manifest.path
-        self.keycache[key] = args
+        self.pkgcache[pkg] = args
         return manifest
 
     def read_manifest(self, hash: str) -> Manifest:
@@ -116,14 +117,24 @@ class Volume(ResourceKey):
                 return Manifest(path, **self.args)
         raise FileNotFoundError(f"Manifest not found: {hash}\n\tin: {paths}")
 
+    def get_pkg_name(self, key: str, **kwargs) -> str:
+        opts: dict[str, str] = kwargs
+        hash = opts.get(self.KEY_HSH, "")
+        tag = opts.get(self.KEY_TAG, self.TAG_DEFAULT)
+        if hash:
+            return f"{key}@{hash}"
+        if tag:
+            return f"{key}:{tag}"
+        return key
+
     def get_manifest(self, key: str, **kwargs) -> "Resource":
         """
         Get or Create manifest for Namespace `key` and `kwargs`
         """
         opts: dict[str, str] = kwargs
         hash = opts.get(self.KEY_HSH, "")
+        tag = opts.get(self.KEY_TAG, self.TAG_DEFAULT)
         if len(hash) == 0:
-            tag = opts.get(self.KEY_TAG, self.TAG_DEFAULT)
             name = self.registry.get(key)
             if not isinstance(name, Namespace):
                 raise TypeError(f"Volume.get requires a Namespace, not {type(name)}")
@@ -166,14 +177,13 @@ class Volume(ResourceKey):
         )
         kwargs[self.KEY_NS] = ns_name
 
-        ns_name = self.write_entries(man, new_path, ns_name)
-        man2 = Manifest(new_path, **self.args)
+        man2 = self.translate_manifest(man, new_path, ns_name)
         self.registry.put(man2, **kwargs)
         return man2
 
-    def write_entries(self, man: ResourceKey, path: Path, name: str) -> str:
-        """Write entries to a manifest"""
+    def translate_manifest(self, man: ResourceKey, path: Path, name: str) -> Manifest:
+        """Translate entries from manifest into this Volume"""
         dest = str(self.path / name)
         entries = [entry.get(dest) for entry in man.list()]
         self.WriteManifest(man.head, entries, path)  # type: ignore
-        return name
+        return Manifest(path, **self.args)

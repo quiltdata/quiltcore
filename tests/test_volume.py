@@ -51,6 +51,10 @@ def test_vol_get(vol):
     with raises(KeyError):
         vol.delete(TEST_PKG)
 
+def test_vol_stage(vol):
+    """If a given hash is locally staged, use that instead"""
+    pass
+
 
 def test_vol_man(vol):
     man = vol.get(TEST_PKG)
