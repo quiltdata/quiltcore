@@ -81,10 +81,9 @@ class Codec(Config):
     def AsStr(cls, object) -> str:
         """Return a string from a simple object."""
         if isinstance(object, UPath) and object.exists():
-            print(f"AsStr.UPath: {object.stat()}")
             versionId = cls.StatVersion(object)
             if versionId:
-                print(f"AsStr.versionId: {versionId}")
+                logging.debug(f"AsStr.versionId: {versionId}")
                 return f"{object}?{cls.K_VER}={versionId}"
         if isinstance(object, Path):
             object = str(object)

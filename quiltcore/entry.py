@@ -66,7 +66,7 @@ class Entry(ResourceKey):
         path.write_bytes(self.to_bytes())  # for binary files
         kwargs = asdict(self.to_row3())
         clone = Entry(path.resolve(), **kwargs)
-        print(f"clone[{type(path)}]: {path.stat()}")
+        logging.debug(f"clone[{type(path)}]: {path.stat()}")
         clone.args[self.cf.K_PLC] = self.codec.AsStr(path)
         #logging.debug(f"clone: {clone.args}")
         return clone

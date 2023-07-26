@@ -55,8 +55,6 @@ def test_entry_remote(entry: Entry):
     remote = UPath(TEST_BKT) / "spec"
     clone = entry.get(str(remote))
     assert clone.path.exists()
-    print(clone.path)
-    print(clone.args)
     place = clone.args[clone.cf.K_PLC]
     query = place.split("?")
     assert query

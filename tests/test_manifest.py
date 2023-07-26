@@ -45,7 +45,6 @@ def test_man_version(man: Manifest):
     assert version
 
     bad_path = UPath(TEST_OBJ)
-    print(f"bad_path[{type(bad_path)}]: {bad_path}")
     bad_version = Codec.StatVersion(bad_path)
     assert not bad_version
 
