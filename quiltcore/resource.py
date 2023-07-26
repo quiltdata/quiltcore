@@ -37,6 +37,7 @@ class Resource:
     KEY_SZ = "size"
     KEY_TAG = "tag"
     KEY_USER = "user_meta"
+    KEY_UVER = "VersionId"
     KEY_VER = "versionId"
 
     MANIFEST = "_manifest"
@@ -70,7 +71,7 @@ class Resource:
 
     @classmethod
     def GetVersion(cls, uri: str) -> str:
-        """Extract `versionId` from query."""
+        """Extract `versionId` from URI query string."""
         query = urlparse(uri).query
         if not query:
             return ""
@@ -96,7 +97,6 @@ class Resource:
         if key is not None:
             self.args[f"{self.class_key}.{self.KEY_KEY}"] = key
         self.cf = Config()
-        assert "s3:/udp" not in str(path)
         self._setup_params()
 
     def __repr__(self):

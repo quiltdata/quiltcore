@@ -4,7 +4,7 @@ from pytest import fixture
 from quiltcore import Entry, Manifest, Registry
 from upath import UPath
 
-from .conftest import TEST_KEY, TEST_MAN, TEST_OBJ_HASH
+from .conftest import TEST_BKT, TEST_KEY, TEST_MAN, TEST_OBJ_HASH
 
 DATA_HW = b"Hello world!"
 HASH_HW = "1220c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
@@ -42,18 +42,27 @@ def test_entry_meta(entry: Entry):
     # TODO: choose a manifest with object-level metadata
     meta = entry.meta
     assert not meta
-    # assert isinstance(meta, dict)
-    # assert meta["target"] == "parquet"
 
 
 def test_entry_get(entry: Entry, tmpdir: UPath):
     dest = tmpdir / "data"
     assert not dest.exists()
-
-    loc = str(dest)
-    clone = entry.get(loc)
+    clone = entry.get(str(dest))
     assert TEST_KEY in str(clone.path)
     assert entry.path != clone.path
+
+def test_entry_remote(entry: Entry):
+    remote = UPath(TEST_BKT) / "spec"
+    clone = entry.get(str(remote))
+    assert clone.path.exists()
+    print(clone.path)
+    print(clone.args)
+    place = clone.args[clone.cf.K_PLC]
+    query = place.split("?")
+    assert query
+    assert len(query) > 1, "has query string"
+    assert clone.KEY_VER in query[1]
+
 
 
 def test_entry_digest(entry: Entry):

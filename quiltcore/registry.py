@@ -11,17 +11,20 @@ class Registry(ResourcePath):
     Defines core paths containing Namespaces and Manifests.
     `list` and `get` return Namespace objects
     """
+    DIR_PREFIX = "quilt3/dirs/"
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.root = path
-        self.base = self._setup_dir(path, "quilt3/dirs/config")
-        self.path = self._setup_dir(self.base, "quilt3/dirs/names")
-        self.manifests = self._setup_dir(self.base, "quilt3/dirs/manifests")
+        self.base = self._setup_dir(path, "config")
+        self.path = self._setup_dir(self.base, "names")
+        self.manifests = self._setup_dir(self.base, "manifests")
+        self.stage = self._setup_dir(self.base, "stage")
 
     def _setup_dir(self, path: Path, key: str) -> Path:
         """Form dir and create if it does not exist."""
-        dir = path / self.cf.get_path(key)
+
+        dir = path / self.cf.get_path(self.DIR_PREFIX + key)
         if not dir.exists():
             dir.mkdir(parents=True, exist_ok=True)
         return dir

@@ -1,17 +1,17 @@
-from pathlib import Path
+from upath import UPath
 
 from pytest import fixture
-from quiltcore import Entry, Header, Manifest, Registry
+from quiltcore import Codec, Entry, Header, Manifest, Registry
 
 from .conftest import (
-    TEST_KEY, TEST_MAN, TEST_OBJ, TEST_SIZE, TEST_VER, TEST_VOL, not_win
+    TEST_KEY, TEST_MAN, TEST_OBJ, TEST_SIZE, TEST_S3VER, TEST_VER, TEST_VOL, not_win
 )
 
 
 @fixture
 def opts() -> dict:
     root = TEST_VOL
-    rootdir = Path(root)
+    rootdir = UPath(root)
     opts = {Registry.ARG_REG: Registry(rootdir)}
     return opts
 
@@ -37,6 +37,17 @@ def test_man_head(man: Manifest):
     assert hashable
     assert isinstance(hashable, dict)
     assert hashable["user_meta"]["Author"] == "Ernest"
+
+
+def test_man_version(man: Manifest):
+    path = UPath(TEST_S3VER)
+    version = Codec.StatVersion(path)
+    assert version
+
+    bad_path = UPath(TEST_OBJ)
+    print(f"bad_path[{type(bad_path)}]: {bad_path}")
+    bad_version = Codec.StatVersion(bad_path)
+    assert not bad_version
 
 
 def test_man_child_place(man: Manifest):

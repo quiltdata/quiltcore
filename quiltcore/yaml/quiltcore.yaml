@@ -32,6 +32,7 @@ quilt3:
     config: .quilt
     names: named_packages
     manifests: packages
+    stage: remotes
   format:
     datetime: "%Y-%m-%d"
   hash_type: SHA256
