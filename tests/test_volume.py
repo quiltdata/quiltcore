@@ -45,12 +45,12 @@ def test_vol_get(vol):
     assert isinstance(man2, Manifest)
     vol.delete(TEST_PKG)
 
-
     with raises(KeyError):
         vol.get("invalid")
 
     with raises(KeyError):
         vol.delete(TEST_PKG)
+
 
 def test_vol_man(vol):
     man = vol.get(TEST_PKG)
@@ -58,7 +58,7 @@ def test_vol_man(vol):
     tag = vol.TAG_DEFAULT
     hash = name.hash(tag)
     assert hash == man.name
-    
+
 
 def test_vol_list(vol):
     result = vol.list()

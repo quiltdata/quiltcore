@@ -47,9 +47,9 @@ class Volume(ResourceKey):
             self.KEY_SELF: self.args,
         }
 
-#
-# Helper Methods
-#
+    #
+    # Helper Methods
+    #
 
     def is_local(self) -> bool:
         return self.uri.startswith("file://") or "://" not in self.uri
@@ -59,11 +59,11 @@ class Volume(ResourceKey):
         names = list(self.keycache.keys())
         names.remove(self.KEY_SELF)
         return names
-    
+
     def _man_path(self, hash: str) -> Path:
         """Return path to a manifest"""
         return self.registry.manifests / hash
-    
+
     def _stage_path(self, hash: str) -> Path:
         """Return path to a manifest"""
         return self.registry.stage / hash
@@ -106,7 +106,7 @@ class Volume(ResourceKey):
         args[self.KEY_PATH] = manifest.path
         self.keycache[key] = args
         return manifest
-    
+
     def read_manifest(self, hash: str) -> Manifest:
         """Read a manifest from the registry"""
         paths = [self._stage_path(hash), self._man_path(hash)]

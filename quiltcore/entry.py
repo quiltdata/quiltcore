@@ -68,5 +68,4 @@ class Entry(ResourceKey):
         clone = Entry(path.resolve(), **kwargs)
         logging.debug(f"clone[{type(path)}]: {path.stat()}")
         clone.args[self.cf.K_PLC] = self.codec.AsStr(path)
-        #logging.debug(f"clone: {clone.args}")
         return clone

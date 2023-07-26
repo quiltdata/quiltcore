@@ -11,6 +11,7 @@ class Registry(ResourcePath):
     Defines core paths containing Namespaces and Manifests.
     `list` and `get` return Namespace objects
     """
+
     DIR_PREFIX = "quilt3/dirs/"
 
     def __init__(self, path: Path, **kwargs):

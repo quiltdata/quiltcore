@@ -2,13 +2,13 @@ import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Optional
-from upath import UPath
 from urllib.parse import quote, unquote
 
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 from multiformats import multihash
 from typing_extensions import Any
+from upath import UPath
 
 from .config import Config
 
@@ -71,7 +71,7 @@ class Codec(Config):
     UNQUOTED = "/:"
 
     @classmethod
-    def StatVersion(cls, path: Path) -> str|None:
+    def StatVersion(cls, path: Path) -> str | None:
         if not path.exists():
             return None
         stat: dict = path.stat()  # type: ignore

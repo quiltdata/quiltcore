@@ -1,4 +1,4 @@
-from quiltcore import Config, Codec, Hash3
+from quiltcore import Codec, Config, Hash3
 
 
 def test_cf_config():

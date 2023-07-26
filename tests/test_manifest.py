@@ -1,10 +1,16 @@
-from upath import UPath
-
 from pytest import fixture
 from quiltcore import Codec, Entry, Header, Manifest, Registry
+from upath import UPath
 
 from .conftest import (
-    TEST_KEY, TEST_MAN, TEST_OBJ, TEST_SIZE, TEST_S3VER, TEST_VER, TEST_VOL, not_win
+    TEST_KEY,
+    TEST_MAN,
+    TEST_OBJ,
+    TEST_S3VER,
+    TEST_SIZE,
+    TEST_VER,
+    TEST_VOL,
+    not_win,
 )
 
 

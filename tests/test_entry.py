@@ -51,6 +51,7 @@ def test_entry_get(entry: Entry, tmpdir: UPath):
     assert TEST_KEY in str(clone.path)
     assert entry.path != clone.path
 
+
 def test_entry_remote(entry: Entry):
     remote = UPath(TEST_BKT) / "spec"
     clone = entry.get(str(remote))
@@ -60,7 +61,6 @@ def test_entry_remote(entry: Entry):
     assert query
     assert len(query) > 1, "has query string"
     assert clone.KEY_VER in query[1]
-
 
 
 def test_entry_digest(entry: Entry):
