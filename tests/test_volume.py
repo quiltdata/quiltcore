@@ -36,8 +36,12 @@ def test_vol_get(vol):
     assert isinstance(man, Manifest)
     vol.delete(TEST_PKG)
 
-    opts = {vol.KEY_HSH: TEST_HASH}
-    man2 = vol.get(TEST_PKG, **opts)
+    hash = man.name
+    man_hash = vol.get("", **{man.KEY_HSH: hash})
+    assert man_hash.name == hash
+    assert man_hash == man
+
+    man2 = vol.get(TEST_PKG, **{vol.KEY_HSH: TEST_HASH})
     assert isinstance(man2, Manifest)
     vol.delete(TEST_PKG)
 
@@ -46,6 +50,18 @@ def test_vol_get(vol):
 
     with raises(KeyError):
         vol.delete(TEST_PKG)
+
+def test_vol_stage(vol):
+    """If a given hash is locally staged, use that instead"""
+    pass
+
+
+def test_vol_man(vol):
+    man = vol.get(TEST_PKG)
+    name = vol.registry.get(TEST_PKG)
+    tag = vol.TAG_DEFAULT
+    hash = name.hash(tag)
+    assert hash == man.name
 
 
 def test_vol_list(vol):
@@ -77,14 +93,11 @@ def test_vol_put(dir: UPath):  # noqa: F401
     pkg_tmp = v_tmp.registry.path / TEST_PKG
     assert not pkg_tmp.exists()
 
-    man2: Manifest = v_tmp.put(man)  # type: ignore
-    assert pkg_tmp.exists()
+    man2: Manifest = v_tmp.put(man, **{man.KEY_NS: TEST_PKG})  # type: ignore
     assert man2.path.exists()
+    assert man2.name == man2.hash_quilt3()
 
-    hash = man2.hash_quilt3()
-    assert hash == man2.name
-
+    assert pkg_tmp.exists()
     latest = pkg_tmp / Volume.TAG_DEFAULT
     assert latest.exists()
-    hash = latest.read_text()
-    assert hash == man2.name
+    assert man2.name == latest.read_text()

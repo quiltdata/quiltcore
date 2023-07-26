@@ -5,13 +5,13 @@ from .resource_path import ResourcePath
 
 class Namespace(ResourcePath):
     """
-    Namespacespace of Manifests by Hash
+    Namespace of Manifests by Hash
     list/get returns a specific Manifest
     """
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.manifests = kwargs["manifests"]
+        self.manifests = kwargs[self.KEY_MAN]
 
     def hash(self, tag: str = ResourcePath.TAG_DEFAULT) -> str:
         hash_file = self.path / tag

@@ -30,5 +30,6 @@ TEST_ROW = {
     },
 }
 
+
 def not_win():
     return not platform.startswith("win")

@@ -8,6 +8,7 @@ import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 from multiformats import multihash
 from typing_extensions import Any
+from upath import UPath
 
 from .config import Config
 
@@ -58,18 +59,32 @@ class Codec(Config):
 
     """
 
+    K_UVER = "VersionId"
+    K_VER = "versionId"
+    MH_DIG = "digest"
+    MH_PRE = "prefix"
     T_HSH = "is_hash"
     T_LST = "is_list"
     T_OPT = "is_optional"
     T_QTD = "is_quoted"
-    MH_DIG = "digest"
-    MH_PRE = "prefix"
 
     UNQUOTED = "/:"
 
-    @staticmethod
-    def AsStr(object) -> str:
+    @classmethod
+    def StatVersion(cls, path: Path) -> str | None:
+        if not path.exists():
+            return None
+        stat: dict = path.stat()  # type: ignore
+        return stat.get(cls.K_UVER, None)
+
+    @classmethod
+    def AsStr(cls, object) -> str:
         """Return a string from a simple object."""
+        if isinstance(object, UPath) and object.exists():
+            versionId = cls.StatVersion(object)
+            if versionId:
+                logging.debug(f"AsStr.versionId: {versionId}")
+                return f"{object}?{cls.K_VER}={versionId}"
         if isinstance(object, Path):
             object = str(object)
         if not isinstance(object, str):
