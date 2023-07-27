@@ -7,7 +7,7 @@ from .entry import Entry
 from .header import Header
 from .resource_key import ResourceKey
 from .table import Table
-from .yaml.codec import asdict, Dict3
+from .yaml.codec import Dict3, asdict
 
 
 class Manifest(ResourceKey):
@@ -30,7 +30,6 @@ class Manifest(ResourceKey):
                     if not isinstance(row, Dict3):
                         raise ValueError("")
                     writer.write(asdict(row))
-
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)

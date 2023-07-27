@@ -44,7 +44,7 @@ class Builder(ResourceKey):
         """Get a child entry by key."""
         delta = self.changes.get(key)
         children = delta.list()
-        return children[0] 
+        return children[0]
 
     def post(self, path: Path, **kwargs) -> Resource:
         path = path or self.path
@@ -55,4 +55,3 @@ class Builder(ResourceKey):
             raise ValueError(f"Cannot post empty manifest: {self.changes}")
         Manifest.WriteToPath(self.head, self.list(), path)  # type: ignore
         return Manifest(path, **kwargs)
-

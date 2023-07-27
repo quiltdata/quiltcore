@@ -1,7 +1,7 @@
 from tempfile import TemporaryDirectory
 
-from pytest import fixture, raises, skip
-from quiltcore import Builder, Codec, Manifest
+from pytest import fixture
+from quiltcore import Builder, Manifest
 from upath import UPath
 
 from .test_changes import MockChanges
@@ -10,6 +10,7 @@ OPTS = {
     Builder.KEY_USER: {"key": "value"},
     Builder.KEY_MSG: "Test message",
 }
+
 
 @fixture
 def dir():

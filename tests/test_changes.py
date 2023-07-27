@@ -4,6 +4,7 @@ from pytest import fixture, raises
 from quiltcore import Changes, Delta, Entry
 from upath import UPath
 
+
 class MockChanges(Changes):
     FILENAME = "filename.txt"
     FILETEXT = "hello world"

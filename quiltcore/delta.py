@@ -68,7 +68,6 @@ class Delta(ResourceKey):
     # Legacy Constructors
     #
 
-
     def to_dict(self) -> dict:
         return {
             self.KEY_ACT: self.action,

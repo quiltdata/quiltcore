@@ -3,9 +3,7 @@ from tempfile import TemporaryDirectory
 
 from pytest import fixture, skip
 from quilt3 import Package  # type: ignore
-from quiltcore import (
-    Builder, Changes, Entry, Header, Manifest, Registry, Spec, Volume
-)
+from quiltcore import Builder, Changes, Entry, Header, Manifest, Registry, Spec, Volume
 from upath import UPath
 
 from .conftest import LOCAL_ONLY
@@ -156,11 +154,11 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     Then with quilt3:
     * read it all back
     """
-    
+
     # 1. Create Changes
     for filename, filedata in spec_new.files().items():
         path = tmpdir / filename
-        path.write_text(filedata) # TODO: Object-level Metadata
+        path.write_text(filedata)  # TODO: Object-level Metadata
 
     chg = Changes(tmpdir)
     delta = chg.post(tmpdir)
