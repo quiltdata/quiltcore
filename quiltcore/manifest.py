@@ -1,9 +1,13 @@
 import logging
 from pathlib import Path
 
+from jsonlines import Writer  # type: ignore
+
+from .entry import Entry
+from .header import Header
 from .resource_key import ResourceKey
 from .table import Table
-from .yaml.codec import asdict
+from .yaml.codec import asdict, Dict3
 
 
 class Manifest(ResourceKey):
@@ -11,6 +15,20 @@ class Manifest(ResourceKey):
     In-memory representation of a serialized package manifest.
     list/get returns Entry with Path to the Place data actually lives
     """
+
+    @staticmethod
+    def WriteToPath(head: Header, entries: list[Entry], path: Path) -> None:
+        """Write manifest contents to _path_"""
+        logging.debug(f"WriteToPath: {path}")
+        rows = [entry.to_dict3() for entry in entries]  # type: ignore
+        with path.open(mode="wb") as fo:
+            with Writer(fo) as writer:
+                writer.write(head.to_dict())
+                for row in rows:
+                    if not isinstance(row, Dict3):
+                        raise ValueError("")
+                    writer.write(asdict(row))
+
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -50,7 +68,7 @@ class Manifest(ResourceKey):
 
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
-        row = self.table.get_row4(key)
+        row = self.table.get_dict4(key)
         place = row.place
         drow = asdict(row)
         drow[self.codec.K_PLC] = self._child_place(place)

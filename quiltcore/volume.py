@@ -1,16 +1,11 @@
 import logging
 from pathlib import Path
 
-from jsonlines import Writer  # type: ignore
-
-from .entry import Entry
-from .header import Header
 from .manifest import Manifest
 from .namespace import Namespace
 from .registry import Registry
 from .resource import Resource
 from .resource_key import ResourceKey
-from .yaml.codec import asdict
 
 
 class Volume(ResourceKey):
@@ -27,17 +22,6 @@ class Volume(ResourceKey):
         """Create a Volume from a URI"""
         path = Volume.AsPath(uri)
         return Volume(path, **kwargs)
-
-    @staticmethod
-    def WriteManifest(head: Header, entries: list[Entry], path: Path) -> None:
-        """Write manifest contents to _path_"""
-        logging.debug(f"WriteManifest: {path}")
-        rows = [entry.to_row3() for entry in entries]  # type: ignore
-        with path.open(mode="wb") as fo:
-            with Writer(fo) as writer:
-                writer.write(head.to_dict())
-                for row in rows:
-                    writer.write(asdict(row))
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -113,7 +97,6 @@ class Volume(ResourceKey):
         paths = [self._stage_path(hash), self._man_path(hash)]
         for path in paths:
             if path.exists():
-                print(f"read_manifest: {path}")
                 return Manifest(path, **self.args)
         raise FileNotFoundError(f"Manifest not found: {hash}\n\tin: {paths}")
 
@@ -164,7 +147,7 @@ class Volume(ResourceKey):
         man: Manifest = res
         hash = man.hash_quilt3()
         stage_path = self._stage_path(hash)
-        self.WriteManifest(man.head, man.list(), stage_path)  # type: ignore
+        Manifest.WriteToPath(man.head, man.list(), stage_path)  # type: ignore
 
         new_path = self._man_path(hash)
         if new_path.exists() and not kwargs.get(self.KEY_FRC, False):
@@ -190,5 +173,5 @@ class Volume(ResourceKey):
         """Translate entries from manifest into this Volume"""
         dest = str(self.path / name)
         entries = [entry.get(dest) for entry in man.list()]
-        self.WriteManifest(man.head, entries, path)  # type: ignore
+        Manifest.WriteToPath(man.head, entries, path)  # type: ignore
         return Manifest(path, **self.args)

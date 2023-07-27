@@ -47,7 +47,7 @@ class Table(ResourceKey):
             return self.codec.name_col.to_pylist()
         return []
 
-    def get_row4(self, key: str) -> Dict4:
+    def get_dict4(self, key: str) -> Dict4:
         """Return the dict for a child resource."""
         # TODO: cache to avoid continually re-calcluating
         index = self.codec.index_name(key).as_py()  # type: ignore

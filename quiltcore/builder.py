@@ -29,12 +29,12 @@ class Builder(ResourceKey):
     #
 
     def list(self, **kwargs) -> list[Resource]:
-        """List all child resources."""
+        """List all child entries."""
         nested_entries = [delta.list() for delta in self.changes.list()]
         return [entry for entries in nested_entries for entry in entries]
 
     def get(self, key: str, **kwargs) -> Resource:
-        """Get a child resource by key."""
+        """Get a child entry by key."""
         delta = self.changes.get(key)
         children = delta.list()
         return children[0] 
@@ -43,6 +43,9 @@ class Builder(ResourceKey):
         path = path or self.path
         hash = self.hash_quilt3()
         path = self.path / hash
-        Volume.WriteManifest(self.head, self.list(), path)  # type: ignore
+        rows = self.list()
+        if len(rows) == 0:
+            raise ValueError(f"Cannot post empty manifest: {self.changes}")
+        Manifest.WriteToPath(self.head, self.list(), path)  # type: ignore
         return Manifest(path, **self.args)
 

@@ -3,7 +3,9 @@ from tempfile import TemporaryDirectory
 
 from pytest import fixture, skip
 from quilt3 import Package  # type: ignore
-from quiltcore import Changes, Entry, Header, Manifest, Registry, Spec, Volume
+from quiltcore import (
+    Builder, Changes, Entry, Header, Manifest, Registry, Spec, Volume
+)
 from upath import UPath
 
 from .conftest import LOCAL_ONLY
@@ -160,10 +162,11 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
 
     chg = Changes(tmpdir)
     delta = chg.post(tmpdir)
+    assert delta
     msg = f"test_spec_write {TIME_NOW}"
     opts = {chg.KEY_NS: spec_new.namespace(), chg.KEY_FRC: True, chg.KEY_MSG: msg}
-    man = chg.to_manifest(**opts)  # TODO: user_meta=pkg_metadata
-    assert delta
+    build = Builder(chg, **opts)
+    man = build.post(tmpdir, **opts)  # TODO: user_meta=pkg_metadata
     assert man
 
     bkt = UPath(spec_new.registry())

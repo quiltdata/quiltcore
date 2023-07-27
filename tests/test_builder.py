@@ -4,11 +4,12 @@ from pytest import fixture, raises, skip
 from quiltcore import Builder, Codec, Manifest
 from upath import UPath
 
-FILENAME = "filename.txt"
-FILETEXT = "hello world"
+from .test_changes import MockChanges
 
-skip(allow_module_level=True)
-
+OPTS = {
+    Builder.KEY_USER: {"key": "value"},
+    Builder.KEY_MSG: "Test message",
+}
 
 @fixture
 def dir():
@@ -18,27 +19,15 @@ def dir():
 
 @fixture
 def build(dir: UPath) -> Builder:
-    """Why does row require a hash? And as a list?"""
-    path = dir / FILENAME
-    path.write_text(FILETEXT)
-    row = {
-        Codec.K_NAM: FILENAME,
-        Codec.K_PLC: str(path),
-        Builder.KEY_META: {"content": "context"},
-    }
-    return Builder(dir, [row])
+    chg = MockChanges(dir)
+    builder = Builder(chg)
+    return builder
 
 
 def test_build(build: Builder):
     assert build
     assert build.path.exists()
     assert build.path.is_dir()
-
-
-def test_build_raise(dir: UPath):
-    with raises(KeyError):
-        build = Builder(dir, [{}])
-        assert build
 
 
 def test_build_head(build: Builder):
@@ -49,16 +38,27 @@ def test_build_head(build: Builder):
     bd = build.head.to_dict()
     assert bd["user_meta"] == {}
 
+    entries = build.list()
+    assert len(entries) == 1
+
+
+def test_build_opts(dir: UPath):
+    chg = MockChanges(dir)
+    build = Builder(chg, **OPTS)
+    assert build.head.version == "v0"  # type: ignore
+    assert build.head.message == OPTS["message"]  # type: ignore
+    assert build.head.user_meta == OPTS["user_meta"]  # type: ignore
+
 
 def test_build_man(build: Builder):
-    man = build.to_manifest()
+    man = build.post(build.path)
     assert isinstance(man, Manifest)
     assert man.head.to_dict() == build.head.to_dict()
 
     mlist = man.list()
     assert len(mlist) == 1
     entry = mlist[0]
-    assert entry.name == FILENAME
+    assert entry.name == MockChanges.FILENAME
 
     hash = man.hash_quilt3()
     assert hash == man.name

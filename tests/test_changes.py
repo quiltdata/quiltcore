@@ -12,6 +12,7 @@ class MockChanges(Changes):
         super().__init__(dir, **kwargs)
         self.infile = (dir / self.FILENAME).resolve()
         self.infile.write_text(self.FILETEXT)
+        self.post(self.infile)
 
 
 @fixture
@@ -34,7 +35,6 @@ def infile(dir: UPath) -> UPath:
 @fixture
 def changed(dir: UPath):
     chg = MockChanges(dir)
-    chg.post(chg.infile)
     return chg
 
 
