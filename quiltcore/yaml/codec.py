@@ -188,7 +188,7 @@ class Codec(Config):
         for key3, opts in self.coding.items():
             self.check_opts(opts)
             key4 = opts[self.K_NAM]
-            print(f"encode[{key3}]: {key4} -> {opts}")
+            logging.debug(f"encode[{key3}]: {key4} -> {opts}")
             if key4 == self.K_PLC:
                 key4 = "path"
             if hasattr(obj, key4):

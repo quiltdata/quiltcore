@@ -40,6 +40,35 @@ class Delta(ResourceKey):
     def __str__(self):
         return dump(self.to_dict())
 
+    #
+    # Abstract Methods for child resources
+    #
+
+    def _child_names(self, **kwargs) -> list[str]:
+        """Return names of each child resource."""
+        if self.path.is_dir():
+            return [str(obj) for obj in self.path.rglob("*")]
+        return [str(self.path)]
+
+    def _child_dict(self, key: str) -> dict:
+        """Return the dict for a child resource."""
+        path = self.AsPath(key)
+        name = self.prefixed(path) if self.path.is_dir() else self.name
+        args: dict = {
+            self.cf.K_NAM: name,
+            self.cf.K_PLC: key,
+        }
+        if self.action == self.KEY_RM:
+            args[self.KEY_META] = {self.KEY_RM: True}
+        elif not path.exists():
+            raise ValueError(f"Missing path: {path}")
+        return args
+
+    #
+    # Legacy Constructors
+    #
+
+
     def to_dict(self) -> dict:
         return {
             self.KEY_ACT: self.action,
@@ -56,7 +85,6 @@ class Delta(ResourceKey):
                 self.KEY_ACT: self.action,
                 self.cf.K_NAM: self.prefixed(obj),
                 self.cf.K_PLC: str(obj),
-                # self.KEY_PATH: obj,
             }
             result.append(row)
         return result

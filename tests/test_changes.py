@@ -56,10 +56,24 @@ def test_chg_delta(infile: UPath):
     assert delta.path == infile
     assert delta.action == "add"
     assert delta.name == FILENAME
-    p = delta.to_dict()
-    assert p["name"] == FILENAME
-    y = str(delta)
-    assert f"name: {FILENAME}" in y
+
+    cn = delta._child_names()
+    assert len(cn) == 1
+    assert cn[0] == str(infile)
+
+    cd = delta._child_dict(cn[0])
+    assert cd[delta.cf.K_NAM] == FILENAME
+    assert cd[delta.cf.K_PLC] == str(infile)
+
+    entries = delta.list()
+    assert len(entries) == 1
+    entry = entries[0]
+    assert isinstance(entry, Entry)
+    assert entry.path == infile
+    assert entry.name == FILENAME
+
+    delta_dir = Delta(infile.parent)
+    assert entry == delta_dir.list()[0]
 
 
 def test_chg_delta_rm(infile: UPath):
@@ -67,6 +81,12 @@ def test_chg_delta_rm(infile: UPath):
     assert delta.path == infile
     assert delta.action == "rm"
     assert delta.name == "bar/foo.md"
+
+    entries = delta.list()
+    assert len(entries) == 1
+    entry = entries[0]
+    assert isinstance(entry, Entry)
+    assert entry.meta == {Delta.KEY_RM: True}
 
 
 def test_chg_post(chg: Changes, infile: UPath):

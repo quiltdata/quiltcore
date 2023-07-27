@@ -18,11 +18,11 @@ class Builder(ResourceKey):
     def __init__(self, path: Path, rows: list[dict], header: dict = {}, **kwargs):
         super().__init__(path, **kwargs)
         if not path.exists() or not path.is_dir():
-            raise ValueError(f"Non-directory path: {path}")
+            raise ValueError(f"No directory path: {path}")
 
         self.head = Header(self.path, first=header)
         self.keystore = {row[Delta.KEY_NAM]: row for row in rows}
-        self.removals = kwargs.get(Delta.KEY_RM)
+        self.removals = kwargs.get(Delta.KEY_RM, [])
 
     def _child_names(self, **kwargs) -> list[str]:
         """Return names of each child resource."""
