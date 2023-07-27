@@ -75,15 +75,3 @@ class Delta(ResourceKey):
             self.cf.K_PLC: str(self.path),
         }
 
-    def to_dicts(self) -> list[dict]:
-        if not self.path.is_dir():
-            return [self.to_dict()]
-        result = []
-        for obj in self.path.rglob("*"):
-            row = {
-                self.KEY_ACT: self.action,
-                self.cf.K_NAM: self.prefixed(obj),
-                self.cf.K_PLC: str(obj),
-            }
-            result.append(row)
-        return result

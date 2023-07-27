@@ -39,8 +39,12 @@ def test_build_head(build: Builder):
     bd = build.head.to_dict()
     assert bd["user_meta"] == {}
 
+def test_build_entries(build: Builder):
     entries = build.list()
     assert len(entries) == 1
+    entry = entries[0]
+    assert entry.name == MockChanges.FILENAME
+    assert build.get(entry.name) == entry
 
 
 def test_build_opts(dir: UPath):
