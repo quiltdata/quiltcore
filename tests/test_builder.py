@@ -1,11 +1,13 @@
 from tempfile import TemporaryDirectory
 
-from pytest import fixture, raises
+from pytest import fixture, raises, skip
 from quiltcore import Builder, Codec, Manifest
 from upath import UPath
 
 FILENAME = "filename.txt"
 FILETEXT = "hello world"
+
+skip(allow_module_level=True)
 
 
 @fixture

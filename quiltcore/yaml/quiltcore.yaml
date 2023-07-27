@@ -24,7 +24,7 @@ resources:
   Delta:
     child: Entry
   Changes:
-    child: Entry
+    child: Delta
   Builder:
     child: Entry
 quilt3:

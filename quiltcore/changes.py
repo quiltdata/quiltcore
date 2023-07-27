@@ -13,11 +13,9 @@ from .resource_key import ResourceKey
 class Changes(ResourceKey):
     """
     Track Changes to a new or existing Manifest
-    Add a file: put(path, action="add", key="filename.txt", prefix="./")
+    Add a file or directory: post(path, action="add", key="filename.txt", prefix="./")
     Use 'get' and 'list' to return the Deltas
-    Create Manifest in scratch directory
-
-    Optional: track changes to a directory?
+    Create Manifest in self.path
     """
 
     def __init__(self, path, **kwargs):
@@ -60,21 +58,11 @@ class Changes(ResourceKey):
     # ResourceKey helper methods
     #
 
-    def _child_dict(self, key: str) -> dict:
-        """Return the dict for a child resource."""
-        delta = self.get_delta(key)
-        return {self.cf.K_NAM: delta.name, self.cf.K_PLC: str(delta.path)}
-
-    def get_delta(self, key: str, **kwargs) -> Delta:
+    def child(self, key: str, **kwargs) -> Delta:
         """Return a Delta by key. Raise KeyError if not found."""
         if key in self.keystore:
             return self.keystore[key]
         raise KeyError(f"Key {key} not found in {self.keystore}")
-
-    def key_path(self, key: str, args: dict = {}) -> Path:
-        """Return the Path for a child resource."""
-        delta = self.get_delta(key)
-        return delta.path
 
     def _child_names(self, **kwargs) -> list[str]:
         """Return keys for each change."""

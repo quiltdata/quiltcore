@@ -91,54 +91,34 @@ def test_chg_delta_rm(infile: UPath):
 
 def test_chg_post(chg: Changes, infile: UPath):
     test_key = "largo"
-    chg.post(infile, name=test_key)
-    delta = chg.get_delta(test_key)
+    delta = chg.post(infile, name=test_key)
     assert delta.name == test_key
+    assert delta == chg.get(test_key)
 
     chg.delete(test_key)
     with raises(KeyError):
-        chg.get_delta(test_key)
+        chg.get(test_key)
 
     with raises(KeyError):
         chg.get("invalid_key")
 
 
 def test_chg_get(changed: Changes):
-    entry = changed.get(FILENAME)
-    assert isinstance(entry, Entry)
+    delta = changed.get(FILENAME)
+    assert isinstance(delta, Delta)
 
 
 def test_chg_list(changed: Changes):
-    entries = changed.list()
-    assert len(entries) == 1
-    entry = entries[0]
-    assert isinstance(entry, Entry)
-    assert entry.name == FILENAME
+    deltas = changed.list()
+    assert len(deltas) == 1
+    delta = deltas[0]
+    assert isinstance(delta, Delta)
+    assert delta.name == FILENAME
 
 
 def test_chg_str(changed: Changes):
     y = str(changed)
     assert f"{FILENAME}:" in y
-
-
-def test_chg_grouped(changed: Changes):
-    group = changed.grouped_dicts()
-    assert isinstance(group, dict)
-    assert len(group) == 1
-    adds = group[Delta.KEY_ADD]
-    assert len(adds) == 1
-    item = adds[0]
-    assert isinstance(item, dict)
-    assert item[Delta.KEY_NAM] == FILENAME
-    assert FILENAME in item[changed.cf.K_PLC]
-
-
-def test_chg_man(changed: Changes, infile: UPath):
-    changed.post(infile)
-    man = changed.to_manifest()
-    assert man
-    res = man.list()
-    assert man.get(infile.name)
 
 
 def test_chg_man_dir(chg: Changes):

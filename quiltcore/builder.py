@@ -24,6 +24,20 @@ class Builder(ResourceKey):
         self.keystore = {row[Delta.KEY_NAM]: row for row in rows}
         self.removals = kwargs.get(Delta.KEY_RM, [])
 
+    def write_manifest(self, **kwargs) -> Path:
+        ns_name = (
+            kwargs.get(self.KEY_NS)
+            or self.args.get(self.KEY_NS)
+            or f"unknown/{self.Now()}"
+        )
+        kwargs[self.KEY_NS] = ns_name
+        if self.KEY_META in kwargs:
+            user_meta = kwargs[self.KEY_META]
+        if self.KEY_MSG in kwargs:
+            message = kwargs[self.KEY_MSG]
+        return self.path
+
+
     def _child_names(self, **kwargs) -> list[str]:
         """Return names of each child resource."""
         return list(self.keystore.keys())
