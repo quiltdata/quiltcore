@@ -3,9 +3,7 @@ from pathlib import Path
 
 from yaml import dump
 
-from .builder import Builder
 from .delta import Delta
-from .manifest import Manifest
 from .resource import Resource
 from .resource_key import ResourceKey
 
@@ -67,31 +65,3 @@ class Changes(ResourceKey):
     def _child_names(self, **kwargs) -> list[str]:
         """Return keys for each change."""
         return list(self.keystore.keys())
-
-    #
-    # Create Manifest
-    #
-
-    def grouped_dicts(self) -> dict[str, list[dict]]:
-        rows = [row for delta in self.keystore.values() for row in delta.to_dicts()]
-        rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
-        grouped = {k: list(v) for k, v in groupby(rows, lambda row: row[Delta.KEY_ACT])}
-        return grouped
-
-    def to_manifest(self, **kwargs) -> Manifest:
-        """
-        Return a Manifest for this change set.
-        Options:
-        * user_meta: package-level metadata
-        * msg: commit message
-
-        1. Get rows from each Delta (multiple if a directory)
-        1. Create Entry for each row
-        2. Create a Manifest from the entries (adding metadata if present)
-
-        """
-        grouped = self.grouped_dicts()
-        adds: list[dict] = grouped.get(Delta.KEY_ADD)  # type: ignore
-        rms = grouped.get(Delta.KEY_RM)
-        build = Builder(self.path, adds, kwargs, rm=rms, **self.args)
-        return build.to_manifest()
