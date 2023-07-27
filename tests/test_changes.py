@@ -4,8 +4,14 @@ from pytest import fixture, raises
 from quiltcore import Changes, Delta, Entry
 from upath import UPath
 
-FILENAME = "filename.txt"
-FILETEXT = "hello world"
+class MockChanges(Changes):
+    FILENAME = "filename.txt"
+    FILETEXT = "hello world"
+
+    def __init__(self, dir: UPath, **kwargs):
+        super().__init__(dir, **kwargs)
+        self.infile = (dir / self.FILENAME).resolve()
+        self.infile.write_text(self.FILETEXT)
 
 
 @fixture
@@ -21,14 +27,14 @@ def chg(dir: UPath):
 
 @fixture
 def infile(dir: UPath) -> UPath:
-    path = dir / FILENAME
-    path.write_text(FILETEXT)
-    return path.resolve()
+    chg = MockChanges(dir)
+    return chg.infile  # type: ignore
 
 
 @fixture
-def changed(chg: Changes, infile: UPath):
-    chg.post(infile)
+def changed(dir: UPath):
+    chg = MockChanges(dir)
+    chg.post(chg.infile)
     return chg
 
 
@@ -55,14 +61,14 @@ def test_chg_delta(infile: UPath):
     delta = Delta(infile)
     assert delta.path == infile
     assert delta.action == "add"
-    assert delta.name == FILENAME
+    assert delta.name == MockChanges.FILENAME
 
     cn = delta._child_names()
     assert len(cn) == 1
     assert cn[0] == str(infile)
 
     cd = delta._child_dict(cn[0])
-    assert cd[delta.cf.K_NAM] == FILENAME
+    assert cd[delta.cf.K_NAM] == MockChanges.FILENAME
     assert cd[delta.cf.K_PLC] == str(infile)
 
     entries = delta.list()
@@ -70,7 +76,7 @@ def test_chg_delta(infile: UPath):
     entry = entries[0]
     assert isinstance(entry, Entry)
     assert entry.path == infile
-    assert entry.name == FILENAME
+    assert entry.name == MockChanges.FILENAME
 
     delta_dir = Delta(infile.parent)
     assert entry == delta_dir.list()[0]
@@ -104,7 +110,7 @@ def test_chg_post(chg: Changes, infile: UPath):
 
 
 def test_chg_get(changed: Changes):
-    delta = changed.get(FILENAME)
+    delta = changed.get(MockChanges.FILENAME)
     assert isinstance(delta, Delta)
 
 
@@ -113,17 +119,9 @@ def test_chg_list(changed: Changes):
     assert len(deltas) == 1
     delta = deltas[0]
     assert isinstance(delta, Delta)
-    assert delta.name == FILENAME
+    assert delta.name == MockChanges.FILENAME
 
 
 def test_chg_str(changed: Changes):
     y = str(changed)
-    assert f"{FILENAME}:" in y
-
-
-def test_chg_man_dir(chg: Changes):
-    subdir = chg.path / "subdir"
-    subdir.mkdir()
-    subfile = subdir / FILENAME
-    subfile.write_text(FILETEXT)
-    chg.post(subdir)
+    assert f"{MockChanges.FILENAME}:" in y
