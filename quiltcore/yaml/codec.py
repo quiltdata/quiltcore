@@ -198,6 +198,15 @@ class Codec(Config):
         d3 = Dict3(**row)
         return d3
 
+    def encode_dates(self, values: dict) -> dict:
+        """format dates for quilt3 metadata"""
+        for key, value in values.items():
+            if hasattr(value, "strftime"):
+                values[key] = self.encode_date(value)
+            elif isinstance(value, dict):
+                values[key] = self.encode_dates(value)
+        return values
+
     def encode_date(self, value, opts={}) -> str:
         """format date for quilt3 metadata"""
         if not hasattr(value, "strftime"):

@@ -156,6 +156,8 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     Then with quilt3:
     * read it all back
     """
+    
+    # 1. Create Changes
     for filename, filedata in spec_new.files().items():
         path = tmpdir / filename
         path.write_text(filedata) # TODO: Object-level Metadata
@@ -163,12 +165,20 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     chg = Changes(tmpdir)
     delta = chg.post(tmpdir)
     assert delta
+
+    # 2. Create Manifest
     msg = f"test_spec_write {TIME_NOW}"
-    opts = {chg.KEY_NS: spec_new.namespace(), chg.KEY_FRC: True, chg.KEY_MSG: msg}
-    build = Builder(chg, **opts)
-    man = build.post(tmpdir, **opts)  # TODO: user_meta=pkg_metadata
+    pkg_meta = {
+        chg.KEY_USER: spec_new.metadata(),
+        chg.KEY_MSG: msg,
+    }
+    man = Builder.MakeManifest(chg, pkg_meta)
     assert man
 
+    opts = {
+        chg.KEY_FRC: True,
+        chg.KEY_NS: spec_new.namespace(),
+    }
     bkt = UPath(spec_new.registry())
     vol = Volume(bkt)
     vol.put(man, **opts)
@@ -177,8 +187,10 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     assert qpkg
 
     meta = qpkg._meta
+    new_meta = man.codec.encode_dates(spec_new.metadata())
+    print(f"new_meta: {new_meta}")
     assert meta
-    assert meta["user_meta"] == spec_new.metadata()  # type: ignore
+    assert meta["user_meta"] == new_meta
     assert meta[vol.KEY_MSG] == msg
 
     for filename, filedata in spec_new.files().items():

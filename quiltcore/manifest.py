@@ -23,7 +23,9 @@ class Manifest(ResourceKey):
         rows = [entry.to_dict3() for entry in entries]  # type: ignore
         with path.open(mode="wb") as fo:
             with Writer(fo) as writer:
-                writer.write(head.to_dict())
+                head_dict = head.to_dict()
+                print(f"head_dict: {head_dict}")
+                writer.write(head_dict)
                 for row in rows:
                     if not isinstance(row, Dict3):
                         raise ValueError("")

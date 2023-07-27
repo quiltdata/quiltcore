@@ -5,7 +5,6 @@ from .header import Header
 from .manifest import Manifest
 from .resource import Resource
 from .resource_key import ResourceKey
-from .volume import Volume
 
 
 class Builder(ResourceKey):
@@ -15,6 +14,14 @@ class Builder(ResourceKey):
     Write a new manifest file
     Return the path
     """
+
+    @classmethod
+    def MakeManifest(cls, changes: Changes, pkg_meta: dict) -> Manifest:
+        build = cls(changes, **pkg_meta)
+        man = build.post(changes.path)
+        if not isinstance(man, Manifest):
+            raise ValueError(f"Expected Manifest {man} not {type(man)}")
+        return man
 
     def __init__(self, changes: Changes, **kwargs):
         super().__init__(changes.path)
@@ -47,5 +54,5 @@ class Builder(ResourceKey):
         if len(rows) == 0:
             raise ValueError(f"Cannot post empty manifest: {self.changes}")
         Manifest.WriteToPath(self.head, self.list(), path)  # type: ignore
-        return Manifest(path, **self.args)
+        return Manifest(path, **kwargs)
 
