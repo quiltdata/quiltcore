@@ -84,7 +84,7 @@ class Changes(ResourceKey):
     # Create Manifest
     #
 
-    def grouped_row3s(self) -> dict[str, list[dict]]:
+    def grouped_dicts(self) -> dict[str, list[dict]]:
         rows = [row for delta in self.keystore.values() for row in delta.to_dicts()]
         rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
         grouped = {k: list(v) for k, v in groupby(rows, lambda row: row[Delta.KEY_ACT])}
@@ -102,7 +102,7 @@ class Changes(ResourceKey):
         2. Create a Manifest from the entries (adding metadata if present)
 
         """
-        grouped = self.grouped_row3s()
+        grouped = self.grouped_dicts()
         adds: list[dict] = grouped.get(Delta.KEY_ADD)  # type: ignore
         rms = grouped.get(Delta.KEY_RM)
         build = Builder(self.path, adds, kwargs, rm=rms, **self.args)

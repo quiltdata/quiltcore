@@ -176,6 +176,10 @@ class Volume(ResourceKey):
             or f"unknown/{self.Now()}"
         )
         kwargs[self.KEY_NS] = ns_name
+        if self.KEY_META in kwargs:
+            man.head.user_meta = kwargs[self.KEY_META]
+        if self.KEY_MSG in kwargs:
+            man.head.message = kwargs[self.KEY_MSG]
 
         if not kwargs.get(self.KEY_NCP, False):
             man = self.translate_manifest(man, new_path, ns_name)

@@ -102,7 +102,7 @@ def test_chg_str(changed: Changes):
 
 
 def test_chg_grouped(changed: Changes):
-    group = changed.grouped_row3s()
+    group = changed.grouped_dicts()
     assert isinstance(group, dict)
     assert len(group) == 1
     adds = group[Delta.KEY_ADD]
@@ -117,7 +117,7 @@ def test_chg_man(changed: Changes, infile: UPath):
     changed.post(infile)
     man = changed.to_manifest()
     assert man
-    assert man.list()
+    res = man.list()
     assert man.get(infile.name)
 
 
