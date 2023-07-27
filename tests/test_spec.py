@@ -195,7 +195,8 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
 
     for filename, filedata in spec_new.files().items():
         assert filename in qpkg
-        assert qpkg[filename] == filedata
+        entry = qpkg[filename]
+        assert entry.deserialize() == filedata
 
 
 def test_spec_workflow():
