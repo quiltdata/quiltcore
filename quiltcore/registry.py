@@ -50,4 +50,5 @@ class Registry(ResourcePath):
         latest_file.unlink(missing_ok=True)
         latest_file.write_text(hash)
 
+        res.args[self.KEY_TAG] = tag
         return res

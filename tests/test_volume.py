@@ -51,6 +51,7 @@ def test_vol_get(vol):
     with raises(KeyError):
         vol.delete(TEST_PKG)
 
+
 def test_vol_stage(vol):
     """If a given hash is locally staged, use that instead"""
     pass
@@ -96,6 +97,7 @@ def test_vol_put(dir: UPath):  # noqa: F401
     man2: Manifest = v_tmp.put(man, **{man.KEY_NS: TEST_PKG})  # type: ignore
     assert man2.path.exists()
     assert man2.name == man2.hash_quilt3()
+    assert man.KEY_TAG in man2.args
 
     assert pkg_tmp.exists()
     latest = pkg_tmp / Volume.TAG_DEFAULT

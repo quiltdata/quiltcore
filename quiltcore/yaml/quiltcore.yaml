@@ -24,7 +24,7 @@ resources:
   Delta:
     child: Entry
   Changes:
-    child: Entry
+    child: Delta
   Builder:
     child: Entry
 quilt3:
@@ -46,7 +46,7 @@ quilt3:
   schema:
     logical_key:
       format: path
-      is_quoted: true
+      is_quoted: false
       name: name
       type: str
     physical_keys:

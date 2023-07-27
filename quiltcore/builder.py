@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from .delta import Delta
+from .changes import Changes
 from .header import Header
 from .manifest import Manifest
+from .resource import Resource
 from .resource_key import ResourceKey
-from .volume import Volume
 
 
 class Builder(ResourceKey):
@@ -15,29 +15,43 @@ class Builder(ResourceKey):
     Return the path
     """
 
-    def __init__(self, path: Path, rows: list[dict], header: dict = {}, **kwargs):
-        super().__init__(path, **kwargs)
-        if not path.exists() or not path.is_dir():
-            raise ValueError(f"Non-directory path: {path}")
+    @classmethod
+    def MakeManifest(cls, changes: Changes, pkg_meta: dict) -> Manifest:
+        build = cls(changes, **pkg_meta)
+        man = build.post(changes.path)
+        if not isinstance(man, Manifest):
+            raise ValueError(f"Expected Manifest {man} not {type(man)}")
+        return man
 
-        self.head = Header(self.path, first=header)
-        self.keystore = {row[Delta.KEY_NAM]: row for row in rows}
-        self.removals = kwargs.get(Delta.KEY_RM)
-
-    def _child_names(self, **kwargs) -> list[str]:
-        """Return names of each child resource."""
-        return list(self.keystore.keys())
-
-    def _child_dict(self, key: str) -> dict:
-        """Return the dict for a child resource."""
-        return self.keystore[key]
+    def __init__(self, changes: Changes, **kwargs):
+        super().__init__(changes.path)
+        self.changes = changes
+        self.head = Header(self.path, first=kwargs)
 
     def _hash_multihash(self) -> str:
         return self._hash_manifest()
 
-    def to_manifest(self, **kwargs) -> Manifest:
-        """Create manifest file and return Manifest"""
+    #
+    # ResourceKey helper methods
+    #
+
+    def list(self, **kwargs) -> list[Resource]:
+        """List all child entries."""
+        nested_entries = [delta.list() for delta in self.changes.list()]
+        return [entry for entries in nested_entries for entry in entries]
+
+    def get(self, key: str, **kwargs) -> Resource:
+        """Get a child entry by key."""
+        delta = self.changes.get(key)
+        children = delta.list()
+        return children[0]
+
+    def post(self, path: Path, **kwargs) -> Resource:
+        path = path or self.path
         hash = self.hash_quilt3()
         path = self.path / hash
-        Volume.WriteManifest(self.head, self.list(), path)  # type: ignore
-        return Manifest(path, **self.args)
+        rows = self.list()
+        if len(rows) == 0:
+            raise ValueError(f"Cannot post empty manifest: {self.changes}")
+        Manifest.WriteToPath(self.head, self.list(), path)  # type: ignore
+        return Manifest(path, **kwargs)

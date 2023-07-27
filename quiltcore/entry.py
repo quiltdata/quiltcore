@@ -33,7 +33,7 @@ class Entry(ResourceKey):
     # Parse and unparse
     #
 
-    def to_row3(self) -> Dict3:
+    def to_dict3(self) -> Dict3:
         row = self.codec.encode(self)
         # row[self.KEY_PATH] = self.path
         return row
@@ -64,7 +64,7 @@ class Entry(ResourceKey):
         """Copy contents of resource's path into _key_ directory."""
         path = self.to_path(key)
         path.write_bytes(self.to_bytes())  # for binary files
-        kwargs = asdict(self.to_row3())
+        kwargs = asdict(self.to_dict3())
         clone = Entry(path.resolve(), **kwargs)
         logging.debug(f"clone[{type(path)}]: {path.stat()}")
         clone.args[self.cf.K_PLC] = self.codec.AsStr(path)

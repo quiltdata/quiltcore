@@ -1,11 +1,8 @@
-from itertools import groupby
 from pathlib import Path
 
 from yaml import dump
 
-from .builder import Builder
 from .delta import Delta
-from .manifest import Manifest
 from .resource import Resource
 from .resource_key import ResourceKey
 
@@ -13,11 +10,9 @@ from .resource_key import ResourceKey
 class Changes(ResourceKey):
     """
     Track Changes to a new or existing Manifest
-    Add a file: put(path, action="add", key="filename.txt", prefix="./")
+    Add a file or directory: post(path, action="add", key="filename.txt", prefix="./")
     Use 'get' and 'list' to return the Deltas
-    Create Manifest in scratch directory
-
-    Optional: track changes to a directory?
+    Create Manifest in self.path
     """
 
     def __init__(self, path, **kwargs):
@@ -60,50 +55,12 @@ class Changes(ResourceKey):
     # ResourceKey helper methods
     #
 
-    def _child_dict(self, key: str) -> dict:
-        """Return the dict for a child resource."""
-        delta = self.get_delta(key)
-        return {self.cf.K_NAM: delta.name, self.cf.K_PLC: str(delta.path)}
-
-    def get_delta(self, key: str, **kwargs) -> Delta:
+    def child(self, key: str, **kwargs) -> Delta:
         """Return a Delta by key. Raise KeyError if not found."""
         if key in self.keystore:
             return self.keystore[key]
         raise KeyError(f"Key {key} not found in {self.keystore}")
 
-    def key_path(self, key: str, args: dict = {}) -> Path:
-        """Return the Path for a child resource."""
-        delta = self.get_delta(key)
-        return delta.path
-
     def _child_names(self, **kwargs) -> list[str]:
         """Return keys for each change."""
         return list(self.keystore.keys())
-
-    #
-    # Create Manifest
-    #
-
-    def grouped_row3s(self) -> dict[str, list[dict]]:
-        rows = [row for delta in self.keystore.values() for row in delta.to_dicts()]
-        rows = sorted(rows, key=lambda row: row[Delta.KEY_ACT])
-        grouped = {k: list(v) for k, v in groupby(rows, lambda row: row[Delta.KEY_ACT])}
-        return grouped
-
-    def to_manifest(self, **kwargs) -> Manifest:
-        """
-        Return a Manifest for this change set.
-        Options:
-        * user_meta: package-level metadata
-        * msg: commit message
-
-        1. Get rows from each Delta (multiple if a directory)
-        1. Create Entry for each row
-        2. Create a Manifest from the entries (adding metadata if present)
-
-        """
-        grouped = self.grouped_row3s()
-        adds: list[dict] = grouped.get(Delta.KEY_ADD)  # type: ignore
-        rms = grouped.get(Delta.KEY_RM)
-        build = Builder(self.path, adds, kwargs, rm=rms, **self.args)
-        return build.to_manifest()

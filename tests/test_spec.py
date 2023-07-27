@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 
 from pytest import fixture, skip
 from quilt3 import Package  # type: ignore
-from quiltcore import Changes, Entry, Header, Manifest, Registry, Spec, Volume
+from quiltcore import Builder, Changes, Entry, Header, Manifest, Registry, Spec, Volume
 from upath import UPath
 
 from .conftest import LOCAL_ONLY
@@ -141,7 +141,6 @@ def test_spec_read(spec: Spec, man: Manifest):
             assert entry.user_meta == meta  # type: ignore
 
 
-# @mark.skip(reason="pending manifest creation")
 def test_spec_write(spec_new: Spec, tmpdir: UPath):
     """
     Ensure quilt3 can read manifests created by quiltcore
@@ -155,27 +154,47 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     Then with quilt3:
     * read it all back
     """
+
+    # 1. Create Changes
     for filename, filedata in spec_new.files().items():
         path = tmpdir / filename
-        path.write_text(filedata)
-    spec_new.metadata()
-    # TODO: Object-level Metadata
+        path.write_text(filedata)  # TODO: Object-level Metadata
 
     chg = Changes(tmpdir)
-    assert chg
     delta = chg.post(tmpdir)
-    chg.grouped_row3s()
     assert delta
-    man = chg.to_manifest()  # TODO: user_meta=pkg_metadata
+
+    # 2. Create Manifest
+    msg = f"test_spec_write {TIME_NOW}"
+    pkg_meta = {
+        chg.KEY_USER: spec_new.metadata(),
+        chg.KEY_MSG: msg,
+    }
+    man = Builder.MakeManifest(chg, pkg_meta)
     assert man
 
-    reg = UPath(spec_new.registry())
-    vol = Volume(reg)
     opts = {
-        vol.KEY_NS: spec_new.namespace(),
-        vol.KEY_FRC: True,
+        chg.KEY_FRC: True,
+        chg.KEY_NS: spec_new.namespace(),
     }
+    bkt = UPath(spec_new.registry())
+    vol = Volume(bkt)
     vol.put(man, **opts)
+
+    qpkg = Package.browse(spec_new.namespace(), registry=spec_new.registry())
+    assert qpkg
+
+    meta = qpkg._meta
+    new_meta = man.codec.encode_dates(spec_new.metadata())
+    print(f"new_meta: {new_meta}")
+    assert meta
+    assert meta["user_meta"] == new_meta
+    assert meta[vol.KEY_MSG] == msg
+
+    for filename, filedata in spec_new.files().items():
+        assert filename in qpkg
+        entry = qpkg[filename]
+        assert entry.deserialize() == filedata
 
 
 def test_spec_workflow():

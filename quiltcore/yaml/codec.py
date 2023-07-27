@@ -1,5 +1,6 @@
 import logging
 from dataclasses import asdict, dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from urllib.parse import quote, unquote
@@ -68,7 +69,7 @@ class Codec(Config):
     T_OPT = "is_optional"
     T_QTD = "is_quoted"
 
-    UNQUOTED = "/:"
+    UNQUOTED = "/:?="
 
     @classmethod
     def StatVersion(cls, path: Path) -> str | None:
@@ -187,29 +188,42 @@ class Codec(Config):
         for key3, opts in self.coding.items():
             self.check_opts(opts)
             key4 = opts[self.K_NAM]
+            logging.debug(f"encode[{key3}]: {key4} -> {opts}")
             if key4 == self.K_PLC:
                 key4 = "path"
             if hasattr(obj, key4):
                 value = getattr(obj, key4)
-                row[key3] = self.encode_value(value)
+                row[key3] = self.encode_value(value, opts)
         logging.debug(f"encode: {obj} -> {row}")
         d3 = Dict3(**row)
         return d3
 
-    def encode_date(self, value) -> str:
+    def encode_dates(self, values: dict) -> dict:
+        """format dates for quilt3 metadata"""
+        for key, value in values.items():
+            if hasattr(value, "strftime"):
+                values[key] = self.encode_date(value)
+            elif isinstance(value, dict):
+                values[key] = self.encode_dates(value)
+        return values
+
+    def encode_date(self, value, opts={}) -> str:
         """format date for quilt3 metadata"""
         if not hasattr(value, "strftime"):
             raise ValueError(f"Value {value} not formattable")
         fmt = self.get_str("quilt3/format/datetime", "%Y-%m-%d")
         return value.strftime(fmt)
 
-    def encode_value(self, value):
+    def encode_value(self, value, opts={}):
         """encode value based on this_opt"""
+        self.check_opts(opts)
         if self.check(self.T_HSH):
             if not isinstance(value, str):
                 raise TypeError(f"Expected str, got {type(value)}: {value}")
             value = self.encode_hash(value)
 
+        if isinstance(value, datetime):
+            value = self.encode_date(value)
         if self.check(self.T_QTD):
             value = self.AsStr(value)
             value = quote(value, safe=self.UNQUOTED)
