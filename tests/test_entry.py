@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from pytest import fixture
+from pytest import fixture, mark
 from quiltcore import Entry, Manifest, Registry
 from upath import UPath
 
-from .conftest import TEST_BKT, TEST_KEY, TEST_MAN, TEST_OBJ_HASH
+from .conftest import LOCAL_ONLY, TEST_BKT, TEST_KEY, TEST_MAN, TEST_OBJ_HASH
 
 DATA_HW = b"Hello world!"
 HASH_HW = "1220c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a"
@@ -52,6 +52,7 @@ def test_entry_get(entry: Entry, tmpdir: UPath):
     assert entry.path != clone.path
 
 
+@mark.skipif(LOCAL_ONLY, reason="skip network tests")
 def test_entry_remote(entry: Entry):
     remote = UPath(TEST_BKT) / "spec"
     clone = entry.get(str(remote))

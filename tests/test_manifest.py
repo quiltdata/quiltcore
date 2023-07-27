@@ -1,8 +1,9 @@
-from pytest import fixture
+from pytest import fixture, mark
 from quiltcore import Codec, Entry, Header, Manifest, Registry
 from upath import UPath
 
 from .conftest import (
+    LOCAL_ONLY,
     TEST_KEY,
     TEST_MAN,
     TEST_OBJ,
@@ -45,6 +46,7 @@ def test_man_head(man: Manifest):
     assert hashable["user_meta"]["Author"] == "Ernest"
 
 
+@mark.skipif(LOCAL_ONLY, reason="skip network tests")
 def test_man_version(man: Manifest):
     path = UPath(TEST_S3VER)
     version = Codec.StatVersion(path)
