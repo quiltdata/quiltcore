@@ -1,6 +1,12 @@
 # CHANGELOG.md
 
-## 0.3.0 (UNRELEASED)
+## 0.3.1 (UNRELEASED)
+
+QuiltPlus fixes
+
+- Namespace.pkg_name() returns the package name
+
+## 0.3.0 (2023-07-27)
 
 - quiltspec
 - push new packages
