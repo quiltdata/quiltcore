@@ -5,6 +5,7 @@
 QuiltPlus fixes
 
 - Namespace.pkg_name() returns the package name
+- Load Manifests lazily
 
 ## 0.3.0 (2023-07-27)
 

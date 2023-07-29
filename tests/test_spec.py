@@ -86,13 +86,13 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
         pkg._meta, pkg.walk()
     ), "q3_hash != pkg._calculate_top_hash()"
 
-    man_meta = man.head.to_hashable()
+    man_meta = man.head().to_hashable()
     pkg_user = pkg._meta[man.KEY_USER]
     man_user = man_meta[man.KEY_USER]
     assert pkg_user["Date"] == man_user["Date"]  # type: ignore
-    assert pkg._meta == man.head.to_hashable()
+    assert pkg._meta == man.head().to_hashable()
     encoded = json_encode(pkg._meta).encode()
-    assert encoded == man.head.hashable()
+    assert encoded == man.head().hashable()
 
     for part in pkg._get_top_hash_parts(pkg._meta, pkg.walk()):
         if "logical_key" in part:
@@ -118,7 +118,7 @@ def test_spec_read(spec: Spec, man: Manifest):
     - package-level metadata
     - file-level metadata
     """
-    head = man.head
+    head = man.head()
     assert head
     assert isinstance(head, Header)
     assert hasattr(head, "user_meta")

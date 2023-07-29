@@ -147,7 +147,7 @@ class Volume(ResourceKey):
         man: Manifest = res
         hash = man.hash_quilt3()
         stage_path = self._stage_path(hash)
-        Manifest.WriteToPath(man.head, man.list(), stage_path)  # type: ignore
+        Manifest.WriteToPath(man.head(), man.list(), stage_path)  # type: ignore
 
         new_path = self._man_path(hash)
         if new_path.exists() and not kwargs.get(self.KEY_FRC, False):
@@ -160,9 +160,9 @@ class Volume(ResourceKey):
         )
         kwargs[self.KEY_NS] = ns_name
         if self.KEY_META in kwargs:
-            man.head.user_meta = kwargs[self.KEY_META]
+            man.head().user_meta = kwargs[self.KEY_META]
         if self.KEY_MSG in kwargs:
-            man.head.message = kwargs[self.KEY_MSG]
+            man.head().message = kwargs[self.KEY_MSG]
 
         if not kwargs.get(self.KEY_NCP, False):
             man = self.translate_manifest(man, new_path, ns_name)
@@ -173,5 +173,5 @@ class Volume(ResourceKey):
         """Translate entries from manifest into this Volume"""
         dest = str(self.path / name)
         entries = [entry.get(dest) for entry in man.list()]
-        Manifest.WriteToPath(man.head, entries, path)  # type: ignore
+        Manifest.WriteToPath(man.head(), entries, path)  # type: ignore
         return Manifest(path, **self.args)

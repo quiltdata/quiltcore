@@ -36,7 +36,7 @@ def test_man(man: Manifest):
 
 
 def test_man_head(man: Manifest):
-    head = man.head
+    head = man.head()
     assert head
     assert isinstance(head, Header)
 
