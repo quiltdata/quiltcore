@@ -99,6 +99,7 @@ class Resource:
             self.args[f"{self.class_key}.{self.KEY_KEY}"] = key
         self.cf = Config()
         self._setup_params()
+        logging.debug(f"Resource: {repr(self)}")
 
     def __repr__(self):
         return f"<{self.class_name}({self.path}, {self.args})>"
