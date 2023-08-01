@@ -31,12 +31,13 @@ def man(opts: dict) -> Manifest:
 
 def test_man(man: Manifest):
     assert man
-    assert man.table
     assert "manifest" in man.args
+    assert not man._table
+    assert man.table()
 
 
 def test_man_head(man: Manifest):
-    head = man.head
+    head = man.head()
     assert head
     assert isinstance(head, Header)
 

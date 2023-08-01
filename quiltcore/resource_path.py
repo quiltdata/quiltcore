@@ -50,5 +50,7 @@ class ResourcePath(Resource):
         """Get a child resource by name."""
         path = self._child_path(key)
         if not path.exists():
-            raise KeyError(f"Key {key} not found in {self.path}")
+            if not kwargs.get(self.KEY_FRC, False):
+                raise KeyError(f"Key {key} not found in {self.path}")
+            path.mkdir(parents=True)
         return self.child(path, key)

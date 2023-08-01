@@ -33,11 +33,20 @@ class Manifest(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        try:
-            self.table = Table(path, **kwargs)
-            self.head = self.table.head
-        except FileNotFoundError:
-            logging.warning(f"Manifest not found: {path}")
+        self._table: Table|None = None
+
+    def table(self) -> Table:
+        if not hasattr(self, "_table") or self._table is None:
+            try:
+                self._table = Table(self.path, **self.args)
+            except FileNotFoundError:
+                logging.warning(f"Manifest not found: {self.path}")
+        if not isinstance(self._table, Table):
+            raise TypeError(f"Expected Table, got {type(self._table)}")
+        return self._table
+    
+    def head(self):
+        return self.table().head
 
     #
     # Hash functions
@@ -53,7 +62,7 @@ class Manifest(ResourceKey):
 
     def _child_names(self, **kwargs) -> list[str]:
         """List all child resource names."""
-        return self.table.names()
+        return self.table().names()
 
     def _child_place(self, place: str) -> str:
         if self.IS_REL not in place:
@@ -69,7 +78,7 @@ class Manifest(ResourceKey):
 
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
-        row = self.table.get_dict4(key)
+        row = self.table().get_dict4(key)
         place = row.place
         drow = asdict(row)
         drow[self.codec.K_PLC] = self._child_place(place)

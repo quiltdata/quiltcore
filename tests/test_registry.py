@@ -59,6 +59,12 @@ def test_reg_name(reg):
     assert "namespace" in man.args
     assert reg.KEY_NS in man.args
 
+def test_reg_new(reg):
+    NEW_PKG = f"test/test_reg_new_{Registry.Now()}"
+    with raises(KeyError):
+        reg.get(NEW_PKG)
+    force = {Registry.KEY_FRC: True}
+    assert reg.get(NEW_PKG, **force)    
 
 def test_reg_name_latest(reg):
     name = reg.get(TEST_PKG)

@@ -10,6 +10,7 @@ class Registry(ResourcePath):
     Top-level Resource reperesenting a Quilt Registry.
     Defines core paths containing Namespaces and Manifests.
     `list` and `get` return Namespace objects
+    TODO: Rename as "Domain"?
     """
 
     DIR_PREFIX = "quilt3/dirs/"
@@ -31,7 +32,10 @@ class Registry(ResourcePath):
         return dir
 
     def _child_args(self, key: str) -> dict:
-        return {self.KEY_MAN: self.manifests}
+        return {
+            self.KEY_MAN: self.manifests,
+            self.KEY_NS: key,
+        }
 
     def put(self, res: Resource, **kwargs) -> "Resource":
         """Link manifest into namespace"""

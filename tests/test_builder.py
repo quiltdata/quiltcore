@@ -58,7 +58,7 @@ def test_build_opts(dir: UPath):
 def test_build_man(build: Builder):
     man = build.post(build.path)
     assert isinstance(man, Manifest)
-    assert man.head.to_dict() == build.head.to_dict()
+    assert man.head().to_dict() == build.head.to_dict()
 
     mlist = man.list()
     assert len(mlist) == 1
