@@ -21,6 +21,7 @@ class Namespace(ResourcePath):
 
     def _child_path(self, key: str) -> Path:
         """Return the path for a child resource."""
+        # TODO: match on partial hashes
         hash = self.hash(key)
         return self.manifests / hash
 
