@@ -31,7 +31,7 @@ def man(opts: dict) -> Manifest:
 
 def test_man(man: Manifest):
     assert man
-    assert man.table
+    assert man._table
     assert "manifest" in man.args
 
 
