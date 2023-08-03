@@ -74,4 +74,3 @@ class Delta(ResourceKey):
             self.cf.K_NAM: self.name,
             self.cf.K_PLC: str(self.path),
         }
-

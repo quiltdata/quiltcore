@@ -1,7 +1,7 @@
 from pytest import fixture, raises
 from quiltcore import Manifest, Namespace, Registry
 
-from .conftest import TEST_HASH, TEST_PKG, TEST_TAG, TEST_VOL
+from .conftest import TEST_PKG, TEST_VOL
 
 
 @fixture
@@ -50,4 +50,4 @@ def test_reg_new(reg):
     with raises(KeyError):
         reg.get(NEW_PKG)
     force = {Registry.KEY_FRC: True}
-    assert reg.get(NEW_PKG, **force)    
+    assert reg.get(NEW_PKG, **force)

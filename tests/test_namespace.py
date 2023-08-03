@@ -1,4 +1,4 @@
-from pytest import fixture, raises
+from pytest import fixture
 from quiltcore import Manifest, Namespace, Registry
 
 from .conftest import TEST_HASH, TEST_PKG, TEST_TAG, TEST_VOL
@@ -46,6 +46,7 @@ def test_names_hash(names: Namespace):
     assert latest.hash_quilt3() != not_latest.hash_quilt3()
     assert TEST_HASH == not_latest.hash_quilt3()
     assert names.KEY_HSH == "hash"
+
 
 def test_names_hash_part(names: Namespace):
     """use explicit hash, or partial, if provided"""

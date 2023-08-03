@@ -8,6 +8,7 @@ class Namespace(ResourcePath):
     Namespace of Manifests by Hash
     list/get returns a specific Manifest
     """
+
     SEP = "/"
     HASH_LEN = 64
 
