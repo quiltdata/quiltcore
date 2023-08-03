@@ -22,7 +22,7 @@ class Namespace(ResourcePath):
     def _child_path(self, key: str, **kwargs) -> Path:
         """Return the path for a child resource."""
         # TODO: match on partial hashes
-        hash = self.hash(key)
+        hash = kwargs.get(self.KEY_HSH) or self.hash(key)
         return self.manifests / hash
 
     def pkg_name(self) -> str:
