@@ -1,8 +1,15 @@
 # CHANGELOG.md
 
-## 0.3.1 (UNRELEASED)
+## 0.3.2 (2023-08-03)
 
-QuiltPlus fixes
+QuiltPlus fixes, Part 2
+
+- pass/use explicit 'hash=' to namespace.get()
+- support partial hashes
+
+## 0.3.1 (2023-08-01)
+
+QuiltPlus fixes, Part 1
 
 - Namespace.pkg_name() returns the package name
 - Load Manifests lazily
