@@ -19,7 +19,7 @@ class Namespace(ResourcePath):
         hash_file = self.path / tag
         return hash_file.read_text()
 
-    def _child_path(self, key: str) -> Path:
+    def _child_path(self, key: str, **kwargs) -> Path:
         """Return the path for a child resource."""
         # TODO: match on partial hashes
         hash = self.hash(key)

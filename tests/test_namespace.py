@@ -39,4 +39,7 @@ def test_names_man(names: Namespace):
 
 
 def test_names_hash(names: Namespace):
-    pass
+    """use explicit hash, or partial, if provided"""
+    latest: Manifest = names.get("latest")  # type: ignore
+    not_latest: Manifest = names.get("latest", hash=TEST_HASH)  # type: ignore
+    assert latest.hash_quilt3() != not_latest.hash_quilt3()
