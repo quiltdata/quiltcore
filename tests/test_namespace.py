@@ -46,3 +46,10 @@ def test_names_hash(names: Namespace):
     assert latest.hash_quilt3() != not_latest.hash_quilt3()
     assert TEST_HASH == not_latest.hash_quilt3()
     assert names.KEY_HSH == "hash"
+
+def test_names_hash_part(names: Namespace):
+    """use explicit hash, or partial, if provided"""
+    assert len(TEST_HASH) == names.HASH_LEN
+    opts = {names.KEY_HSH: TEST_HASH[:8]}
+    not_latest: Manifest = names.get("latest", **opts)  # type: ignore
+    assert TEST_HASH == not_latest.hash_quilt3()
