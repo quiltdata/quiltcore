@@ -39,6 +39,7 @@ def test_build_head(build: Builder):
     bd = build.head.to_dict()
     assert bd["user_meta"] == {}
 
+
 def test_build_entries(build: Builder):
     entries = build.list()
     assert len(entries) == 1

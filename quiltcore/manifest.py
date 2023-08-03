@@ -33,7 +33,7 @@ class Manifest(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self._table: Table|None = None
+        self._table: Table | None = None
 
     def table(self) -> Table:
         if not hasattr(self, "_table") or self._table is None:
@@ -44,7 +44,7 @@ class Manifest(ResourceKey):
         if not isinstance(self._table, Table):
             raise TypeError(f"Expected Table, got {type(self._table)}")
         return self._table
-    
+
     def head(self):
         return self.table().head
 

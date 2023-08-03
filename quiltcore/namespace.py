@@ -8,7 +8,9 @@ class Namespace(ResourcePath):
     Namespace of Manifests by Hash
     list/get returns a specific Manifest
     """
+
     SEP = "/"
+    HASH_LEN = 64
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -19,11 +21,14 @@ class Namespace(ResourcePath):
         hash_file = self.path / tag
         return hash_file.read_text()
 
-    def _child_path(self, key: str) -> Path:
+    def _child_path(self, key: str, **kwargs) -> Path:
         """Return the path for a child resource."""
-        # TODO: match on partial hashes
-        hash = self.hash(key)
-        return self.manifests / hash
+        hash = kwargs.get(self.KEY_HSH) or self.hash(key)
+        if len(hash) == self.HASH_LEN:
+            return self.manifests / hash
+        for match in self.manifests.glob(f"{hash}*"):
+            return match
+        raise ValueError(f"hash must be {self.HASH_LEN} chars long")
 
     def pkg_name(self) -> str:
         return self.SEP.join(self.path.parts[-2:])

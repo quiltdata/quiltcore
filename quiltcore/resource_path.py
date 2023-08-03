@@ -30,7 +30,7 @@ class ResourcePath(Resource):
         self.CheckPath(path)
         return self.klass(path, **merged)
 
-    def _child_path(self, key: str) -> Path:
+    def _child_path(self, key: str, **kwargs) -> Path:
         """Return the path for a child resource."""
         return self.path / key
 
@@ -48,7 +48,7 @@ class ResourcePath(Resource):
 
     def get(self, key: str, **kwargs) -> "Resource":
         """Get a child resource by name."""
-        path = self._child_path(key)
+        path = self._child_path(key, **kwargs)
         if not path.exists():
             if not kwargs.get(self.KEY_FRC, False):
                 raise KeyError(f"Key {key} not found in {self.path}")

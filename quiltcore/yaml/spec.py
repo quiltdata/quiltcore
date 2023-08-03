@@ -5,7 +5,6 @@ class Spec(Config):
     """Manage quiltspec parameters"""
 
     CONFIG_FILE = "quiltspec.yaml"
-    K_PKG = "config"
 
     def __init__(self, name=None, update=None) -> None:
         super().__init__()
@@ -13,7 +12,7 @@ class Spec(Config):
         self.update = update
 
     def pkg(self, key: str) -> str:
-        _pkg = self.get_dict(self.K_PKG)
+        _pkg = self.get_dict(self.K_CFG)
         return _pkg.get(key, "<missing>")
 
     # Configuration
@@ -25,7 +24,7 @@ class Spec(Config):
         return self.name or self.pkg("namespace")
 
     def hash(self) -> str:
-        return self.pkg("hash")
+        return self.pkg(self.K_HSH)
 
     def tag(self) -> str:
         return str(self.pkg("tag"))
