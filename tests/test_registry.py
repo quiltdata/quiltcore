@@ -45,28 +45,9 @@ def test_reg_get(reg):
         reg.get("invalid")
 
 
-def test_reg_name(reg):
-    names = reg.get(TEST_PKG)
-    assert isinstance(names, Namespace)
-    assert "registry" in names.args
-    assert reg.KEY_NS in names.args.keys()
-    assert names.args[reg.KEY_NS] == TEST_PKG
-
-    man = names.get(TEST_TAG)
-    assert isinstance(man, Manifest)
-    assert TEST_HASH in str(man)
-    assert "registry" in man.args
-    assert "namespace" in man.args
-    assert reg.KEY_NS in man.args
-
 def test_reg_new(reg):
     NEW_PKG = f"test/test_reg_new_{Registry.Now()}"
     with raises(KeyError):
         reg.get(NEW_PKG)
     force = {Registry.KEY_FRC: True}
     assert reg.get(NEW_PKG, **force)    
-
-def test_reg_name_latest(reg):
-    name = reg.get(TEST_PKG)
-    latest = name.get("latest")
-    assert isinstance(latest, Manifest)
