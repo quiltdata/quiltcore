@@ -23,6 +23,9 @@ class Changes(ResourceKey):
 
     def __str__(self):
         return dump(self.to_dict())
+    
+    def __len__(self):
+        return len(self.keystore)
 
     def to_dict(self):
         return {k: v.to_dict() for k, v in self.keystore.items()}
