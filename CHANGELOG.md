@@ -1,5 +1,12 @@
 # CHANGELOG.md
 
+## 0.3.3 (2023-08-07?)
+
+QuiltPlus fixes, Part 3
+
+- len(changes)
+- builder post?
+
 ## 0.3.2 (2023-08-03)
 
 QuiltPlus fixes, Part 2

@@ -4,16 +4,7 @@ from pytest import fixture, raises
 from quiltcore import Changes, Delta, Entry
 from upath import UPath
 
-
-class MockChanges(Changes):
-    FILENAME = "filename.txt"
-    FILETEXT = "hello world"
-
-    def __init__(self, dir: UPath, **kwargs):
-        super().__init__(dir, **kwargs)
-        self.infile = (dir / self.FILENAME).resolve()
-        self.infile.write_text(self.FILETEXT)
-        self.post(self.infile)
+from .conftest import MockChanges
 
 
 @fixture
@@ -40,7 +31,7 @@ def changed(dir: UPath):
 
 
 def test_chg(chg: Changes):
-    assert chg
+    assert chg is not None
 
 
 def test_chg_dir(dir: UPath):

@@ -6,6 +6,8 @@ from upath import UPath
 
 from .conftest import LOCAL_ONLY, TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL
 
+from .conftest import MockChanges
+
 
 @fixture
 def dir():
@@ -16,6 +18,12 @@ def dir():
 @fixture
 def vol():
     return Volume.FromURI(TEST_VOL)
+
+
+@fixture
+def changed(dir: UPath):
+    chg = MockChanges(dir)
+    return chg
 
 
 def test_vol(vol):
@@ -103,3 +111,10 @@ def test_vol_put(dir: UPath):  # noqa: F401
     latest = pkg_tmp / Volume.TAG_DEFAULT
     assert latest.exists()
     assert man2.name == latest.read_text()
+
+def test_vol_post(dir: UPath, changed: MockChanges):  # noqa: F401
+    """Create a new manifest from a directory"""
+    v_tmp = Volume(dir)
+    assert changed#.path.exists()
+
+    pass
