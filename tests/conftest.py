@@ -1,6 +1,7 @@
 from os import environ
 from pathlib import Path
 from sys import platform
+
 from quiltcore import Changes
 
 LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
@@ -35,6 +36,7 @@ TEST_ROW = {
 def not_win():
     return not platform.startswith("win")
 
+
 class MockChanges(Changes):
     FILENAME = "filename.txt"
     FILETEXT = "hello world"
@@ -46,4 +48,3 @@ class MockChanges(Changes):
         self.infile = (dir / self.FILENAME).resolve()
         self.infile.write_text(self.FILETEXT)
         self.post(self.infile)
-

@@ -180,7 +180,7 @@ class Volume(ResourceKey):
 
     #
     # POST and helpers - create a new Manifest from a folder's Changeset
-    # 
+    #
 
     def post(self, path: Path, **kwargs) -> Manifest:
         chg = Changes(self.path, **self.args)
@@ -189,4 +189,3 @@ class Volume(ResourceKey):
         if not isinstance(man, Manifest):
             raise ValueError("Builder.post did not return a Manifest")
         return man
-    

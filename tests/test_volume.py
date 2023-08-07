@@ -4,9 +4,7 @@ from pytest import fixture, mark, raises
 from quiltcore import Manifest, Volume
 from upath import UPath
 
-from .conftest import LOCAL_ONLY, TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL
-
-from .conftest import MockChanges
+from .conftest import LOCAL_ONLY, TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL, MockChanges
 
 
 @fixture
@@ -106,10 +104,10 @@ def test_vol_put(dir: UPath):  # noqa: F401
     assert latest.exists()
     assert man2.name == latest.read_text()
 
+
 def test_vol_post(dir: UPath):  # noqa: F401
     """Use Volume to create a new manifest from a folder in a Volume"""
     vol = Volume(dir)
     chg = MockChanges(vol.path / "sub")
 
     assert chg.path.exists()
-

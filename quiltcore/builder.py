@@ -47,6 +47,7 @@ class Builder(ResourceKey):
         return children[0]
 
     def post(self, path: Path, **kwargs) -> Resource:
+        """Create a manfest in the `manifests` folder"""
         path = path or self.path
         hash = self.hash_quilt3()
         path = self.path / hash

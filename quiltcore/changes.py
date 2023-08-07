@@ -23,7 +23,7 @@ class Changes(ResourceKey):
 
     def __str__(self):
         return dump(self.to_dict())
-    
+
     def __len__(self):
         return len(self.keystore)
 
