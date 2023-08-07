@@ -20,12 +20,6 @@ def vol():
     return Volume.FromURI(TEST_VOL)
 
 
-@fixture
-def changed(dir: UPath):
-    chg = MockChanges(dir)
-    return chg
-
-
 def test_vol(vol):
     assert vol
     assert vol.cf
@@ -112,9 +106,10 @@ def test_vol_put(dir: UPath):  # noqa: F401
     assert latest.exists()
     assert man2.name == latest.read_text()
 
-def test_vol_post(dir: UPath, changed: MockChanges):  # noqa: F401
-    """Create a new manifest from a directory"""
-    v_tmp = Volume(dir)
-    assert changed#.path.exists()
+def test_vol_post(dir: UPath):  # noqa: F401
+    """Use Volume to create a new manifest from a folder in a Volume"""
+    vol = Volume(dir)
+    chg = MockChanges(vol.path / "sub")
 
-    pass
+    assert chg.path.exists()
+
