@@ -76,7 +76,12 @@ class Codec(Config):
         if not path.exists():
             return None
         stat: dict = path.stat()  # type: ignore
-        return stat.get(cls.K_UVER, None)
+        if isinstance(stat, dict):
+            return stat.get(cls.K_UVER, None)
+        if hasattr(stat, "cls.K_UVER"):
+            return getattr(stat, cls.K_UVER)
+        logging.warning(f"StatVersion: {path} -> {stat} has no {cls.K_UVER}")
+        return None
 
     @classmethod
     def AsStr(cls, object) -> str:
