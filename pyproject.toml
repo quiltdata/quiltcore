@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "quiltcore"
-version = "0.3.2"
+version = "0.3.3"
 description = "low-level plubming to read/write Quilt packages"
 authors = ["Ernest Prabhakar <ernest@quiltdata.io>"]
 readme = "README.md"
