@@ -1781,20 +1781,20 @@ typing-extensions = ">=4.5.0,<5.0.0"
 
 [[package]]
 name = "universal-pathlib"
-version = "0.0.24"
+version = "0.1.1"
 description = "pathlib api extended to use fsspec backends"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "universal_pathlib-0.0.24-py3-none-any.whl", hash = "sha256:a2e907b11b1b3f6e982275e5ac0c58a4d34dba2b9e703ecbe2040afa572c741b"},
-    {file = "universal_pathlib-0.0.24.tar.gz", hash = "sha256:fcbffb95e4bc69f704af5dde4f9a624b2269f251a38c81ab8bec19dfeaad830f"},
+    {file = "universal_pathlib-0.1.1-py3-none-any.whl", hash = "sha256:53e1edba0045653a2a20ec3bb2ba84e2d0f7a9cf61cd6a668378370c10584305"},
+    {file = "universal_pathlib-0.1.1.tar.gz", hash = "sha256:5214c86f210feab9be5bcc002f042d65eaeec3c0933fd665a4336cb70e86c59d"},
 ]
 
 [package.dependencies]
 fsspec = "*"
 
 [package.extras]
-dev = ["adlfs", "aiohttp", "cheroot", "gcsfs", "hadoop-test-cluster", "moto[s3,server]", "mypy (==1.3.0)", "pyarrow", "pylint (==2.17.4)", "pytest (==7.3.2)", "pytest-cov (==4.1.0)", "pytest-mock (==3.11.1)", "pytest-sugar (==0.9.6)", "requests", "s3fs", "webdav4[fsspec]", "wsgidav"]
+dev = ["adlfs", "aiohttp", "cheroot", "gcsfs", "hadoop-test-cluster", "moto[s3,server]", "mypy (==1.3.0)", "pyarrow", "pydantic", "pydantic-settings", "pylint (==2.17.4)", "pytest (==7.3.2)", "pytest-cov (==4.1.0)", "pytest-mock (==3.11.1)", "pytest-sugar (==0.9.6)", "requests", "s3fs", "webdav4[fsspec]", "wsgidav"]
 tests = ["mypy (==1.3.0)", "pylint (==2.17.4)", "pytest (==7.3.2)", "pytest-cov (==4.1.0)", "pytest-mock (==3.11.1)", "pytest-sugar (==0.9.6)"]
 
 [[package]]
@@ -2026,4 +2026,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "332685a1fac071e6aa4033d44ed0e394100b7a91333959b86a3cb1a22a188dc5"
+content-hash = "c9169e2fc05614c41c970f48460cf2ca538c2edcca43c2f39afc7152f15b9ae8"
