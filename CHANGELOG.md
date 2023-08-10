@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 0.3.4 (2023-08-09)
+
+- Fix types (missing from package?)
+- Added a py.typed file so that mypy will know to use our type annotations.
+
 ## 0.3.3 (2023-08-09)
 
 QuiltPlus fixes, Part 3
