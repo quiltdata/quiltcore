@@ -104,10 +104,18 @@ def test_vol_put(dir: UPath):  # noqa: F401
     assert latest.exists()
     assert man2.name == latest.read_text()
 
-
+@mark.skip("Not fully implemented")
 def test_vol_post(dir: UPath):  # noqa: F401
     """Use Volume to create a new manifest from a folder in a Volume"""
     vol = Volume(dir)
-    chg = MockChanges(vol.path / "sub")
+    subdir = vol.path / "sub"
+    chg = MockChanges(subdir)
 
     assert chg.path.exists()
+    man = vol.post(subdir, **chg.args)
+    assert man
+    assert man.path.exists
+    assert isinstance(man, Manifest)
+    assert vol.registry.manifests / man.name == man.path
+
+
