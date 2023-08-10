@@ -2,6 +2,8 @@ from os import environ
 from pathlib import Path
 from sys import platform
 
+from quiltcore import Changes
+
 LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 
 TEST_BKT = "s3://udp-spec"
@@ -33,3 +35,16 @@ TEST_ROW = {
 
 def not_win():
     return not platform.startswith("win")
+
+
+class MockChanges(Changes):
+    FILENAME = "filename.txt"
+    FILETEXT = "hello world"
+
+    def __init__(self, dir: Path, **kwargs):
+        if not dir.exists():
+            dir.mkdir(parents=True)
+        super().__init__(dir, **kwargs)
+        self.infile = (dir / self.FILENAME).resolve()
+        self.infile.write_text(self.FILETEXT)
+        self.post(self.infile)

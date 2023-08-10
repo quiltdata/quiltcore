@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "quiltcore"
-version = "0.3.2"
+version = "0.3.3"
 description = "low-level plubming to read/write Quilt packages"
 authors = ["Ernest Prabhakar <ernest@quiltdata.io>"]
 readme = "README.md"
@@ -19,7 +19,7 @@ typing-extensions = "^4.6.3"
 tzlocal = "^5.0.1"
 un-yaml = ">=0.3.1"
 # un-yaml = {git = "https://github.com/data-yaml/un-yaml.git", rev = "main"}
-universal-pathlib = "^0.0.24"
+universal-pathlib = "^0.1.0"
 
 
 [tool.poetry.group.dev.dependencies]

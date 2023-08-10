@@ -41,17 +41,18 @@ class Builder(ResourceKey):
         return [entry for entries in nested_entries for entry in entries]
 
     def get(self, key: str, **kwargs) -> Resource:
-        """Get a child entry by key."""
+        """Get the first child Entry for a key."""
         delta = self.changes.get(key)
         children = delta.list()
         return children[0]
 
     def post(self, path: Path, **kwargs) -> Resource:
+        """Create a manfest in the `manifests` folder"""
         path = path or self.path
         hash = self.hash_quilt3()
         path = self.path / hash
         rows = self.list()
         if len(rows) == 0:
             raise ValueError(f"Cannot post empty manifest: {self.changes}")
-        Manifest.WriteToPath(self.head, self.list(), path)  # type: ignore
+        Manifest.WriteToPath(self.head, rows, path)  # type: ignore
         return Manifest(path, **kwargs)

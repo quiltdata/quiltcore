@@ -4,7 +4,7 @@ from pytest import fixture
 from quiltcore import Builder, Manifest
 from upath import UPath
 
-from .test_changes import MockChanges
+from .conftest import MockChanges
 
 OPTS = {
     Builder.KEY_USER: {"key": "value"},
