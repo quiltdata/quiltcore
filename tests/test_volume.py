@@ -114,7 +114,7 @@ def test_vol_post(dir: UPath):  # noqa: F401
     assert chg.path.exists()
     man = vol.post(subdir, **chg.args)
     assert man
-    assert man.path.exists
+    assert man.path.exists()
     assert isinstance(man, Manifest)
     assert vol.registry.manifests / man.name == man.path
 
