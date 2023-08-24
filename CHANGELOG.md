@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 0.3.5 (2023-08-24)
+
+- Improve CI Roles
+- Improve README testing
+
 ## 0.3.4 (2023-08-09)
 
 - Fix types (missing from package?)
