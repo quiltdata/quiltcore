@@ -22,7 +22,7 @@ def man() -> Manifest:
 
 @fixture
 def entry(man: Manifest) -> Entry:
-    entry: Entry = man.get(TEST_KEY)  # type: ignore
+    entry: Entry = man.getResource(TEST_KEY)  # type: ignore
     return entry
 
 
@@ -47,7 +47,7 @@ def test_entry_meta(entry: Entry):
 def test_entry_get(entry: Entry, tmpdir: UPath):
     dest = tmpdir / "data"
     assert not dest.exists()
-    clone = entry.get(str(dest))
+    clone = entry.getResource(str(dest))
     assert TEST_KEY in str(clone.path)
     assert entry.path != clone.path
 
@@ -55,7 +55,7 @@ def test_entry_get(entry: Entry, tmpdir: UPath):
 @mark.skipif(LOCAL_ONLY, reason="skip network tests")
 def test_entry_remote(entry: Entry):
     remote = UPath(TEST_BKT) / "spec"
-    clone = entry.get(str(remote))
+    clone = entry.getResource(str(remote))
     assert clone.path.exists()
     place = clone.args[clone.cf.K_PLC]
     query = place.split("?")
@@ -86,7 +86,7 @@ def test_entry_digest_verify(entry: Entry):
 
 def test_entry_verify(entry: Entry, tmpdir: UPath):
     assert entry.multihash
-    clone = entry.get(str(tmpdir))
+    clone = entry.getResource(str(tmpdir))
     assert clone.path.exists()
     bstring = clone.to_bytes()
     assert entry.verify(bstring)

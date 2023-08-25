@@ -78,7 +78,7 @@ def test_man_child_dict(man: Manifest):
 
 
 def test_man_entry(man: Manifest):
-    entry = man.get(TEST_KEY)
+    entry = man.getResource(TEST_KEY)
     assert entry
     assert isinstance(entry, Entry)
     assert entry.args
@@ -93,7 +93,7 @@ def test_man_list(man: Manifest):
 
 
 def test_man_get(man: Manifest):
-    entry = man.get(TEST_KEY)
+    entry = man.getResource(TEST_KEY)
     assert "manifest" in entry.args
     assert entry
     assert isinstance(entry, Entry)

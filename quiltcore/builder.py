@@ -40,9 +40,9 @@ class Builder(ResourceKey):
         nested_entries = [delta.list() for delta in self.changes.list()]
         return [entry for entries in nested_entries for entry in entries]
 
-    def get(self, key: str, **kwargs) -> Resource:
+    def getResource(self, key: str, **kwargs) -> Resource:
         """Get the first child Entry for a key."""
-        delta = self.changes.get(key)
+        delta = self.changes.getResource(key)
         children = delta.list()
         return children[0]
 

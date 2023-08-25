@@ -62,7 +62,7 @@ class Entry(ResourceKey):
     # Public Methods
     #
 
-    def get(self, key: str, **kwargs) -> Resource:
+    def getResource(self, key: str, **kwargs) -> Resource:
         """Copy contents of resource's path into _key_ directory."""
         path = self.to_path(key)
         path.write_bytes(self.to_bytes())  # for binary files

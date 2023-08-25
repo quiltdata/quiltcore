@@ -62,9 +62,9 @@ class ResourcePath(Keyed, Resource):
     
     def __getitem__(self, key: str) -> Resource:
         """Get a child resource by name."""
-        return self.get(key)  # type: ignore
+        return self.getResource(key)  # type: ignore
 
-    def get(self, key: str, **kwargs) -> Resource:
+    def getResource(self, key: str, **kwargs) -> Resource:
         """Get a child resource by name."""
         path = self._child_path(key, **kwargs)
         if not path.exists():

@@ -69,13 +69,13 @@ class Volume(ResourceKey):
 
     def list(self, **kwargs) -> list["Resource"]:
         """List all child resources."""
-        return [self.get(x) for x in self._child_names()]
+        return [self.getResource(x) for x in self._child_names()]
 
     #
     # GET and helpers - return a Manfiest
     #
 
-    def get(self, key: str, **kwargs) -> "Resource":
+    def getResource(self, key: str, **kwargs) -> "Resource":
         """
         Return and keycache manifest for Namespace `key`
 
@@ -120,11 +120,11 @@ class Volume(ResourceKey):
         hash = opts.get(self.KEY_HSH, "")
         tag = opts.get(self.KEY_TAG, self.TAG_DEFAULT)
         if len(hash) == 0:
-            name = self.registry.get(key)
+            name = self.registry.getResource(key)
             if not isinstance(name, Namespace):
                 raise TypeError(f"Volume.get requires a Namespace, not {type(name)}")
             hash = name.hash(tag)
-            name.get(tag)
+            name.getResource(tag)
         return self.read_manifest(hash)
 
     #
@@ -174,7 +174,7 @@ class Volume(ResourceKey):
     def translate_manifest(self, man: ResourceKey, path: Path, name: str) -> Manifest:
         """Translate entries from manifest into this Volume"""
         dest = str(self.path / name)
-        entries = [entry.get(dest) for entry in man.list()]
+        entries = [entry.getResource(dest) for entry in man.list()]
         Manifest.WriteToPath(man.head(), entries, path)  # type: ignore
         return Manifest(path, **self.args)
 

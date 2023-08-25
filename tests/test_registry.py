@@ -23,6 +23,10 @@ def test_reg(reg):
 def test_reg_map(reg):
     assert reg
     assert reg.__len__() > 0
+    name = reg[TEST_PKG]
+    assert isinstance(name, Namespace)
+    assert name in reg.values()
+    assert TEST_PKG in reg.keys()
 
 
 def test_reg_eq(reg):
@@ -42,19 +46,19 @@ def test_reg_list(reg):
 
 
 def test_reg_get(reg):
-    name = reg.get(TEST_PKG)
+    name = reg.getResource(TEST_PKG)
     assert isinstance(name, Namespace)
     assert TEST_PKG in str(name.path.as_posix())
 
     with raises(KeyError):
-        reg.get("invalid")
+        reg.getResource("invalid")
 
 
 def test_reg_new(reg):
     NEW_PKG = f"test/test_reg_new_{Registry.Now()}"
     with raises(KeyError):
-        reg.get(NEW_PKG)
+        reg.getResource(NEW_PKG)
     force = {Registry.KEY_FRC: True}
-    new_pkg = reg.get(NEW_PKG, **force)
+    new_pkg = reg.getResource(NEW_PKG, **force)
     assert new_pkg != None
     assert isinstance(new_pkg, Namespace)

@@ -100,7 +100,7 @@ class ResourceKey(Resource):
     # Concrete HTTP Methods
     #
 
-    def get(self, key: str, **kwargs) -> "Resource":
+    def getResource(self, key: str, **kwargs) -> "Resource":
         """Get a child resource by name."""
         return self.child(key, **kwargs)
 

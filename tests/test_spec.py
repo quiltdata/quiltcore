@@ -30,8 +30,8 @@ def pkg(spec: Spec) -> Package:
 def man(spec: Spec) -> Manifest:
     reg = Registry.AsPath(spec.registry())
     registry = Registry(reg)
-    namespace = registry.get(spec.namespace())
-    man = namespace.get(spec.tag())
+    namespace = registry.getResource(spec.namespace())
+    man = namespace.getResource(spec.tag())
     return man  # type: ignore
 
 
@@ -97,7 +97,7 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
     for part in pkg._get_top_hash_parts(pkg._meta, pkg.walk()):
         if "logical_key" in part:
             key = part["logical_key"]
-            entry = man.get(key)
+            entry = man.getResource(key)
             hashable = entry.to_hashable()  # type: ignore
             assert part == hashable
             part_encoded = json_encode(part).encode()
@@ -128,7 +128,7 @@ def test_spec_read(spec: Spec, man: Manifest):
         assert head.user_meta[key] == value  # type: ignore
 
     for key, value in spec.files().items():
-        entry = man.get(key)
+        entry = man.getResource(key)
         assert entry
         assert entry.name in spec.files().keys()
         assert isinstance(entry, Entry)

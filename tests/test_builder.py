@@ -45,7 +45,7 @@ def test_build_entries(build: Builder):
     assert len(entries) == 1
     entry = entries[0]
     assert entry.name == MockChanges.FILENAME
-    assert build.get(entry.name) == entry
+    assert build.getResource(entry.name) == entry
 
 
 def test_build_opts(dir: UPath):

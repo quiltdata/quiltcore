@@ -12,7 +12,7 @@ def reg():
 
 @fixture
 def names(reg):
-    return reg.get(TEST_PKG)
+    return reg.getResource(TEST_PKG)
 
 
 def test_names(names: Namespace):
@@ -23,13 +23,13 @@ def test_names(names: Namespace):
 
 
 def test_names_latest(names: Namespace):
-    latest = names.get("latest")
+    latest = names.getResource("latest")
     assert isinstance(latest, Manifest)
     assert latest.hash_quilt3() != TEST_HASH
 
 
 def test_names_man(names: Namespace):
-    man = names.get(TEST_TAG)
+    man = names.getResource(TEST_TAG)
     assert isinstance(man, Manifest)
     assert man.hash_quilt3() == TEST_HASH
     assert TEST_HASH in str(man)
@@ -40,9 +40,9 @@ def test_names_man(names: Namespace):
 
 def test_names_hash(names: Namespace):
     """use explicit hash, or partial, if provided"""
-    latest: Manifest = names.get("latest")  # type: ignore
+    latest: Manifest = names.getResource("latest")  # type: ignore
     opts = {names.KEY_HSH: TEST_HASH}
-    not_latest: Manifest = names.get("latest", **opts)  # type: ignore
+    not_latest: Manifest = names.getResource("latest", **opts)  # type: ignore
     assert latest.hash_quilt3() != not_latest.hash_quilt3()
     assert TEST_HASH == not_latest.hash_quilt3()
     assert names.KEY_HSH == "hash"
@@ -52,5 +52,5 @@ def test_names_hash_part(names: Namespace):
     """use explicit hash, or partial, if provided"""
     assert len(TEST_HASH) == names.HASH_LEN
     opts = {names.KEY_HSH: TEST_HASH[:8]}
-    not_latest: Manifest = names.get("latest", **opts)  # type: ignore
+    not_latest: Manifest = names.getResource("latest", **opts)  # type: ignore
     assert TEST_HASH == not_latest.hash_quilt3()
