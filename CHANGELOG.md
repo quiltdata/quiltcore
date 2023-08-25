@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## 0.4.0 (2023-08-25+)
+
+- KOMD Algebra, Part 1
+- start converting to mappings
+- new abstract KeyedObject
+
 ## 0.3.5 (2023-08-24)
 
 - Improve CI Roles
