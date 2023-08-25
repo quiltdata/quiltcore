@@ -20,6 +20,11 @@ def test_reg(reg):
     assert "registry" in reg.args
 
 
+def test_reg_map(reg):
+    assert reg
+    assert reg.__len__() > 0
+
+
 def test_reg_eq(reg):
     path = Manifest.AsPath(TEST_VOL)
     reg2 = Registry(path)
@@ -50,4 +55,6 @@ def test_reg_new(reg):
     with raises(KeyError):
         reg.get(NEW_PKG)
     force = {Registry.KEY_FRC: True}
-    assert reg.get(NEW_PKG, **force)
+    new_pkg = reg.get(NEW_PKG, **force)
+    assert new_pkg != None
+    assert isinstance(new_pkg, Namespace)
