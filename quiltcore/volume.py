@@ -174,7 +174,7 @@ class Volume(ResourceKey):
     def translate_manifest(self, man: ResourceKey, path: Path, name: str) -> Manifest:
         """Translate entries from manifest into this Volume"""
         dest = str(self.path / name)
-        entries = [entry.getResource(dest) for entry in man.list()]
+        entries = [entry.install(dest) for entry in man.list()]  # type: ignore
         Manifest.WriteToPath(man.head(), entries, path)  # type: ignore
         return Manifest(path, **self.args)
 

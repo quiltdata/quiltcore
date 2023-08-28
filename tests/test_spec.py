@@ -119,7 +119,6 @@ def test_spec_read(spec: Spec, man: Manifest):
     - file-level metadata
     """
     head = man.head()
-    assert head
     assert isinstance(head, Header)
     assert hasattr(head, "user_meta")
     assert isinstance(head.user_meta, dict)  # type: ignore
@@ -129,7 +128,6 @@ def test_spec_read(spec: Spec, man: Manifest):
 
     for key, value in spec.files().items():
         entry = man.getResource(key)
-        assert entry
         assert entry.name in spec.files().keys()
         assert isinstance(entry, Entry)
         opts = entry.read_opts()

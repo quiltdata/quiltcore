@@ -45,16 +45,14 @@ def test_arrow_s3():
 def test_arrow_table():
     path = Table.AsPath(TEST_MAN)
     table = Table(path)
-    assert table
+    assert isinstance(table, Table)
     head = table.head
-    assert head
     assert head.version == "v0"  # type: ignore
     assert len(head.message) > 0  # type: ignore
     assert len(head.user_meta) > 0  # type: ignore
     assert head.user_meta["Author"] == "Ernest"  # type: ignore
 
     body = table.body
-    assert body
     assert body.num_rows == 1
     schema = body.schema
     assert schema

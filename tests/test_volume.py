@@ -19,7 +19,6 @@ def vol():
 
 
 def test_vol(vol):
-    assert vol
     assert vol.cf
     assert "volume" in vol.args
     assert vol.is_local()
@@ -27,7 +26,6 @@ def test_vol(vol):
 
 def test_vol_reg(vol):
     reg = vol.registry
-    assert reg
     assert "volume" in reg.args
 
 
@@ -88,7 +86,7 @@ def test_vol_put(dir: UPath):  # noqa: F401
     pkg_s3 = v_s3.registry.path / TEST_PKG
     assert pkg_s3.exists()
     man = v_s3.getResource(TEST_PKG)
-    assert man
+    assert man != None
 
     v_tmp = Volume(dir)
     pkg_tmp = v_tmp.registry.path / TEST_PKG
@@ -113,7 +111,6 @@ def test_vol_post(dir: UPath):  # noqa: F401
 
     assert chg.path.exists()
     man = vol.post(subdir, **chg.args)
-    assert man
     assert man.path.exists()
     assert isinstance(man, Manifest)
     assert vol.registry.manifests / man.name == man.path

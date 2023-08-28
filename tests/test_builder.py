@@ -26,13 +26,11 @@ def build(dir: UPath) -> Builder:
 
 
 def test_build(build: Builder):
-    assert build
     assert build.path.exists()
     assert build.path.is_dir()
 
 
 def test_build_head(build: Builder):
-    assert build.head
     assert build.head.version == "v0"  # type: ignore
     assert build.head.message == build.cf.get("quilt3/headers/message")  # type: ignore
     assert build.head.user_meta == {}  # type: ignore
