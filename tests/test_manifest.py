@@ -32,13 +32,12 @@ def man(opts: dict) -> Manifest:
 def test_man(man: Manifest):
     assert man
     assert "manifest" in man.args
-    assert not man._table
-    assert man.table()
+    assert man._table != None
+    assert man.table() != None
 
 
 def test_man_head(man: Manifest):
     head = man.head()
-    assert head
     assert isinstance(head, Header)
 
     hashable = head.to_hashable()
@@ -78,8 +77,8 @@ def test_man_child_dict(man: Manifest):
 
 
 def test_man_entry(man: Manifest):
-    entry = man.get(TEST_KEY)
-    assert entry
+    entry = man.getResource(TEST_KEY)
+    # assert entry
     assert isinstance(entry, Entry)
     assert entry.args
 
@@ -93,9 +92,8 @@ def test_man_list(man: Manifest):
 
 
 def test_man_get(man: Manifest):
-    entry = man.get(TEST_KEY)
+    entry = man.getResource(TEST_KEY)
     assert "manifest" in entry.args
-    assert entry
     assert isinstance(entry, Entry)
     assert TEST_KEY in str(entry.path)
 

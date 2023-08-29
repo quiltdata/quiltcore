@@ -10,10 +10,9 @@ endif
 all: install update test
 
 clean:
-	rm -rf coverage_html
-	rm -f coverage*
-	rm -f .coverage*
-	rm -rf quiltplus/.pytest_cache
+	rm -f *.log
+	rm -rf .coverage* coverage* 
+	rm -rf quiltplus/.pytest_cache .mypy_cache
 
 install:
 	poetry install

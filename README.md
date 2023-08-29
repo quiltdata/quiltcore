@@ -50,7 +50,7 @@ entry = manifest.get(TEST_KEY)
 with TemporaryDirectory() as tmpdir:
   dest = UPath(tmpdir)
   outfile = dest / TEST_KEY
-  entry.get(tmpdir)
+  entry.install(tmpdir)
   print(outfile.resolve())
   assert outfile.exists()
   local_bytes = outfile.read_bytes()

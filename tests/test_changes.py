@@ -91,18 +91,18 @@ def test_chg_post(chg: Changes, infile: UPath):
     test_key = "largo"
     delta = chg.post(infile, name=test_key)
     assert delta.name == test_key
-    assert delta == chg.get(test_key)
+    assert delta == chg.getResource(test_key)
 
     chg.delete(test_key)
     with raises(KeyError):
-        chg.get(test_key)
+        chg.getResource(test_key)
 
     with raises(KeyError):
-        chg.get("invalid_key")
+        chg.getResource("invalid_key")
 
 
 def test_chg_get(changed: Changes):
-    delta = changed.get(MockChanges.FILENAME)
+    delta = changed.getResource(MockChanges.FILENAME)
     assert isinstance(delta, Delta)
 
 

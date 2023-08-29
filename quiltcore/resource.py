@@ -153,7 +153,7 @@ class Resource:
         """List all child resources."""
         return []
 
-    def get(self, key: str, **kwargs) -> "Resource":
+    def getResource(self, key: str, **kwargs) -> "Resource":
         """Get a child resource by key."""
         return self
 
