@@ -11,7 +11,7 @@ from multiformats import multihash
 from typing_extensions import Any
 from upath import UPath
 
-from .config import Config
+from ..yaml.config import Config
 
 
 @dataclass

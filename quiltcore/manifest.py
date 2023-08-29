@@ -7,7 +7,7 @@ from .entry import Entry
 from .header import Header
 from .resource_key import ResourceKey
 from .table import Table
-from .yaml.codec import Dict3, asdict
+from .udg.codec import Dict3, asdict
 
 
 class Manifest(ResourceKey):

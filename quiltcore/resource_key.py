@@ -5,9 +5,9 @@ from json import JSONEncoder
 from pathlib import Path
 from typing import Iterator
 
-from .keyed import Keyed
+from .udg.keyed import Keyed
 from .resource import Resource
-from .yaml.codec import Codec
+from .udg.codec import Codec
 
 
 class ResourceKey(Resource, Keyed):

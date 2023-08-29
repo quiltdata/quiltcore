@@ -3,7 +3,7 @@ from pathlib import Path
 
 from .resource import Resource
 from .resource_key import ResourceKey
-from .yaml.codec import Dict3, asdict
+from .udg.codec import Dict3, asdict
 
 
 class Entry(ResourceKey):

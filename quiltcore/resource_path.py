@@ -3,11 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterator
 
-from .keyed import Keyed
+from .udg.keyed import Keyed
 from .resource import Resource
 
 
-class ResourcePath(Keyed, Resource):
+class ResourcePath(Resource, Keyed):
     """
     Path-based list and get.
     """

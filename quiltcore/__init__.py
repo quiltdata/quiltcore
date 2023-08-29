@@ -29,13 +29,15 @@ from .changes import Changes  # noqa: F401
 from .delta import Delta  # noqa: F401
 from .entry import Entry  # noqa: F401
 from .header import Header  # noqa: F401
-from .keyed import Keyed  # noqa: F401
+from .udg.keyed import Keyed  # noqa: F401
 from .manifest import Manifest  # noqa: F401
 from .namespace import Namespace  # noqa: F401
 from .registry import Registry  # noqa: F401
 from .resource import Resource  # noqa: F401
 from .table import Table  # noqa: F401
 from .volume import Volume  # noqa: F401
-from .yaml.codec import Codec, Dict3, Dict4, Hash3  # noqa: F401
+
+from .udg.node import Node  # noqa: F401
+from .udg.codec import Codec, Dict3, Dict4, Hash3  # noqa: F401
 from .yaml.config import Config  # noqa: F401
 from .yaml.spec import Spec  # noqa: F401

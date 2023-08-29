@@ -6,7 +6,7 @@ import pyarrow.json as pj  # type: ignore
 
 from .header import Header
 from .resource_key import ResourceKey
-from .yaml.codec import Codec, Dict3, Dict4
+from .udg.codec import Codec, Dict3, Dict4
 
 
 class Table(ResourceKey):
