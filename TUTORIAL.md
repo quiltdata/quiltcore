@@ -1,7 +1,7 @@
 # Tutorial: Quilt's Magic UAND
 
-Quilt is a lightweight data abstraction layer that provides Uniform Affordances for Nonuniform Data ("UAND"). It unites diverse decentralized domains into a Universal Data Graph ("UDG") via a hierarchical logical namespace. 
-
+Quilt is a lightweight data abstraction layer that provides Uniform Affordances for Nonuniform Data ("UAND").
+It unites diverse decentralized domains into a Universal Data Graph ("UDG") via a hierarchical logical namespace.
 In Python it looks like this (though convenience APIs can use URIs or defaults instead):
 
 ```python
@@ -39,9 +39,6 @@ The different Node types are:
 The first five are known as Registries, and are always "KeyedObjects" (internal nodes) that allow path traversal.
 Only certain Entry types (e.g., structured data files) are KeyedObjects.
 Note that Metadata and Entry will have children that are not Nodes, but may be KeyedObjects.
-
-
-
 
 
 ```python

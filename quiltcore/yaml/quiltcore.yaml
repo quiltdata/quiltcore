@@ -11,6 +11,12 @@ multihash:
   digest:
     SHA256: sha2-256
 resources:
+  Factory:
+    child: Scheme
+  Scheme:
+    child: Domain
+  Domain:
+    child: Volume
   Volume:
     child: Manifest
   Registry:
