@@ -1,5 +1,3 @@
-ALGEBRA.md
-
 # KOMD: The Relaxation Algebra
 
 KOMD (pronounced "calmed" or "comedy") stands for:
@@ -99,4 +97,4 @@ TBD: object-level metadata
 
 Q: is a committed ChangeSet really a Manifest with a "prior" hash and/or tombstone for each Entry? Does that metadata survive a merge, so we can safely re-merge the resulting Manifest?
 
-Q: can we use a special physical Key (**file:/dev/null**?) as a tombstone within the existing Manifest format?
+Q: can we use a special physical Key (**file:/dev/null**?) as a tombstone within the existing Manifest format
