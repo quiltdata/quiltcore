@@ -1,6 +1,7 @@
+from time import time
+
 import quiltcore
 
-from time import time
 
 class Root:
     """

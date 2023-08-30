@@ -32,8 +32,8 @@ def man(opts: dict) -> Manifest:
 def test_man(man: Manifest):
     assert man
     assert "manifest" in man.args
-    assert man._table != None
-    assert man.table() != None
+    assert man._table is not None
+    assert man.table() is not None
 
 
 def test_man_head(man: Manifest):

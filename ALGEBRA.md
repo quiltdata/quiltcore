@@ -47,7 +47,7 @@ There are several useful entities that are similar to Objects or KObjects but do
 - the global Context
 - various DataStores (eg, S3 buckets or local folders)
 
-We will occasionally refer to these as Pseudo-Objects to emphasize that, while part of the Algebra, they don't have all the same semantics as true Objects. 
+We will occasionally refer to these as Pseudo-Objects to emphasize that, while part of the Algebra, they don't have all the same semantics as true Objects.
 
 ## Registration
 
@@ -59,7 +59,7 @@ Registration is the process of creating an _Entry_ for a child Object in a paren
 - the unique hash for those contents and metadata
 - system metadata, such as the child Object's size and type (which might be unknown)
 
-KObjects that supports Registration -- such as Manifests and Domains -- are called Registries. 
+KObjects that supports Registration -- such as Manifests and Domains -- are called Registries.
 
 ## Relaxation
 
@@ -88,11 +88,11 @@ If a Gate is required, Manifests are:
 
 In addition to atomically adding and replacing individual Entries, it is possible to apply an entire ChangeSet to a Registry (typically a Manifest).
 
-ChangeSets consist of Operations, which can be thought of all lazy Entries. Operations (which can be either Add or Remove) only resolve to specific content and hashes when "committed." For example, a directory would resolve to a list of files. 
+ChangeSets consist of Operations, which can be thought of all lazy Entries. Operations (which can be either Add or Remove) only resolve to specific content and hashes when "committed." For example, a directory would resolve to a list of files.
 
 TBD: object-level metadata
 
-- ChangeSets must be created against a specific Namespace, and start out pinned to its "latest" hash. 
+- ChangeSets must be created against a specific Namespace, and start out pinned to its "latest" hash.
 - Each Operation keeps track of the hash of its corresponding Entry, if any
 - ChangeSets must be "committed" before they can be "applied" to a Manifest
 - Applying a ChangeSet atomically fails if any of the Entry hashes do not match

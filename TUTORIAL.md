@@ -57,7 +57,6 @@ def verify(self, contents: bytes) -> bool: pass
 
 ## Adding Nodes
 
-
 ```python
 
 ```

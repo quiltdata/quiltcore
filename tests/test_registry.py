@@ -60,5 +60,5 @@ def test_reg_new(reg):
         reg.getResource(NEW_PKG)
     force = {Registry.KEY_FRC: True}
     new_pkg = reg.getResource(NEW_PKG, **force)
-    assert new_pkg != None
+    assert new_pkg is not None
     assert isinstance(new_pkg, Namespace)

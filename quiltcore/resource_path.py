@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterator
 
-from .udg.keyed import Keyed
 from .resource import Resource
+from .udg.keyed import Keyed
 
 
 class ResourcePath(Resource, Keyed):
@@ -47,19 +47,19 @@ class ResourcePath(Resource, Keyed):
     def list(self, **kwargs) -> list[Resource]:
         """List all child resources."""
         return [self.child(x) for x in self._child_list()]
-    
+
     def mapping(self, **kwargs) -> dict[str, Resource]:
         """Return a mapping of child resources."""
         return {x.name: x for x in self.list()}
-    
+
     def __len__(self) -> int:
         """Return the number of child resources."""
         return len(self._child_list())
-    
+
     def __iter__(self) -> Iterator[str]:
         """Iterate over child resources."""
         return self.mapping().keys().__iter__()
-    
+
     def __getitem__(self, key: str) -> Resource:
         """Get a child resource by name."""
         return self.getResource(key)  # type: ignore

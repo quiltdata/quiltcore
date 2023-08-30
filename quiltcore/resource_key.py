@@ -5,9 +5,9 @@ from json import JSONEncoder
 from pathlib import Path
 from typing import Iterator
 
-from .udg.keyed import Keyed
 from .resource import Resource
 from .udg.codec import Codec
+from .udg.keyed import Keyed
 
 
 class ResourceKey(Resource, Keyed):
@@ -33,7 +33,7 @@ class ResourceKey(Resource, Keyed):
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         raise NotImplementedError
-    
+
     #
     # Mapping methods: __getitem__, __iter__, and __len__.
     #
@@ -41,11 +41,11 @@ class ResourceKey(Resource, Keyed):
     def __getitem__(self, key: str) -> Resource:
         """Return a child resource by name."""
         return self.child(key)
-    
+
     def __iter__(self) -> Iterator[str]:
         """Return an iterator over child resource names."""
         return iter(self._child_names())
-    
+
     def __len__(self) -> int:
         """Return the number of child resources."""
         return len(self._child_names())

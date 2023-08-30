@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import logging
 
-from typing_extensions import Self
 
-from .verifiable import Verifiable
 from .codec import Codec
+from .verifiable import Verifiable
+
 
 class Node(Verifiable):
-
-    def __init__(self, codec: Codec, name: str, parent: "Node"|None, **kwargs):
+    def __init__(self, codec: Codec, name: str, parent: "Node" | None, **kwargs):
         super().__init__(codec, **kwargs)
         self.name = name
         self.parent = parent or self
@@ -40,4 +39,3 @@ class Node(Verifiable):
     def __getitem__(self, key: str) -> Node:
         """Return a Node."""
         return self.make_child(key)
-    

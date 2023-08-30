@@ -1,5 +1,4 @@
 import logging
-
 from json import JSONEncoder
 
 from .codec import Codec
@@ -7,8 +6,8 @@ from .keyed import Keyed
 
 Multihash = str
 
-class Verifiable(Keyed):
 
+class Verifiable(Keyed):
     ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
 
     def __init__(self, codec: Codec, **kwargs):
@@ -19,16 +18,15 @@ class Verifiable(Keyed):
     # Abstract methods
     #
 
-
     def hash(self) -> Multihash:
         raise NotImplementedError("subclass must override")
 
     def to_bytes(self) -> bytes:
         raise NotImplementedError("subclass must override")
-    
+
     def to_hashable(self) -> dict:
         raise NotImplementedError("subclass must override")
-    
+
     #
     # Hash creation
     #
@@ -60,5 +58,3 @@ class Verifiable(Keyed):
         digest = self.digest(contents)
         logging.debug(f"verify.digest: {digest}")
         return digest == self.hash()
-
-

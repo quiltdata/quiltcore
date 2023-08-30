@@ -1,9 +1,9 @@
-from .udg.child import Child
 from .factory import quilt
+from .udg.child import Child
+
 
 class Domain(Child):
-
-    URI_SPLIT = '://'
+    URI_SPLIT = "://"
 
     @classmethod
     def FromURI(cls, uri):
