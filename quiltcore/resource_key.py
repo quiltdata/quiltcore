@@ -83,7 +83,7 @@ class ResourceKey(Resource, Keyed):
     def _hash_multihash(self) -> str:
         raise NotImplementedError("subclass must override")
 
-    def _hash_path(self) -> str:
+    def _hash_contents(self) -> str:
         """Return the multihash of the source file."""
         return self.digest(self.to_bytes())
 

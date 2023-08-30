@@ -24,7 +24,7 @@ class Entry(ResourceKey):
         if path.is_dir():
             raise ValueError(f"Entry cannot be a directory: {path}")
         self.name = kwargs.get(self.cf.K_NAM, self.path.name)
-        self.multihash: str = kwargs.get(self.KEY_MH, False) or self._hash_path()
+        self.multihash: str = kwargs.get(self.KEY_MH, False) or self._hash_contents()
         self.size = kwargs.get(self.KEY_SZ, False) or self.path.stat().st_size
         self.meta = kwargs.get(self.KEY_META, None)
 

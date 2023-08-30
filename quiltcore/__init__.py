@@ -40,6 +40,7 @@ from .table import Table  # noqa: F401
 from .udg.codec import Codec, Dict3, Dict4, Hash3  # noqa: F401
 from .udg.keyed import Keyed  # noqa: F401
 from .udg.node import Node  # noqa: F401
+from .udg.verifiable import Verifiable  # noqa: F401
 from .volume import Volume  # noqa: F401
 from .yaml.config import Config  # noqa: F401
 from .yaml.spec import Spec  # noqa: F401

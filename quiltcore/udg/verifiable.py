@@ -18,9 +18,6 @@ class Verifiable(Keyed):
     # Abstract methods
     #
 
-    def hash(self) -> Multihash:
-        raise NotImplementedError("subclass must override")
-
     def to_bytes(self) -> bytes:
         raise NotImplementedError("subclass must override")
 
@@ -30,6 +27,9 @@ class Verifiable(Keyed):
     #
     # Hash creation
     #
+
+    def hash(self) -> Multihash:
+        return self._hash_contents()
 
     def digest(self, contents: bytes) -> Multihash:
         """Hash `contents` using the current codec."""
@@ -41,7 +41,7 @@ class Verifiable(Keyed):
         hash_struct = self.cf.encode_hash(mh)
         return hash_struct["value"]
 
-    def _hash_path(self) -> str:
+    def _hash_contents(self) -> str:
         """Return the multihash of the source file."""
         return self.digest(self.to_bytes())
 
