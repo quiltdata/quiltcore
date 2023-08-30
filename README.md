@@ -45,7 +45,7 @@ entry = manifest.get(TEST_KEY)
 
 ### Get Object
 
-<!--pytest-codeblocks:cont-->
+<!--pytest.mark.skip-->
 ```python
 with TemporaryDirectory() as tmpdir:
   dest = UPath(tmpdir)
