@@ -16,6 +16,7 @@ def node():
 
 def test_node(node):
     assert node is not None
+    assert hasattr(node, "path")
 
 
 def test_node_keyed():
@@ -40,17 +41,26 @@ def test_node_factory():
 def test_node_scheme():
     s3 = quilt["s3"]
     assert isinstance(s3, Scheme)
+    assert isinstance(s3.parent, Factory)
     assert s3.name == "s3"
     assert quilt["file"] is not None
 
+    child = s3.make_child("test")
+    assert isinstance(child, Domain)
+    assert isinstance(child.parent, Scheme)
+    assert child.name == "test"
+    assert child.parent_name() == "s3"
 
 def test_node_domain():
     f = quilt["file"]
+    print(f"scheme[{f.name}]: {f}")
     dom = f[LOCAL_VOL]
     assert isinstance(dom, Domain)
+    assert isinstance(dom.parent, Scheme)
 
     uri = "file://" + LOCAL_VOL
-    Domain.FromURI(uri)
+    udom = Domain.FromURI(uri)
+    assert udom == dom
 
 
 @pytest.mark.skip(reason="TODO")
