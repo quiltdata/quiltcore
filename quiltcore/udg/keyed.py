@@ -14,18 +14,19 @@ from .root import Root
 class Keyed(Root, MutableMapping):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.cache = {}
 
     def __getitem__(self, key):
-        raise NotImplementedError
+        return self.cache.get(key, None)
 
     def __iter__(self):
-        raise NotImplementedError
+        return iter(self.cache)
 
     def __len__(self):
-        return 1  # so not zero => None in assert
+        return len(self.cache)
 
     def __setitem__(self, key, value):
-        raise NotImplementedError
+        self.cache[key] = value
 
     def __delitem__(self, key):
-        raise NotImplementedError
+        del self.cache[key]
