@@ -46,12 +46,12 @@ def test_node_scheme():
     assert s3.name == "s3"
     assert quilt["file"] is not None
 
+
 def test_node_uri():
-    uri = "file://" + LOCAL_VOL
     path = UPath(LOCAL_VOL)
-    print(f"test_node_uri[{uri}]: {path}")
     assert path.exists()
 
+    uri = "file://" + LOCAL_VOL
     udom = Domain.FromURI(uri)
     assert isinstance(udom, Domain)
     assert isinstance(udom.parent, Scheme)
@@ -64,6 +64,7 @@ def test_node_domain():
     dom = f[LOCAL_VOL]
     assert isinstance(dom, Domain)
     assert isinstance(dom.parent, Scheme)
+    assert LOCAL_VOL in dom.keys()
 
 
 @pytest.mark.skip(reason="TODO")

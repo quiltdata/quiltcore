@@ -13,24 +13,17 @@ class Domain(Folder):
         scheme, path = uri.split(cls.URI_SPLIT)
         return quilt[scheme][path]
     
-    
-    @classmethod
-    def ToURI(cls, scheme, domain):
-        if scheme == "file":
-            domain = domain.replace("\\", "/")
-            return domain
-        uri = f"{scheme}{cls.URI_SPLIT}{domain}"
-        return uri
-    
     @classmethod
     def ToPath(cls, scheme, domain):
-        uri = cls.ToURI(scheme, domain)
+        if scheme == "file":
+            return UPath(domain)
+        uri = f"{scheme}{cls.URI_SPLIT}{domain}"
         logging.debug(f"Domain.ToPath: {uri}")
         return UPath(uri)
 
     def __init__(self, name, parent, **kwargs):
         super().__init__(name, parent, **kwargs)
-        self.root = self.ToPath(self.parent_name(), name)
-        logging.debug(f"Domain.root: {self.root}")
-        self.base = self._setup_dir(self.root, "config")
+        self.store = self.ToPath(self.parent_name(), name)
+        logging.debug(f"Domain.root: {self.store}")
+        self.base = self._setup_dir(self.store, "config")
         self.path = self._setup_dir(self.base, "names")

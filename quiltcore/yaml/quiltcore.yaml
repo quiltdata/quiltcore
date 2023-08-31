@@ -17,6 +17,8 @@ resources:
     child: Domain
   Domain:
     child: Names
+  Names:
+    child: Manifest2
   Volume:
     child: Manifest
   Registry:
