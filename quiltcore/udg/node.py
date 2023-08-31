@@ -39,11 +39,11 @@ class Node(Verifiable):
         return f"<{self.class_name}({self.name})>"
     
     def check_parent(self) -> Node|None:
-        if not hasattr(self, "parent"):
-            return None
-        if parent := getattr(self, "parent") is not None:
-            assert isinstance(parent, Node) 
-            return parent
+        if hasattr(self, "parent"):
+            if parent := getattr(self, "parent") is not None:
+                assert isinstance(parent, Node) 
+                return parent
+        return None
 
     def set_dirty(self, state: bool = True):
         super().set_dirty(state)

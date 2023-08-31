@@ -9,7 +9,7 @@ Multihash = str
 
 
 class Verifiable(Keyed):
-    DEFAULT_DICT = {}
+    DEFAULT_DICT: dict = {}
     ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
 
     def __init__(self, codec: Codec, **kwargs):
