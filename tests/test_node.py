@@ -1,12 +1,13 @@
 import pytest
-from quiltcore import Codec, Domain, Factory, Keyed, Manifest, Namespace, Node, Scheme, quilt
+from quiltcore import Codec, Domain, Factory, Keyed, Manifest2, Names, Node, Scheme, quilt
 from upath import UPath
 
-from .conftest import LOCAL_VOL, TEST_PKG
+from .conftest import LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_TAG
 
 QKEYS = ["file", LOCAL_VOL, TEST_PKG, "latest"]
-QTYPE = [Scheme, Domain, Namespace, Manifest]
+QTYPE = [Scheme, Domain, Names, Manifest2]
 QMAP = dict(zip(QKEYS, QTYPE))
+LOCAL_URI = "file://" + LOCAL_VOL
 
 
 @pytest.fixture
@@ -50,8 +51,7 @@ def test_node_uri():
     path = UPath(LOCAL_VOL)
     assert path.exists()
 
-    uri = "file://" + LOCAL_VOL
-    udom = Domain.FromURI(uri)
+    udom = Domain.FromURI(LOCAL_URI)
     assert isinstance(udom, Domain)
     assert isinstance(udom.parent, Scheme)
     assert LOCAL_VOL == udom.name
@@ -64,6 +64,22 @@ def test_node_domain():
     assert isinstance(dom, Domain)
     assert isinstance(dom.parent, Scheme)
     assert LOCAL_VOL in dom.keys()
+
+
+def test_node_namespace():
+    udom = Domain.FromURI(LOCAL_URI)
+    ns = udom[TEST_PKG]
+    assert TEST_PKG == ns.name
+    assert isinstance(ns, Names)
+    assert isinstance(ns.parent, Domain)
+
+    q3hash = ns.read_q3hash(TEST_TAG)
+    assert q3hash == TEST_HASH
+
+    man = ns[TEST_TAG]
+    assert isinstance(man, Manifest2)
+    assert man.parent == ns
+    assert man.q3hash() == q3hash
 
 
 @pytest.mark.skip(reason="TODO")

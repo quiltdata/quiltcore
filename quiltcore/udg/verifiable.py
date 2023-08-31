@@ -2,10 +2,8 @@ import logging
 from json import JSONEncoder
 from pathlib import Path
 
-from .codec import Codec
+from .codec import Codec, Multihash
 from .keyed import Keyed
-
-Multihash = str
 
 
 class Verifiable(Keyed):

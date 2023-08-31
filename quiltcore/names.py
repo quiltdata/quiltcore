@@ -31,5 +31,7 @@ class Names(Folder):
             return match
         raise ValueError(f"hash must be {self.HASH_LEN} chars long")
 
-    def pkg_name(self) -> str:
-        return self.SEP.join(self.path.parts[-2:])
+    def _get(self, key: str):
+        hash = self.read_q3hash(key)
+        return super()._get(hash)
+    

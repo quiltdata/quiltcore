@@ -14,6 +14,9 @@ from upath import UPath
 from ..yaml.config import Config
 
 
+Multihash = str
+
+
 @dataclass
 class Hash3:
     type: str
@@ -162,18 +165,23 @@ class Codec(Config):
         digest_type = self.hash_config(self.MH_DIG)[ht]
         return multihash.get(digest_type)
 
-    def digest(self, bstring: bytes) -> str:
+    def digest(self, bstring: bytes) -> Multihash:
         """return multihash digest as hex"""
         digester = self.digester()
         return digester.digest(bstring).hex()
 
-    def decode_hash(self, hash_data: Hash3) -> str:
+    def decode_q3hash(self, q3hash: str) -> Multihash:
+        hash_type = self.config("hash_type")
+        prefix = self.hash_config(self.MH_PRE)[hash_type]
+        return prefix + q3hash
+
+    def decode_hash(self, hash_data: Hash3) -> Multihash:
         """convert quilt3 hash_struct into multihash string"""
         hash_type = hash_data.type
         prefix = self.hash_config(self.MH_PRE)[hash_type]
         return prefix + hash_data.value
 
-    def encode_hash(self, mhash: str) -> dict:
+    def encode_hash(self, mhash: Multihash) -> dict:
         """Encode multihash string into a quilt3 hash_struct."""
         prefixes = self.hash_config(self.MH_PRE)
         prefix = mhash[0:4]

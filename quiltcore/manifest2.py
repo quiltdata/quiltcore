@@ -10,7 +10,7 @@ from .domain import Domain
 from .entry import Entry
 from .header import Header
 from .table import Table
-from .udg.codec import Dict3, asdict
+from .udg.codec import Dict3, Multihash, asdict
 from .udg.child import Child
 
 
@@ -73,6 +73,9 @@ class Manifest2(Child):
     def q3hash(self) -> str:
         """Legacy quilt3 hash of the contents."""
         return self.name
+
+    def _multihash_contents(self) -> Multihash:
+        return self.cf.decode_q3hash(self.q3hash())
 
     #
     # Private Methods for child resources
