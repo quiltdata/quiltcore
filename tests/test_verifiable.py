@@ -25,7 +25,7 @@ def test_verify():
     assert verify is not None
 
     assert verify.hash() == Verify.TEST_HASH
-    assert verify.hash_quilt3() == Verify.TEST_HASH[4:]
+    assert verify.q3hash() == Verify.TEST_HASH[4:]
     assert verify.hashable() == b"{}"
     assert verify.verify(b"") == False
     assert verify.verify(b"hash") == True

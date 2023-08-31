@@ -16,7 +16,7 @@ resources:
   Scheme:
     child: Domain
   Domain:
-    child: Namespace
+    child: Names
   Volume:
     child: Manifest
   Registry:

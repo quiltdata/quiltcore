@@ -1,9 +1,11 @@
+import logging
+
 from .factory import quilt
-from .udg.child import Child
+from .udg.folder import Folder
 
 from upath import UPath
 
-class Domain(Child):
+class Domain(Folder):
     URI_SPLIT = "://"
 
     @classmethod
@@ -11,14 +13,24 @@ class Domain(Child):
         scheme, path = uri.split(cls.URI_SPLIT)
         return quilt[scheme][path]
     
+    
+    @classmethod
+    def ToURI(cls, scheme, domain):
+        if scheme == "file":
+            domain = domain.replace("\\", "/")
+            return domain
+        uri = f"{scheme}{cls.URI_SPLIT}{domain}"
+        return uri
+    
     @classmethod
     def ToPath(cls, scheme, domain):
-        uri = f"{scheme}{cls.URI_SPLIT}{domain}"
-        print(f"Domain.ToURI: {scheme}, {domain} -> {uri}")
+        uri = cls.ToURI(scheme, domain)
+        logging.debug(f"Domain.ToPath: {uri}")
         return UPath(uri)
 
     def __init__(self, name, parent, **kwargs):
         super().__init__(name, parent, **kwargs)
-        print(f"Domain.init: {self} <- {parent}")
-        print(f"Domain.self.parent[{self.parent_name()}]: {self.parent}")
-        self.path = self.ToPath(self.parent_name(), name)
+        self.root = self.ToPath(self.parent_name(), name)
+        logging.debug(f"Domain.root: {self.root}")
+        self.base = self._setup_dir(self.root, "config")
+        self.path = self._setup_dir(self.base, "names")

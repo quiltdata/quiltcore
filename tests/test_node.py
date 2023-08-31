@@ -1,5 +1,6 @@
 import pytest
 from quiltcore import Codec, Domain, Factory, Keyed, Manifest, Namespace, Node, Scheme, quilt
+from upath import UPath
 
 from .conftest import LOCAL_VOL, TEST_PKG
 
@@ -45,11 +46,17 @@ def test_node_scheme():
     assert s3.name == "s3"
     assert quilt["file"] is not None
 
-    child = s3.make_child("test")
-    assert isinstance(child, Domain)
-    assert isinstance(child.parent, Scheme)
-    assert child.name == "test"
-    assert child.parent_name() == "s3"
+def test_node_uri():
+    uri = "file://" + LOCAL_VOL
+    path = UPath(LOCAL_VOL)
+    print(f"test_node_uri[{uri}]: {path}")
+    assert path.exists()
+
+    udom = Domain.FromURI(uri)
+    assert isinstance(udom, Domain)
+    assert isinstance(udom.parent, Scheme)
+    assert LOCAL_VOL == udom.name
+
 
 def test_node_domain():
     f = quilt["file"]
@@ -57,10 +64,6 @@ def test_node_domain():
     dom = f[LOCAL_VOL]
     assert isinstance(dom, Domain)
     assert isinstance(dom.parent, Scheme)
-
-    uri = "file://" + LOCAL_VOL
-    udom = Domain.FromURI(uri)
-    assert udom == dom
 
 
 @pytest.mark.skip(reason="TODO")

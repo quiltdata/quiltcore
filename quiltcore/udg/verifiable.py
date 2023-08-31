@@ -28,25 +28,25 @@ class Verifiable(Keyed):
     # Hash creation
     #
 
-    def hash(self) -> Multihash:
-        return self._hash_contents()
-
     def digest(self, contents: bytes) -> Multihash:
         """Hash `contents` using the current codec."""
         return self.cf.digest(contents)
-
-    def hash_quilt3(self) -> str:
-        """Return the value portion of the legacy quilt3 hash."""
-        mh = self.hash()
-        hash_struct = self.cf.encode_hash(mh)
-        return hash_struct["value"]
 
     def _hash_contents(self) -> str:
         """Return the multihash of the source file."""
         return self.digest(self.to_bytes())
 
+    def hash(self) -> Multihash:
+        return self._hash_contents()
+
+    def q3hash(self) -> str:
+        """Return the value portion of the legacy quilt3 hash."""
+        mh = self.hash()
+        hash_struct = self.cf.encode_hash(mh)
+        return hash_struct["value"]
+
     #
-    # Hash retreival
+    # Hash retrieval
     #
 
     def hashable(self) -> bytes:

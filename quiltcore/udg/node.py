@@ -10,6 +10,19 @@ from .verifiable import Verifiable
 
 
 class Node(Verifiable):
+    """
+    Base class for all Nodes.
+
+    Contains:
+    - name
+    - parent
+    - path
+    - type
+    - children
+    """
+
+    DEFAULT_PATH = Path(".")
+
     def __init__(self, codec: Codec, name: str, parent: "Node" | None, **kwargs):
         super().__init__(codec, **kwargs)
         self.name = name
@@ -25,12 +38,11 @@ class Node(Verifiable):
     def __str__(self):
         return f"<{self.class_name}({self.name})>"
     
-    def extend_parent_path(self, key: str) -> Path|None:
+    def extend_parent_path(self, key: str) -> Path:
         print(f"Node.extend_parent_path: {self.parent} + {key}")
-        if (self.parent is not None and hasattr(self.parent, "path") and 
-            self.parent.path is not None):
+        if self.parent is not None and hasattr(self.parent, "path"):
             return self.parent.path / key
-        return None
+        return self.DEFAULT_PATH
     
     def parent_name(self) -> str:
         return self.parent.name if self.parent is not None else "None"
@@ -50,6 +62,6 @@ class Node(Verifiable):
         merged = {**self.args, **kwargs}
         return klass(name, self, **merged)
 
-    def __getitem__(self, key: str) -> Node:
-        """Return a Node."""
+    def _get(self, key: str) -> Node:
+        """Return child Node for a key."""
         return self.make_child(key)
