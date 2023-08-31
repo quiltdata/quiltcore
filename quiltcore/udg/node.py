@@ -38,6 +38,20 @@ class Node(Verifiable):
     def __str__(self):
         return f"<{self.class_name}({self.name})>"
     
+    def check_parent(self) -> Node|None:
+        if not hasattr(self, "parent"):
+            return None
+        if parent := getattr(self, "parent") is not None:
+            assert isinstance(parent, Node) 
+            return parent
+
+    def set_dirty(self, state: bool = True):
+        super().set_dirty(state)
+        if parent := self.check_parent() is not None:
+            assert isinstance(parent, Node) 
+            parent.set_dirty(state)
+    
+
     def extend_parent_path(self, key: str) -> Path:
         print(f"Node.extend_parent_path: {self.parent} + {key}")
         if self.parent is not None and hasattr(self.parent, "path"):

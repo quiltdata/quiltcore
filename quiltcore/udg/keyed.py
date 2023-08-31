@@ -16,10 +16,16 @@ class Keyed(Root, MutableMapping):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._cache = {}
-        self.isDirty = False
+        self.set_dirty(False)
 
     def _get(self, key: str):
         raise KeyError(key)
+    
+    def set_dirty(self, state: bool = True):
+        self.__dirty = True
+
+    def is_dirty(self) -> bool:
+        return self.__dirty
 
     def __getitem__(self, key: str):
         result = self._cache.get(key, None)
@@ -36,9 +42,9 @@ class Keyed(Root, MutableMapping):
 
     def __setitem__(self, key, value):
         self._cache[key] = value
-        self.isDirty = True
+        self.set_dirty()
 
     def __delitem__(self, key):
         del self._cache[key]
-        self.isDirty = True
+        self.set_dirty()
 

@@ -12,13 +12,13 @@ class Verify(Verifiable):
     def to_bytes(self):
         return b"hash"
 
-    def hashable_dict(self):
-        return {}
 
 def test_verifiable():
     codec = Codec()
     verifiable = Verifiable(codec)
     assert verifiable is not None
+    # assert verifiable.hash() == Verify.TEST_HASH
+
 
 def test_verify():
     verify = Verify()

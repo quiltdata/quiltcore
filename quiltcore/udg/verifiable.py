@@ -63,7 +63,7 @@ class Verifiable(Keyed):
     
     def hash(self) -> Multihash:
         """Return (or calculate) the multihash of the contents."""
-        if self._hash is None or self.isDirty:
+        if self._hash is None or self.is_dirty():
             self._hash = self._multihash_contents()
         return self._hash
 
