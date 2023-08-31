@@ -65,12 +65,12 @@ def test_entry_remote(entry: Entry):
 
 
 def test_entry_digest(entry: Entry):
-    digest2 = entry.digest(DATA_HW)
+    digest2 = entry.digest_bytes(DATA_HW)
     assert digest2 == HASH_HW
 
 
 def test_entry_hashable(entry: Entry):
-    hashable = entry.to_hashable()
+    hashable = entry.hashable_dict()
     assert hashable
     assert isinstance(hashable, dict)
     assert hashable["logical_key"] == TEST_KEY

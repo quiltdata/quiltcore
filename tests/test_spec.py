@@ -86,11 +86,11 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
         pkg._meta, pkg.walk()
     ), "q3_hash != pkg._calculate_top_hash()"
 
-    man_meta = man.head().to_hashable()
+    man_meta = man.head().hashable_dict()
     pkg_user = pkg._meta[man.KEY_USER]
     man_user = man_meta[man.KEY_USER]
     assert pkg_user["Date"] == man_user["Date"]  # type: ignore
-    assert pkg._meta == man.head().to_hashable()
+    assert pkg._meta == man.head().hashable_dict()
     encoded = json_encode(pkg._meta).encode()
     assert encoded == man.head().hashable()
 
@@ -98,13 +98,13 @@ def test_spec_hash(spec: Spec, pkg: Package, man: Manifest):
         if "logical_key" in part:
             key = part["logical_key"]
             entry = man.getResource(key)
-            hashable = entry.to_hashable()  # type: ignore
+            hashable = entry.hashable_dict()  # type: ignore
             assert part == hashable
             part_encoded = json_encode(part).encode()
             assert part_encoded == entry.hashable()  # type: ignore
             encoded += part_encoded
 
-    multihash = man.digest(encoded)
+    multihash = man.digest_bytes(encoded)
     man_struct = man.codec.encode_hash(multihash)
     assert q3_hash == man_struct["value"], "q3_hash != digest(encoded).removeprefix"
     assert q3_hash == man.hash_quilt3(), "q3_hash != man.hash_quilt3()"

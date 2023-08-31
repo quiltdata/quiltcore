@@ -40,7 +40,7 @@ class Entry(ResourceKey):
         # row[self.KEY_PATH] = self.path
         return row
 
-    def to_hashable(self) -> dict:
+    def hashable_dict(self) -> dict:
         if not self.multihash or not self.size:
             raise ValueError(f"Missing hash or size: {self}")
         hashable = {

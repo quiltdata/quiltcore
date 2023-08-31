@@ -46,7 +46,7 @@ class Header(ResourceKey):
         raw_dict = {k: getattr(self, k) for k in self.headers.keys()}
         return self.codec.encode_dates(raw_dict)
 
-    def to_hashable(self) -> dict:
+    def hashable_dict(self) -> dict:
         meta = self.to_dict()
         if hasattr(self, self.KEY_USER):
             user_meta = getattr(self, self.KEY_USER)

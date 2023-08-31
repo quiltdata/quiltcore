@@ -101,7 +101,7 @@ class Manifest2(Child):
         logging.debug(f"{place} -> {path} [{path.absolute()}]")
         return str(path)
 
-    def _get(self, key: str) -> dict:
+    def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         row = self.table().get_dict4(key)
         place = row.place

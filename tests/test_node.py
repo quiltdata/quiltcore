@@ -22,7 +22,6 @@ def test_node(node):
 
 def test_node_keyed():
     keyed = Keyed()
-    assert keyed.cache is not None
     assert len(keyed) == 0
 
     keyed["key"] = "value"

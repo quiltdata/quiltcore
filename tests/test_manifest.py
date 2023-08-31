@@ -40,7 +40,7 @@ def test_man_head(man: Manifest):
     head = man.head()
     assert isinstance(head, Header)
 
-    hashable = head.to_hashable()
+    hashable = head.hashable_dict()
     assert hashable
     assert isinstance(hashable, dict)
     assert hashable["user_meta"]["Author"] == "Ernest"

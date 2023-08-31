@@ -15,27 +15,30 @@ from .root import Root
 class Keyed(Root, MutableMapping):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.cache = {}
+        self._cache = {}
+        self.isDirty = False
 
     def _get(self, key: str):
         raise KeyError(key)
 
     def __getitem__(self, key: str):
-        result = self.cache.get(key, None)
+        result = self._cache.get(key, None)
         if result is None:
             result = self._get(key)
-            self.cache[key] = result
+            self._cache[key] = result
         return result
 
     def __iter__(self) -> Iterator[str]:
-        return iter(self.cache)
+        return iter(self._cache)
 
     def __len__(self) -> int:
         return len(list(self.__iter__()))
 
     def __setitem__(self, key, value):
-        self.cache[key] = value
+        self._cache[key] = value
+        self.isDirty = True
 
     def __delitem__(self, key):
-        del self.cache[key]
+        del self._cache[key]
+        self.isDirty = True
 

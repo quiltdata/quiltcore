@@ -12,7 +12,7 @@ class Verify(Verifiable):
     def to_bytes(self):
         return b"hash"
 
-    def to_hashable(self):
+    def hashable_dict(self):
         return {}
 
 def test_verifiable():

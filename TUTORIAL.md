@@ -50,7 +50,7 @@ Multihash = str
 
 def hash(self) -> Multihash: pass
 
-def digest(self, contents: bytes) -> Multihash: pass
+def digest_bytes(self, contents: bytes) -> Multihash: pass
 
 def verify(self, contents: bytes) -> bool: pass
 ```
