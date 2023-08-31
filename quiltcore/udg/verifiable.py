@@ -9,6 +9,7 @@ Multihash = str
 
 
 class Verifiable(Keyed):
+    DEFAULT_DICT = {}
     ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
 
     def __init__(self, codec: Codec, **kwargs):
@@ -21,7 +22,7 @@ class Verifiable(Keyed):
     #
 
     def hashable_dict(self) -> dict:
-        return {}
+        return self.DEFAULT_DICT
     
     def hashable_path(self) -> Path|None:
         if hasattr(self, "path"):
