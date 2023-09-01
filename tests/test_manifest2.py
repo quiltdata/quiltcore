@@ -1,7 +1,7 @@
 from tempfile import TemporaryDirectory
 
 from pytest import fixture, mark
-from quiltcore import Codec, Domain, Entry2, Header, Manifest2
+from quiltcore import Codec, Domain, Entry2, Header, Manifest2, quilt
 from upath import UPath
 
 from .conftest import (
@@ -54,6 +54,8 @@ def test_man_version(man: Manifest2):
     bad_path = UPath(TEST_OBJ)
     bad_version = Codec.StatVersion(bad_path)
     assert not bad_version
+    remote = quilt["s3"]["quilt-example"]["akarve/amazon-reviews"]["1570503102"]["camera-reviews"]
+    assert isinstance(remote, Entry2)
 
 
 def test_man_entry(man: Manifest2):
