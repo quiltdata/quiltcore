@@ -63,6 +63,8 @@ class Codec(Config):
 
     """
 
+    K_META = "meta"
+    K_SIZE = "size"
     K_UVER = "VersionId"
     K_VER = "versionId"
     MH_DIG = "digest"

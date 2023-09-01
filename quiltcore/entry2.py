@@ -1,15 +1,15 @@
 import logging
 from pathlib import Path
+from re import compile
 from upath import UPath
 
 from .domain import Domain
-from .resource import Resource
 from .udg.codec import Dict3, asdict
 from .udg.child import Child
 from .manifest2 import Manifest2
 
 
-class Entry2(Child, Resource):
+class Entry2(Child):
     """
     Represents a single row in a Manifest.
     Attributes:
@@ -19,12 +19,23 @@ class Entry2(Child, Resource):
     * size: int
     * multihash: Multihash (str)
     * meta: dict
-
     """
+
+    IS_LOCAL = compile(r"file:\/*")
+    IS_REL = "./"
+    IS_URI = ":/"
+
+    @classmethod
+    def AsPath(cls, key: str) -> Path:
+        """Return a Path from a string."""
+        if not isinstance(key, str):
+            raise TypeError(f"[{key}]Expected str, got {type(key)}")
+        return UPath(key, version_aware=True)
 
     def __init__(self, name: str, parent: Manifest2, **kwargs):
         super().__init__(name, parent, **kwargs)
         row = parent.table().get_dict4(name)
+        self.path = self.extend_parent_path(row.place)
         self.multihash = row.multihash or self._multihash_contents()
         self.size = row.size or self.path.stat().st_size
         self.meta = row.metadata or {}
@@ -56,10 +67,10 @@ class Entry2(Child, Resource):
             raise ValueError(f"Missing hash or size: {self}")
         hashable = {
             self.cf.config("map")["name"]: self.name,
-            self.KEY_HSH: self.cf.encode_hash(self.multihash),
-            self.KEY_SZ: self.size,
+            self.cf.K_HASH: self.cf.encode_hash(self.multihash),
+            self.cf.K_SIZE: self.size,
         }
-        hashable[self.KEY_META] = self.meta # or {}
+        hashable[self.cf.K_META] = self.meta # or {}
         return hashable
 
     def to_path(self, key: str) -> Path:
@@ -73,7 +84,7 @@ class Entry2(Child, Resource):
     # Public Methods
     #
 
-    def install(self, key: str, **kwargs) -> Resource:
+    def install(self, key: str, **kwargs) -> "Entry2":
         """Copy contents of resource's path into _key_ directory."""
         path = self.to_path(key)
         path.write_bytes(self.to_bytes())  # for binary files

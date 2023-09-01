@@ -2,7 +2,6 @@ import logging
 
 from jsonlines import Writer  # type: ignore
 from pathlib import Path
-from re import compile
 from typing import Iterator
 
 from .entry import Entry
@@ -17,10 +16,6 @@ class Manifest2(Child):
     In-memory representation of a serialized package manifest.
     list/get returns Entry with Path to the Place data actually lives
     """
-
-    IS_LOCAL = compile(r"file:\/*")
-    IS_REL = "./"
-    IS_URI = ":/"
 
     @staticmethod
     def WriteToPath(head: Header, entries: list[Entry], path: Path) -> None:

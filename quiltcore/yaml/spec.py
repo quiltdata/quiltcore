@@ -24,7 +24,7 @@ class Spec(Config):
         return self.name or self.pkg("namespace")
 
     def hash(self) -> str:
-        return self.pkg(self.K_HSH)
+        return self.pkg(self.K_HASH)
 
     def tag(self) -> str:
         return str(self.pkg("tag"))

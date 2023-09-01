@@ -7,10 +7,12 @@ In Python it looks like this (though convenience APIs can use URIs or defaults i
 ## Example
 
 ```python
-from quiltcore import quilt, Domain, Manifest
+from quiltcore import quilt, Domain, Manifest2
 
 domain = quilt["file"]["./tests/example"]
 assert isinstance(domain, Domain)
+dataset = domain["test/package"]["latest"]
+assert isinstance(dataset, Manifest2)
 ```
 
 ## UDG Node Types
@@ -33,8 +35,6 @@ The Manifest is the heart of the UDG, and maps logical _names_ to physical _plac
 
 <!--pytest.mark.skip-->
 ```python
-dataset = domain["test/package"]["latest"]
-assert isinstance(dataset, Manifest)
 assert "Hello world" == dataset["README.md"].read_text()
 assert "Ernie" == dataset.meta["Author"]["First"]
 assert 123 == dataset["data.parquet"]["count"][0]
