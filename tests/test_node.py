@@ -66,20 +66,30 @@ def test_node_domain():
     assert LOCAL_VOL in dom.keys()
 
 
-def test_node_namespace():
+def test_node_names():
     udom = Domain.FromURI(LOCAL_URI)
     ns = udom[TEST_PKG]
     assert TEST_PKG == ns.name
     assert isinstance(ns, Names)
     assert isinstance(ns.parent, Domain)
 
-    q3hash = ns.read_q3hash(TEST_TAG)
+    q3hash = ns.get_q3hash(TEST_TAG)
     assert q3hash == TEST_HASH
+    assert q3hash == ns.get_q3hash(TEST_HASH)
+    assert q3hash == ns.get_q3hash(TEST_HASH[:6])
 
+    with pytest.raises(ValueError):
+        ns.get_q3hash("not-a-hash")
+    with pytest.raises(ValueError):
+        ns.get_q3hash("92") # ambiguous
+
+
+def test_node_man():
+    ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]
     man = ns[TEST_TAG]
     assert isinstance(man, Manifest2)
     assert man.parent == ns
-    assert man.q3hash() == q3hash
+    assert man.q3hash() == TEST_HASH
 
 
 @pytest.mark.skip(reason="TODO")
