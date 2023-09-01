@@ -71,7 +71,14 @@ Registration is the process of creating an _Entry_ for a child Object in a paren
 
 KObjects that supports Registration -- such as Manifests and Domains -- are called Registries.
 
-## Relaxation
+## Domain Pull vs Push/Install
+
+In KOMD, everything lives inside a Domain, which bundles Registration with Storage.
+In particular, we assume that the Domain is 'sovereign' over the data it contains.
+This means that Domains "pull" Objects from other domains, rather than "push" data into them.
+Pull is stricter than mere "install", because it includes copying over Manifests.
+
+### Relaxation
 
 - Domains are Registries that are
   a) associated with a specific DataStore and
@@ -88,7 +95,7 @@ KObjects that supports Registration -- such as Manifests and Domains -- are call
 - "Relaxation" is the process of rewriting a "source" Manifest to only use home Keys (including copying over any necessary contents) without changing the hash
 - A "neighborly" Manifest has physical keys with the same _type_ of storage as its home (eg, all S3 but different buckets, or all local but different root folders)
 
-## Quality Gates ("Workflows")
+### Quality Gates ("Workflows")
 
 - A Domain (or user) can require a Manifest to pass a Quality Gate (sometimes called a "workflow")
 - Once a namespace has been assigned (or used with) a Gate, it will always require it
@@ -110,7 +117,7 @@ If a Gate is required, Manifests are:
 > AK: I think relaxation is orthogonal to certification; or relaxation _is_ a certification that certain
 > data can attain.
 
-## Merging ChangeSets
+### Merging ChangeSets
 
 In addition to atomically adding and replacing individual Entries, it is possible to apply an entire ChangeSet to a Registry (typically a Manifest).
 
