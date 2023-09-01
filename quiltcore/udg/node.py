@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import logging
-
 from pathlib import Path
-
 
 from .codec import Codec
 from .verifiable import Verifiable
@@ -38,27 +36,26 @@ class Node(Verifiable):
 
     def __str__(self):
         return f"<{self.class_name}({self.name})>"
-    
-    def check_parent(self) -> Node|None:
+
+    def check_parent(self) -> Node | None:
         if hasattr(self, "parent"):
             if parent := getattr(self, "parent") is not None:
-                assert isinstance(parent, Node) 
+                assert isinstance(parent, Node)
                 return parent
         return None
 
     def set_dirty(self, state: bool = True):
         super().set_dirty(state)
         if parent := self.check_parent() is not None:
-            assert isinstance(parent, Node) 
+            assert isinstance(parent, Node)
             parent.set_dirty(state)
-    
 
     def extend_parent_path(self, key: str) -> Path:
         print(f"Node.extend_parent_path: {self.parent} + {key}")
         if self.parent is not None and hasattr(self.parent, "path"):
             return self.parent.path / key
         return self.DEFAULT_PATH
-    
+
     def parent_name(self) -> str:
         return self.parent.name if self.parent is not None else "None"
 

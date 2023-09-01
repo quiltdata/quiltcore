@@ -1,14 +1,11 @@
 import logging
-
-from jsonlines import Writer  # type: ignore
 from pathlib import Path
 from typing import Iterator
 
-from .entry import Entry
-from .header import Header
+
 from .table import Table
-from .udg.codec import Dict3, Multihash, asdict
 from .udg.child import Child
+from .udg.codec import Multihash
 
 
 class Manifest2(Child):
@@ -28,6 +25,7 @@ class Manifest2(Child):
             assert base.exists()
             return base / key
         raise ValueError(f"Parent has no manifests: {self.parent}")
+
     #
     # Initialize Table
     #

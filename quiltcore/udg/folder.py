@@ -1,10 +1,9 @@
-import logging
+from pathlib import Path
 from typing import Iterator
 
-from .node import Node
 from .child import Child
+from .node import Node
 
-from pathlib import Path
 
 class Folder(Child):
     KEY_DIR = "quilt3/dirs/"

@@ -1,12 +1,12 @@
 import logging
 from pathlib import Path
 from re import compile
+
 from upath import UPath
 
 from .domain import Domain
-from .udg.codec import Dict3, asdict
-from .udg.child import Child
 from .manifest2 import Manifest2
+from .udg.child import Child
 
 
 class Entry2(Child):
@@ -40,7 +40,6 @@ class Entry2(Child):
         self.size = row.size or self.path.stat().st_size
         self.meta = row.metadata or {}
 
-
     def _setup(self):
         pass
 
@@ -65,7 +64,7 @@ class Entry2(Child):
             self.cf.K_HASH: self.cf.encode_hash(self.multihash),
             self.cf.K_SIZE: self.size,
         }
-        hashable[self.cf.K_META] = self.meta # or {}
+        hashable[self.cf.K_META] = self.meta  # or {}
         return hashable
 
     def to_path(self, key: str) -> Path:

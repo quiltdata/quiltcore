@@ -20,7 +20,7 @@ class Keyed(Root, MutableMapping):
 
     def _get(self, key: str):
         raise KeyError(key)
-    
+
     def set_dirty(self, state: bool = True):
         self.__dirty = True
 
@@ -47,4 +47,3 @@ class Keyed(Root, MutableMapping):
     def __delitem__(self, key):
         del self._cache[key]
         self.set_dirty()
-

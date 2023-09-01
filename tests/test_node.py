@@ -1,5 +1,15 @@
 import pytest
-from quiltcore import Codec, Domain, Factory, Keyed, Manifest2, Names, Node, Scheme, quilt
+from quiltcore import (
+    Codec,
+    Domain,
+    Factory,
+    Keyed,
+    Manifest2,
+    Names,
+    Node,
+    Scheme,
+    quilt,
+)
 from upath import UPath
 
 from .conftest import LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_TAG
@@ -12,7 +22,7 @@ QMAP = dict(zip(QKEYS, QTYPE))
 @pytest.fixture
 def node():
     codec = Codec()
-    return  Node(codec, "test", None)
+    return Node(codec, "test", None)
 
 
 def test_node(node):
@@ -80,7 +90,7 @@ def test_node_names():
     with pytest.raises(ValueError):
         ns.get_q3hash("not-a-hash")
     with pytest.raises(ValueError):
-        ns.get_q3hash("92") # ambiguous
+        ns.get_q3hash("92")  # ambiguous
 
 
 def test_node_man():

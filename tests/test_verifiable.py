@@ -1,14 +1,16 @@
 from pathlib import Path
+from tempfile import TemporaryDirectory
+
 from pytest import fixture, raises
 from quiltcore import Codec, Verifiable
-from tempfile import TemporaryDirectory
+
 
 @fixture
 def ver():
     return Verifiable(Codec())
 
-class Verify(Verifiable):
 
+class Verify(Verifiable):
     TEST_BYTES = b"hash"
     HASH_BYTES = "1220d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa"
     HASH_HASH = "12209577cb12add200bb6c6059d5ff459c69beeb8b5a80845ad17ae80a17276af024"
@@ -62,6 +64,6 @@ def test_verify():
     assert verify.hash() == Verify.HASH_BYTES
     assert verify.q3hash() == Verify.HASH_BYTES[4:]
     assert verify.hashable() == b"{}"
-    assert verify.verify(b"") == False
-    assert verify.verify(b"hash") == True
-    assert verify.verify(b"hash2") == False
+    assert verify.verify(b"") is False
+    assert verify.verify(b"hash") is True
+    assert verify.verify(b"hash2") is False

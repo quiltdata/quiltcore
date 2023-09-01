@@ -1,21 +1,17 @@
+from tempfile import TemporaryDirectory
+
 from pytest import fixture, mark
 from quiltcore import Codec, Domain, Entry2, Header, Manifest2
-from tempfile import TemporaryDirectory
 from upath import UPath
 
 from .conftest import (
     LOCAL_ONLY,
     LOCAL_URI,
-    TEST_KEY,
     TEST_HASH,
-    TEST_MAN,
+    TEST_KEY,
     TEST_OBJ,
     TEST_PKG,
     TEST_S3VER,
-    TEST_SIZE,
-    TEST_VER,
-    TEST_VOL,
-    not_win,
 )
 
 
@@ -23,11 +19,13 @@ from .conftest import (
 def man() -> Manifest2:
     ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]
     return ns[TEST_HASH]
-    
+
+
 @fixture
 def tmpdir():
     with TemporaryDirectory() as tmpdirname:
         yield UPath(tmpdirname)
+
 
 def test_man(man: Manifest2):
     assert man

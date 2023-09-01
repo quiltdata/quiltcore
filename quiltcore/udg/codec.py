@@ -13,7 +13,6 @@ from upath import UPath
 
 from ..yaml.config import Config
 
-
 Multihash = str
 
 

@@ -1,7 +1,5 @@
 import logging
 
-from pathlib import Path
-
 from .domain import Domain
 from .udg.folder import Folder
 
@@ -27,11 +25,11 @@ class Names(Folder):
         hash_file = self.path / key
         if hash_file.exists():
             return hash_file.read_text()
-        logging.debug(f"tag not found: {hash_file}\ninterpet as hash: {key}")    
-        
+        logging.debug(f"tag not found: {hash_file}\ninterpet as hash: {key}")
+
         if len(key) == self.HASH_LEN:
             return key
-        
+
         hash = None
         for match in self.manifests.rglob(f"{key}*"):
             if hash is None:
@@ -41,8 +39,7 @@ class Names(Folder):
         if hash is not None:
             return hash
         raise ValueError(f"Tag/Hash not found: {key}")
-        
+
     def _get(self, key: str):
         hash = self.get_q3hash(key)
         return super()._get(hash)
-    

@@ -1,11 +1,12 @@
 import logging
-
-from .factory import quilt
-from .udg.node import Node
-from .udg.folder import Folder
+from urllib.parse import parse_qs, urlparse
 
 from upath import UPath
-from urllib.parse import parse_qs, urlparse
+
+from .factory import quilt
+from .udg.folder import Folder
+from .udg.node import Node
+
 
 class Domain(Folder):
     URI_SPLIT = "://"
@@ -14,7 +15,7 @@ class Domain(Folder):
     def FromURI(cls, uri):
         scheme, path = uri.split(cls.URI_SPLIT)
         return quilt[scheme][path]
-    
+
     @classmethod
     def ToPath(cls, scheme, domain):
         if scheme == "file":
@@ -22,7 +23,7 @@ class Domain(Folder):
         uri = f"{scheme}{cls.URI_SPLIT}{domain}"
         logging.debug(f"Domain.ToPath: {uri}")
         return UPath(uri)
-    
+
     @classmethod
     def FindStore(cls, next: Node) -> UPath:
         """Return the datastore path."""

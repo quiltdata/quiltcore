@@ -13,7 +13,7 @@ class Verifiable(Keyed):
     def __init__(self, codec: Codec, **kwargs):
         super().__init__(**kwargs)
         self.cf = codec
-        self._hash: Multihash|None = None
+        self._hash: Multihash | None = None
 
     #
     # Hashable Bytes
@@ -21,8 +21,8 @@ class Verifiable(Keyed):
 
     def hashable_dict(self) -> dict:
         return self.DEFAULT_DICT
-    
-    def hashable_path(self) -> Path|None:
+
+    def hashable_path(self) -> Path | None:
         if hasattr(self, "path"):
             path = getattr(self, "path")
             assert isinstance(path, Path)
@@ -30,17 +30,16 @@ class Verifiable(Keyed):
                 logging.debug(f"to_bytes.path: {path}")
                 return path
         return None
-            
+
     def hashable_values(self) -> str:
         """Concatenate the hashes of each Verifiable in values()."""
         hashes = [v.hash() for v in self.values() if isinstance(v, Verifiable)]
         return "".join(hashes)
 
-
     def to_bytes(self) -> bytes:
         """Return hashable bytes if present."""
         if path := self.hashable_path():
-                return path.read_bytes()
+            return path.read_bytes()
         if values := self.hashable_values():
             return values.encode("utf-8")
         if source := self.hashable_dict():
@@ -59,7 +58,7 @@ class Verifiable(Keyed):
     def _multihash_contents(self) -> Multihash:
         """Calculate the multihash for this object's bytes."""
         return self.digest_bytes(self.to_bytes())
-    
+
     def hash(self) -> Multihash:
         """Return (or calculate) the multihash of the contents."""
         if self._hash is None or self.is_dirty():
