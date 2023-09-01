@@ -33,7 +33,8 @@ class Node(Verifiable):
         self._setup()
 
     def __repr__(self):
-        return f"<{self.class_name}({self.name}:{self.parent_name()}, {self.args})>"
+        name = f"{self.name}:{self.parent_name()}"
+        return f"<{self.class_name}({name}, {self.args})@{self.path}>"
 
     def __str__(self):
         return f"<{self.class_name}({self.name})>"

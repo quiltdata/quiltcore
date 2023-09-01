@@ -57,11 +57,6 @@ class Entry2(Child):
     # Parse and unparse
     #
 
-    def to_dict3(self) -> Dict3:
-        row = self.cf.encode(self)
-        # row[self.KEY_PATH] = self.path
-        return row
-
     def hashable_dict(self) -> dict:
         if not self.multihash or not self.size:
             raise ValueError(f"Missing hash or size: {self}")
@@ -84,12 +79,15 @@ class Entry2(Child):
     # Public Methods
     #
 
-    def install(self, key: str, **kwargs) -> "Entry2":
-        """Copy contents of resource's path into _key_ directory."""
-        path = self.to_path(key)
+    # TODO: Need to rethink `install` since we do not pass Paths
+    # Should this really be into a new Domain?
+
+    def install(self, dest: str, **kwargs) -> "Entry2":
+        """Copy contents of resource's path into `dest` directory."""
+        path = self.to_path(dest)
         path.write_bytes(self.to_bytes())  # for binary files
-        kwargs = asdict(self.to_dict3())
-        clone = Entry2(key, **kwargs)
+        assert isinstance(self.parent, Manifest2)
+        clone = Entry2(self.name, self.parent)
         logging.debug(f"clone[{type(path)}]: {path.stat()}")
         clone.args[self.cf.K_PLC] = self.cf.AsStr(path)
         return clone

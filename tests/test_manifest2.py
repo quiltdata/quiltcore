@@ -1,5 +1,6 @@
 from pytest import fixture, mark
 from quiltcore import Codec, Domain, Entry2, Header, Manifest2
+from tempfile import TemporaryDirectory
 from upath import UPath
 
 from .conftest import (
@@ -23,6 +24,10 @@ def man() -> Manifest2:
     ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]
     return ns[TEST_HASH]
     
+@fixture
+def tmpdir():
+    with TemporaryDirectory() as tmpdirname:
+        yield UPath(tmpdirname)
 
 def test_man(man: Manifest2):
     assert man
@@ -68,13 +73,21 @@ def test_man_list(man: Manifest2):
     assert TEST_KEY in str(entry.path)
 
 
-def test_man_get(man: Manifest2):
+def test_man_install(man: Manifest2, tmpdir: UPath):
     entry = man[TEST_KEY]
     assert "manifest2" in entry.args
     assert isinstance(entry, Entry2)
     assert TEST_KEY in str(entry.path)
 
+    dest = tmpdir / "data"
+    assert not dest.exists()
+    clone = entry.install(str(dest))
+    assert TEST_KEY in str(clone.path)
+    # assert entry.path != clone.path
+
 
 def test_man_hash(man: Manifest2):
     hash = man.q3hash()
     assert hash == man.name
+    entry = man[TEST_KEY]
+    assert entry.multihash == entry.hash()

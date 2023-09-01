@@ -17,21 +17,6 @@ class Manifest2(Child):
     list/get returns Entry with Path to the Place data actually lives
     """
 
-    @staticmethod
-    def WriteToPath(head: Header, entries: list[Entry], path: Path) -> None:
-        """Write manifest contents to _path_"""
-        logging.debug(f"WriteToPath: {path}")
-        rows = [entry.to_dict3() for entry in entries]  # type: ignore
-        with path.open(mode="wb") as fo:
-            with Writer(fo) as writer:
-                head_dict = head.to_dict()
-                print(f"head_dict: {head_dict}")
-                writer.write(head_dict)
-                for row in rows:
-                    if not isinstance(row, Dict3):
-                        raise ValueError("")
-                    writer.write(asdict(row))
-
     def __init__(self, name: str, parent: Child, **kwargs):
         super().__init__(name, parent, **kwargs)
         self._table: Table | None = None

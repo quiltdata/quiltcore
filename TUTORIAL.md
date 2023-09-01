@@ -7,12 +7,12 @@ In Python it looks like this (though convenience APIs can use URIs or defaults i
 ## Example
 
 ```python
-from quiltcore import quilt, Domain, Manifest2
+from quiltcore import quilt, Domain, Manifest2, Entry2
 
-domain = quilt["file"]["./tests/example"]
-assert isinstance(domain, Domain)
-dataset = domain["test/package"]["latest"]
+dataset = quilt["file"]["./tests/example"]["manual/force"]["latest"]
 assert isinstance(dataset, Manifest2)
+remote = quilt["s3"]["quilt-example"]["akarve/amazon-reviews"]["1570503102"]["camera-reviews"]
+assert isinstance(remote, Entry2)
 ```
 
 ## UDG Node Types

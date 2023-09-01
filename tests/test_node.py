@@ -106,3 +106,5 @@ def test_node_tutorial():
         print(f"{key} -> {node_type.__name__} -> {node.name}")
         node = node[key]
         assert isinstance(node, QMAP[key])
+    print(repr(node))
+    assert node.path.exists()
