@@ -8,6 +8,7 @@ LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 
 TEST_BKT = "s3://udp-spec"
 LOCAL_VOL = "tests/example"
+LOCAL_URI = "file://" + LOCAL_VOL
 
 TEST_VOL = str(Path.cwd() / LOCAL_VOL)
 TEST_PKG = "manual/force"

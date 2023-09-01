@@ -29,6 +29,7 @@ from .changes import Changes  # noqa: F401
 from .delta import Delta  # noqa: F401
 from .domain import Domain  # noqa: F401
 from .entry import Entry  # noqa: F401
+from .entry2 import Entry2  # noqa: F401
 from .factory import Factory, quilt  # noqa: F401
 from .header import Header  # noqa: F401
 from .manifest import Manifest  # noqa: F401

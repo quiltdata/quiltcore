@@ -33,7 +33,7 @@ class Node(Verifiable):
         self._setup()
 
     def __repr__(self):
-        return f"<{self.class_name}({self.name}.{self.parent_name()}, {self.args})>"
+        return f"<{self.class_name}({self.name}:{self.parent_name()}, {self.args})>"
 
     def __str__(self):
         return f"<{self.class_name}({self.name})>"
@@ -69,6 +69,8 @@ class Node(Verifiable):
         """Load Node-specific params from config file."""
         self.params = self.cf.get_dict(f"resources/{self.class_name}")
         self._child_class = self.param("child", self.class_name)
+        if self._child_class == self.class_name:
+            raise ValueError(f"No child class found for: {self.class_name}")
 
     def make_child(self, name: str, **kwargs) -> Node:
         logging.debug(f"Node.make_child: {self._child_class}({name}) <- {self}")

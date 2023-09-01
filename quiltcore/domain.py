@@ -1,9 +1,11 @@
 import logging
 
 from .factory import quilt
+from .udg.node import Node
 from .udg.folder import Folder
 
 from upath import UPath
+from urllib.parse import parse_qs, urlparse
 
 class Domain(Folder):
     URI_SPLIT = "://"
@@ -20,6 +22,26 @@ class Domain(Folder):
         uri = f"{scheme}{cls.URI_SPLIT}{domain}"
         logging.debug(f"Domain.ToPath: {uri}")
         return UPath(uri)
+    
+    @classmethod
+    def FindStore(cls, next: Node) -> UPath:
+        """Return the datastore path."""
+        parent = next.parent
+        if parent is None:
+            raise ValueError("No parent for {self}")
+        if isinstance(parent, Domain):
+            return parent.store
+        return cls.FindStore(parent)
+
+    @classmethod
+    def GetQuery(cls, uri: str, key: str) -> str:
+        """Extract key from URI query string."""
+        query = urlparse(uri).query
+        if not query:
+            return ""
+        qs = parse_qs(query)
+        vlist = qs.get(key)
+        return vlist[0] if vlist else ""
 
     def __init__(self, name, parent, **kwargs):
         super().__init__(name, parent, **kwargs)

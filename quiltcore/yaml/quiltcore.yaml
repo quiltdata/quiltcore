@@ -11,6 +11,8 @@ multihash:
   digest:
     SHA256: sha2-256
 resources:
+  Node:
+    child: Child
   Factory:
     child: Scheme
   Scheme:
@@ -19,6 +21,9 @@ resources:
     child: Names
   Names:
     child: Manifest2
+  Manifest2:
+    child: Entry2
+
   Volume:
     child: Manifest
   Registry:
