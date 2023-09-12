@@ -5,6 +5,7 @@
 - KOMD Algebra, Part 1
 - start converting to mappings
 - new abstract KeyedObject
+- Domain.pull
 
 ## 0.3.5 (2023-08-24)
 

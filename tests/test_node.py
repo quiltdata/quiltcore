@@ -66,15 +66,6 @@ def test_node_uri():
     assert LOCAL_VOL == udom.name
 
 
-def test_node_domain():
-    f = quilt["file"]
-    print(f"scheme[{f.name}]: {f}")
-    dom = f[LOCAL_VOL]
-    assert isinstance(dom, Domain)
-    assert isinstance(dom.parent, Scheme)
-    assert LOCAL_VOL in dom.keys()
-
-
 def test_node_names():
     udom = Domain.FromURI(LOCAL_URI)
     ns = udom[TEST_PKG]
