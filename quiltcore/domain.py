@@ -1,5 +1,4 @@
 import logging
-from urllib.parse import parse_qs, urlparse
 
 from upath import UPath
 
@@ -34,19 +33,10 @@ class Domain(Folder):
             return parent.store
         return cls.FindStore(parent)
 
-    @classmethod
-    def GetQuery(cls, uri: str, key: str) -> str:
-        """Extract key from URI query string."""
-        query = urlparse(uri).query
-        if not query:
-            return ""
-        qs = parse_qs(query)
-        vlist = qs.get(key)
-        return vlist[0] if vlist else ""
-
     def __init__(self, name, parent, **kwargs):
         super().__init__(name, parent, **kwargs)
         self.store = self.ToPath(self.parent_name(), name)
         logging.debug(f"Domain.root: {self.store}")
         self.base = self._setup_dir(self.store, "config")
         self.path = self._setup_dir(self.base, "names")
+

@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 from re import compile
+from urllib.parse import parse_qs, urlparse
 
 from upath import UPath
 
@@ -29,8 +30,18 @@ class Entry2(Child):
     def AsPath(cls, key: str) -> Path:
         """Return a Path from a string."""
         if not isinstance(key, str):
-            raise TypeError(f"[{key}]Expected str, got {type(key)}")
+            raise TypeError(f"[{key}]Expected str, got {type(key)}")           
         return UPath(key, version_aware=True)
+
+    @classmethod
+    def GetQuery(cls, uri: str, key: str) -> str:
+        """Extract key from URI query string."""
+        query = urlparse(uri).query
+        if not query:
+            return ""
+        qs = parse_qs(query)
+        vlist = qs.get(key)
+        return vlist[0] if vlist else ""
 
     def __init__(self, name: str, parent: Manifest2, **kwargs):
         super().__init__(name, parent, **kwargs)
@@ -44,6 +55,7 @@ class Entry2(Child):
         pass
 
     def extend_parent_path(self, key: str) -> Path:
+        self.versionId = self.GetQuery(key, self.cf.K_VER)
         if self.IS_REL not in key:
             return UPath(key)
         if self.IS_LOCAL.match(key) is not None:
