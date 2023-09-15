@@ -1,4 +1,6 @@
 import logging
+
+from dataclasses import dataclass, asdict
 from pathlib import Path
 from re import compile
 from urllib.parse import parse_qs, urlparse
@@ -8,9 +10,11 @@ from upath import UPath
 from .domain import Domain
 from .manifest2 import Manifest2
 from .udg.child import Child
+from .udg.codec import Dict3, Dict4
 
 
-class Entry2(Child):
+
+class Entry2(Child, Dict4):
     """
     Represents a single row in a Manifest.
     Attributes:
@@ -44,12 +48,9 @@ class Entry2(Child):
         return vlist[0] if vlist else ""
 
     def __init__(self, name: str, parent: Manifest2, **kwargs):
-        super().__init__(name, parent, **kwargs)
+        Child.__init__(self, name, parent, **kwargs)
         row = parent.table().get_dict4(name)
-        self.path = self.extend_parent_path(row.place)
-        self.multihash = row.multihash or self._multihash_contents()
-        self.size = row.size or self.path.stat().st_size
-        self.meta = row.metadata or {}
+        Dict4.__init__(self, **asdict(row))
 
     def _setup(self):
         pass
@@ -76,7 +77,7 @@ class Entry2(Child):
             self.cf.K_HASH: self.cf.encode_hash(self.multihash),
             self.cf.K_SIZE: self.size,
         }
-        hashable[self.cf.K_META] = self.meta  # or {}
+        hashable[self.cf.K_META] = self.metadata  # or {}
         return hashable
 
     def to_path(self, key: str) -> Path:
@@ -85,6 +86,9 @@ class Entry2(Child):
         path = dir / self.name
         logging.debug(f"path: {path}")
         return path
+    
+    def to_dict3(self) -> Dict3:
+        return self.cf.encode(self)
 
     #
     # Public Methods

@@ -25,7 +25,9 @@ manages the 'quiltcore.yaml' configuration file.
 """
 
 from .builder import Builder  # noqa: F401
+from .builder2 import Builder2  # noqa: F401
 from .changes import Changes  # noqa: F401
+from .change import Change, ChangeOp  # noqa: F401
 from .delta import Delta  # noqa: F401
 from .domain import Domain  # noqa: F401
 from .entry import Entry  # noqa: F401

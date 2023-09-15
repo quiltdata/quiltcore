@@ -3,6 +3,7 @@ import logging
 from upath import UPath
 
 from .factory import quilt
+from .manifest2 import Manifest2
 from .udg.folder import Folder
 from .udg.node import Node
 
@@ -39,4 +40,4 @@ class Domain(Folder):
         logging.debug(f"Domain.root: {self.store}")
         self.base = self._setup_dir(self.store, "config")
         self.path = self._setup_dir(self.base, "names")
-
+        self.remotes = self._setup_dir(self.base, "remotes")
