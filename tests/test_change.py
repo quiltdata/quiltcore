@@ -16,5 +16,10 @@ def man() -> Manifest2:
     ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]
     return ns[TEST_HASH]
 
-def test_dom_pull():
-    pass
+@fixture
+def builder(man) -> Builder2:
+    return Builder2(man)
+
+def test_chg_builder(builder: Builder2):
+    assert builder
+    assert builder.manifest is not None
