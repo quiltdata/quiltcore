@@ -639,13 +639,13 @@ files = [
 
 [[package]]
 name = "fsspec"
-version = "2023.6.0"
+version = "2023.9.2"
 description = "File-system specification"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "fsspec-2023.6.0-py3-none-any.whl", hash = "sha256:1cbad1faef3e391fba6dc005ae9b5bdcbf43005c9167ce78c915549c352c869a"},
-    {file = "fsspec-2023.6.0.tar.gz", hash = "sha256:d0b2f935446169753e7a5c5c55681c54ea91996cc67be93c39a154fb3a2742af"},
+    {file = "fsspec-2023.9.2-py3-none-any.whl", hash = "sha256:603dbc52c75b84da501b9b2ec8c11e1f61c25984c4a0dda1f129ef391fbfc9b4"},
+    {file = "fsspec-2023.9.2.tar.gz", hash = "sha256:80bfb8c70cc27b2178cc62a935ecf242fc6e8c3fb801f9c571fc01b1e715ba7d"},
 ]
 
 [package.extras]
@@ -1544,23 +1544,23 @@ files = [
 
 [[package]]
 name = "s3fs"
-version = "2023.6.0"
+version = "2023.9.2"
 description = "Convenient Filesystem interface over S3"
 optional = false
 python-versions = ">= 3.8"
 files = [
-    {file = "s3fs-2023.6.0-py3-none-any.whl", hash = "sha256:d1a0a423d0d2e17fb2a193d9531935dc3f45ba742693448a461b6b34f6a92a24"},
-    {file = "s3fs-2023.6.0.tar.gz", hash = "sha256:63fd8ddf05eb722de784b7b503196107f2a518061298cf005a8a4715b4d49117"},
+    {file = "s3fs-2023.9.2-py3-none-any.whl", hash = "sha256:d0e0ad0267820f4e9ff16556e004e6759010e92378aebe2ac5d71419a6ff5387"},
+    {file = "s3fs-2023.9.2.tar.gz", hash = "sha256:64cccead32a816422dd9ae1d693c5d6354d99f64ae26c56388f1d8e1c7858321"},
 ]
 
 [package.dependencies]
-aiobotocore = ">=2.5.0,<2.6.0"
+aiobotocore = ">=2.5.4,<2.6.0"
 aiohttp = "<4.0.0a0 || >4.0.0a0,<4.0.0a1 || >4.0.0a1"
-fsspec = "2023.6.0"
+fsspec = "2023.9.2"
 
 [package.extras]
-awscli = ["aiobotocore[awscli] (>=2.5.0,<2.6.0)"]
-boto3 = ["aiobotocore[boto3] (>=2.5.0,<2.6.0)"]
+awscli = ["aiobotocore[awscli] (>=2.5.4,<2.6.0)"]
+boto3 = ["aiobotocore[boto3] (>=2.5.4,<2.6.0)"]
 
 [[package]]
 name = "s3transfer"
