@@ -53,7 +53,7 @@ __pypackages__/
 # Test caches
 
 .pytest_cache/
-tests/example/.quilt
+tests/example/.quilt/named_packages/manual/force
 
 # Environments
 .env
