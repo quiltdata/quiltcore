@@ -1,3 +1,5 @@
+ALGEBRA.md
+
 # KOMD: The Relaxation Algebra
 
 KOMD (pronounced "calmed" or "comedy") stands for:
@@ -14,8 +16,7 @@ Specifically, KOMD defines precise semantics for using Keys to register:
 
 > AK: I think a manifest is actually just a subpath of a domain (namespace)
 
-It is considered an algebra because it can be used to fully describe and reason about
-any system that conforms to those definitions, independent of the implementation details.  
+It is considered an algebra because it can be used to fully describe and reason about any system that conforms to those definitions, independent of the implementation details.  
 
 ## Objects
 
@@ -77,25 +78,7 @@ In particular, we assume that the Domain is 'sovereign' over the data it contain
 This means that Domains "pull" Objects from other domains, rather than "push" data into them.
 Pull is stricter than mere "install", because it includes copying over Manifests.
 
-Note: stricly speaking, the Namespace does the pulling on behalf of the Domain.
-
-A "fully-relaxed pull" involves three steps:
-
-1. Shallow-copying the "unrelaxed" source Manifest to the destination Domain's "remotes" (dir/stage)
-2. Deep-copying all the source Manifest's physical keys to the destination Domain's "store"
-3. Creating a "relaxed" Manifest using the "homed" physical keys,
-   and storing it under "packages" (dir/manifests)
-
-There can also be partial pulls, which only copy over specific physical keys.
-For example, the default policy should probably be "scheme-relaxed",
-where it only copies over physical keys from different schemes (eg, S3 vs local).
-[This may be tricky to implement generally, but is easy for just S3.]
-
 ### Relaxation
-
-"Relaxation" is the process of rewriting a "source" Manifest to point to "local" Keys
-(including copying over any necessary contents) without changing the hash,
-for some definition of "local".
 
 - Domains are Registries that are
   a) associated with a specific DataStore and
@@ -103,8 +86,14 @@ for some definition of "local".
   c) contain Manifests
 - Manifests are Registries with a parent Domain
 - The "home" for a Manifest is the parent Domain's DataStore
-- A "fully relaxed Manifest" has all its Entries' physical Keys inside its "home"
-- A "scheme-relaxed Manifest" has its physical Keys share the scheme of its "home"
+- A "relaxed Manifest" has all its Entries' physical Keys inside its "home"
+
+> AK: Consider distinguishing "relaxation" relative to a prefix. So something can be relaxed up to s3://,
+> up to s3://foo/bar, etc.
+> I'm not sure if this is relaxation or containment.
+
+- "Relaxation" is the process of rewriting a "source" Manifest to only use home Keys (including copying over any necessary contents) without changing the hash
+- A "neighborly" Manifest has physical keys with the same _type_ of storage as its home (eg, all S3 but different buckets, or all local but different root folders)
 
 ### Quality Gates ("Workflows")
 
@@ -130,24 +119,20 @@ If a Gate is required, Manifests are:
 
 ### Merging ChangeSets
 
-In addition to atomically adding and replacing individual Entries,
-it is possible to apply an entire ChangeSet to a Registry (typically a Manifest).
+In addition to atomically adding and replacing individual Entries, it is possible to apply an entire ChangeSet to a Registry (typically a Manifest).
 
-ChangeSets consist of Operations, which can be thought of all lazy Entries.
-Operations (which can be either Add or Remove) only resolve to specific content and hashes when "committed."
-For example, a directory would resolve to a list of files.
+ChangeSets consist of Operations, which can be thought of all lazy Entries. Operations (which can be either Add or Remove) only resolve to specific content and hashes when "committed." For example, a directory would resolve to a list of files.
 
 > AK: Why not build ChangeSets on true sets so that we can speak of intersection, union, and difference of (keys)
 > across sets?
 
 TBD: object-level metadata
 
-- ChangeSets must be created against a specific Namespace, and start out pinned to its "latest" hash.
+- ChangeSets must be created against a specific Namespace, and start out pinned to its "latest" hash. 
 - Each Operation keeps track of the hash of its corresponding Entry, if any
 - ChangeSets must be "committed" before they can be "applied" to a Manifest
 - Applying a ChangeSet atomically fails if any of the Entry hashes do not match
 
-Q: is a committed ChangeSet really a Manifest with a "prior" hash and/or tombstone for each Entry?
-Does that metadata survive a merge, so we can safely re-merge the resulting Manifest?
+Q: is a committed ChangeSet really a Manifest with a "prior" hash and/or tombstone for each Entry? Does that metadata survive a merge, so we can safely re-merge the resulting Manifest?
 
 Q: can we use a special physical Key (**file:/dev/null**?) as a tombstone within the existing Manifest format?
