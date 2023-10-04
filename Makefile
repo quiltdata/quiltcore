@@ -12,7 +12,7 @@ all: install update test
 clean:
 	rm -f *.log
 	rm -rf .coverage* coverage* 
-	rm -rf quiltplus/.pytest_cache .mypy_cache
+	rm -rf quiltplus/.pytest_cache .mypy_cache .quilt
 
 install:
 	poetry install
