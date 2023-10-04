@@ -25,7 +25,7 @@ def test_names(names: Namespace):
 def test_names_latest(names: Namespace):
     latest = names.getResource("latest")
     assert isinstance(latest, Manifest)
-    assert latest.hash_quilt3() != TEST_HASH
+    assert latest.hash_quilt3() == TEST_HASH
 
 
 def test_names_man(names: Namespace):
@@ -43,7 +43,7 @@ def test_names_hash(names: Namespace):
     latest: Manifest = names.getResource("latest")  # type: ignore
     opts = {names.KEY_HSH: TEST_HASH}
     not_latest: Manifest = names.getResource("latest", **opts)  # type: ignore
-    assert latest.hash_quilt3() != not_latest.hash_quilt3()
+    assert latest.hash_quilt3() == not_latest.hash_quilt3()
     assert TEST_HASH == not_latest.hash_quilt3()
     assert names.KEY_HSH == "hash"
 

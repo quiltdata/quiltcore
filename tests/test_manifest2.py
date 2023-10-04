@@ -85,9 +85,19 @@ def test_man_install(man: Manifest2, tmpdir: UPath):
     assert TEST_KEY in str(clone.path)
     # assert entry.path != clone.path
 
+
 @mark.skip('TODO: recalculate hash algorithm')
 def test_man_hash(man: Manifest2):
     hash = man.q3hash()
     assert hash == man.name
     entry = man[TEST_KEY]
     assert entry.multihash == entry.hash()
+
+
+def test_man_ns(man: Manifest2):
+    ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]
+    assert ns
+    tag = ns.put(man)
+    tag2 = ns.pull(man)
+
+

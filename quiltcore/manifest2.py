@@ -27,7 +27,7 @@ class Manifest2(Child):
         raise ValueError(f"Parent has no manifests: {self.parent}")
     
     def relax(self, dest, flags):
-        pass
+        return self
 
     #
     # Initialize Table
