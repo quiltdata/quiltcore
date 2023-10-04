@@ -5,6 +5,7 @@ from enum import Enum
 from pathlib import Path
 
 from .change import Change, ChangeOp, Dict4
+from .header import Header
 from .manifest2 import Manifest2
 from .udg.keyed import Keyed
 
@@ -29,8 +30,8 @@ class Builder2(Keyed):
         if manifest is None:
             return None
         assert isinstance(manifest, Manifest2)
-        self.message = manifest.head.message
-        self.head_hash = manifest.head.q3hash()
+        self.message = manifest.head().message
+        self.head_hash = manifest.head().q3hash()
         for key, dict4 in manifest.items():
             if not key in self._cache:
                 self._change(ChangeOp.KEEP, key, dict4.path, dict4)

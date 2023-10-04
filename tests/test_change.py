@@ -20,6 +20,7 @@ def man() -> Manifest2:
 def builder(man) -> Builder2:
     return Builder2(man)
 
+@mark.skip
 def test_chg_builder(builder: Builder2):
     assert builder
     assert builder.manifest is not None

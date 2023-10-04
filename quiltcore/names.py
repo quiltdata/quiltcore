@@ -86,4 +86,5 @@ class Names(Folder):
         subfoler = prefix if len(prefix) else self.name
         dest = Domain.FindStore(self) / subfoler
         relaxed = manifest.relax(dest, flags)
+        assert relaxed is not None
         return self.put(relaxed)
