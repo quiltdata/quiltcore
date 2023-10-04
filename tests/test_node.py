@@ -5,7 +5,7 @@ from quiltcore import (
     Factory,
     Keyed,
     Manifest2,
-    Names,
+    Namespace2,
     Node,
     Scheme,
     quilt,
@@ -15,7 +15,7 @@ from upath import UPath
 from .conftest import LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_TAG
 
 QKEYS = ["file", LOCAL_VOL, TEST_PKG, "latest"]
-QTYPE = [Scheme, Domain, Names, Manifest2]
+QTYPE = [Scheme, Domain, Namespace2, Manifest2]
 QMAP = dict(zip(QKEYS, QTYPE))
 
 
@@ -70,7 +70,7 @@ def test_node_names():
     udom = Domain.FromURI(LOCAL_URI)
     ns = udom[TEST_PKG]
     assert TEST_PKG == ns.name
-    assert isinstance(ns, Names)
+    assert isinstance(ns, Namespace2)
     assert isinstance(ns.parent, Domain)
 
     q3hash = ns.get_q3hash(TEST_TAG)

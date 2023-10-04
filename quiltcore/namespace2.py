@@ -6,7 +6,7 @@ from .udg.folder import Folder
 
 Tag = str
 
-class Names(Folder):
+class Namespace2(Folder):
     """
     Namespace of Manifests by Hash
     list/get returns a specific Manifest
@@ -61,7 +61,7 @@ class Names(Folder):
         """Put a manifest into the namespace."""
         tag = self.Now()
         hash = manifest.q3hash()
-        logging.debug(f"Names.put: {hash}")
+        logging.debug(f"Namespace2.put: {hash}")
         self._put(tag, hash)
         if self._valid(options):
             self._put(self.TAG_DEFAULT, hash)
@@ -71,7 +71,7 @@ class Names(Folder):
     def _put(self, tag: Tag, hash: str):
         hash_file = self.path / tag
         hash_file.write_text(hash)
-        logging.debug(f"Names.put[{tag}]: {hash_file}")
+        logging.debug(f"Namespace2.put[{tag}]: {hash_file}")
 
     def _save(self, manifest: Manifest2, hash: str):
         man_file = self.manifests / hash

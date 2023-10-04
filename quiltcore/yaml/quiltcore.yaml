@@ -18,8 +18,8 @@ resources:
   Scheme:
     child: Domain
   Domain:
-    child: Names
-  Names:
+    child: Namespace2
+  Namespace2:
     child: Manifest2
   Manifest2:
     child: Entry2
