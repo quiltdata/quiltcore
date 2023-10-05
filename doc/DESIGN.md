@@ -39,7 +39,7 @@ Streamlined manifest schema:
 ### 2. quiltcore.yaml
 
 Rather than hard-coding any constants, all configuration
-parameters are stored in a [yaml file](./quiltcore/yaml/quiltcore.yaml).
+parameters are stored in a [yaml file](../quiltcore/yaml/quiltcore.yaml).
 
 By making explicit what was previously implicit, this should:
 
@@ -53,7 +53,7 @@ By making explicit what was previously implicit, this should:
 
 ### 2. esource
 
-The [esource](./quiltcore/resource.py) base class
+The [esource](../quiltcore/resource.py) base class
 provides a common set of abstractions for:
 
 1. Accessing configuration parameters
@@ -68,7 +68,7 @@ Other implementations may choose to generate code statically.
 
 ### 3. Entry
 
-The final leaf node is the [Entry](./quiltcore/entry.py) class.
+The final leaf node is the [Entry](../quiltcore/entry.py) class.
 This tracks information for each manifest entry, including:
 
 - name: str (logical_key)
