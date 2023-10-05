@@ -2,7 +2,7 @@ from os import environ
 from pathlib import Path
 from sys import platform
 
-from quiltcore import Changes
+from quiltcore import Changes, UDI
 
 LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 
@@ -34,6 +34,7 @@ TEST_ROW = {
 }
 
 
+
 def not_win():
     return not platform.startswith("win")
 
@@ -49,3 +50,24 @@ class MockChanges(Changes):
         self.infile = (dir / self.FILENAME).resolve()
         self.infile.write_text(self.FILETEXT)
         self.post(self.infile)
+
+T_BKT = "quilt-example"
+T_PKG = "examples/wellplates"
+FIRST_PKG = "akarve/amazon-reviews"
+
+CATALOG_URL = f"https://open.quiltdata.com/b/{T_BKT}/packages/{T_PKG}"
+TEST_URI = (
+    f"quilt+s3://{T_BKT}#package={T_PKG}"
+    + "@e1f83ce3dc7b9487e5732d58effabad64065d2e7401996fa5afccd0ceb92645c"
+    + "&path=README.md&catalog=open.quiltdata.com"
+)
+BKT_URI = f"quilt+s3://{T_BKT}"
+PKG_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}={T_PKG}@e1f83ce3dc7b"
+PKG2_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}=examples/echarts:latest"
+PTH_URI = (
+    f"quilt+s3://{T_BKT}#{UDI.K_PKG}={T_PKG}&{UDI.K_PTH}=README.md"
+)
+VER_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}={T_PKG}"
+PRP_URI = f"{VER_URI}&{UDI.K_PTH}=README.md&{UDI.K_PRP}=*"
+
+TEST_URIS = [TEST_URI, BKT_URI, PKG_URI, PKG2_URI, PTH_URI, PRP_URI, VER_URI]
