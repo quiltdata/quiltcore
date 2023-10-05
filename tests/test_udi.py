@@ -11,30 +11,30 @@ from .conftest import (
 
 
 @pytest.fixture
-def uri():
+def udi():
     return UDI.FromUri(TEST_URI)
 
 
-def test_uri(uri: UDI):
-    assert uri.uri == TEST_URI
-    assert uri.registry == f"s3://{T_BKT}"
-    assert uri.package == T_PKG
+def test_udi(udi: UDI):
+    assert udi.uri == TEST_URI
+    assert udi.registry == f"s3://{T_BKT}"
+    assert udi.package == T_PKG
 
 
-def test_uri_repr(uri: UDI):
-    assert TEST_URI in repr(uri)
-    assert uri == uri
+def test_udi_repr(udi: UDI):
+    assert TEST_URI in repr(udi)
+    assert udi == udi
 
 
-def test_uri_eq(uri: UDI):
-    assert uri == uri
-    uri_pth = UDI.FromUri(PTH_URI)
-    assert uri_pth == uri
-    uri_bkt = UDI.FromUri(BKT_URI)
-    assert uri_bkt != uri
+def test_udi_eq(udi: UDI):
+    assert udi == udi
+    udi_pth = UDI.FromUri(PTH_URI)
+    assert udi_pth == udi
+    udi_bkt = UDI.FromUri(BKT_URI)
+    assert udi_bkt != udi
 
 
-def test_uri_null():
+def test_udi_null():
     un = UDI({})
     assert un
     assert un.uri is None
