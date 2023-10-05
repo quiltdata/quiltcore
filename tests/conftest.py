@@ -33,6 +33,7 @@ TEST_ROW = {
     },
 }
 
+LOCAL_UDI = f"quilt+{LOCAL_URI}#{UDI.K_PKG}={TEST_PKG}"
 
 
 def not_win():

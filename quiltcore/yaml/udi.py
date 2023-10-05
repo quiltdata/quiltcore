@@ -29,6 +29,7 @@ class UDI():
     K_HASH = "_hash"
     K_TAG = "_tag"
     K_VER = "_version"
+    K_PATHS = "_uri_paths"
     SEP = {K_HASH: SEP_HASH, K_TAG: SEP_TAG, K_PKG: SEP_PKG}
     K_PKG_NAME = "_package_name"
     K_PKG_PRE = "_package_prefix"
@@ -78,8 +79,10 @@ class UDI():
         """
         self.attrs = attrs
         self.uri = attrs.get(UnUri.K_URI)
-        self.registry = f"{attrs.get(UnUri.K_PROT)}://{attrs.get(UnUri.K_HOST)}"
         self.package = self.parse_package()
+        self.registry = f"{attrs.get(UnUri.K_PROT)}://{attrs.get(UnUri.K_HOST)}"
+        if self.K_PATHS in attrs and attrs[self.K_PATHS][0]:
+            self.registry += "/" + "/".join(attrs[self.K_PATHS])
 
     def __repr__(self):
         return f"UDI({self.uri})"
