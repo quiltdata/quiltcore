@@ -16,7 +16,7 @@ def domain():
     with TemporaryDirectory() as tmpdirname:
         f = quilt["file"]
         dom = f[tmpdirname]
-        return dom
+        yield dom
 
 @fixture
 def udi():
@@ -39,9 +39,16 @@ def test_pull_udi(udi: UDI):
     assert udi.registry.startswith("file://" + LOCAL_VOL)
 
 
-def test_pull(domain: Domain, udi: UDI):
+def test_pull_call(domain: Domain, udi: UDI):
     assert domain is not None
     assert isinstance(domain, Domain)
     result = domain.pull(udi)
     assert result
 
+def test_pull_data_yaml(domain: Domain, udi: UDI):
+    assert domain.data_yaml
+    assert domain.data_yaml.path
+    assert not domain.data_yaml.path.exists()
+    result = domain.pull(udi)
+    assert domain.data_yaml.path.exists()
+    assert result

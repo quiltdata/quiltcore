@@ -6,10 +6,12 @@ from .factory import quilt
 from .manifest2 import Manifest2
 from .udg.folder import Folder
 from .udg.node import Node
+from .yaml.data import Data
 from .yaml.udi import UDI
 
 
 class Domain(Folder):
+    K_MUTABLE = "mutable"
     URI_SPLIT = "://"
 
     @classmethod
@@ -42,6 +44,10 @@ class Domain(Folder):
         self.base = self._setup_dir(self.store, "config")
         self.path = self._setup_dir(self.base, "names")
         self.remotes = self._setup_dir(self.base, "remotes")
+        self.is_mutable = kwargs.get(self.K_MUTABLE, False)
+        self.data_yaml = Data(self.store)
 
+    
     def pull(self, udi: UDI):
+        self.data_yaml.save()
         return True
