@@ -63,4 +63,4 @@ class Domain(Folder):
         assert self.is_mutable, "Can not pull into read-only Domain"
         path = dest or UPath(udi.package)
         self._store("pull", udi, path, **kwargs)
-        return str(path)
+        return str(path.as_posix())

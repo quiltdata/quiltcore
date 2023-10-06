@@ -5,7 +5,6 @@ from quiltcore import Data
 from upath import UPath
 from .conftest import LOCAL_UDI
 
-
 @fixture
 def data():
     with TemporaryDirectory() as tmpdirname:
