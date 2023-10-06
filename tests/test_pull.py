@@ -10,7 +10,7 @@ from quiltcore import (
     UDI
 )
 
-from .conftest import LOCAL_UDI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_TAG
+from .conftest import LOCAL_UDI, LOCAL_VOL, TEST_HASH, TEST_PKG
 
 
 @fixture
@@ -27,7 +27,6 @@ def udi():
 
 def test_pull_domain():
     f = quilt["file"]
-    print(f"scheme[{f.name}]: {f}")
     dom = f[LOCAL_VOL]
     assert isinstance(dom, Domain)
     assert isinstance(dom.parent, Scheme)
@@ -59,15 +58,15 @@ def test_pull_data_yaml(domain: Domain, udi: UDI):
     assert domain.data_yaml
     assert domain.data_yaml.path
     assert not domain.data_yaml.path.exists()
-    dest = domain.pull(udi)
+    dest = domain.pull(udi, hash=TEST_HASH)
     assert domain.data_yaml.path.exists()
     assert dest == TEST_PKG
     assert domain.data_yaml.get_uri(dest) == LOCAL_UDI
     assert domain.data_yaml.get_folder(LOCAL_UDI) == dest
-    logging.debug(f"domain.data_yaml: {domain.data_yaml.data}")
-    assert domain.data_yaml.get(dest) == {
-        "pull": {
-            "time": "now",
-            "user": "me"
-        }
-    }
+    print(f"domain.data_yaml: {domain.data_yaml.data}")
+    status = domain.data_yaml.get_list(dest, LOCAL_UDI, "pull")
+    print(f"status: {status}")
+    assert isinstance(status, dict)
+    assert "timestamp" in status
+    assert "user" in status
+    assert status["hash"] == TEST_HASH

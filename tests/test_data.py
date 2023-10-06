@@ -8,7 +8,8 @@ from .conftest import LOCAL_UDI
 @fixture
 def data():
     with TemporaryDirectory() as tmpdirname:
-        yield Data(UPath(tmpdirname))
+        path = UPath(tmpdirname)
+        yield Data(path)
 
 
 def test_data(data: Data):
@@ -24,6 +25,11 @@ def test_data_put_list(data: Data):
     data.put_list("foo", "bar", "baz")
     data.save()
     assert data.get("foo/bar") == "baz"
+
+def test_data_get_list(data: Data):
+    data.put_list("foo", "bar", "baz")
+    data.save()
+    assert data.get_list("foo", "bar") == "baz"
 
 def test_data_set(data: Data):
     status = {"time": "now", "user": "me"}

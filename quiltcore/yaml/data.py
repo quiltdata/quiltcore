@@ -35,6 +35,14 @@ class Data(UnConf):
             logging.debug(f"+parent: {parent}")
         parent[tail] = value
 
+    def get_list(self, *keys):
+        parent = self.data
+        for child in keys:
+            if not child in parent:
+                return None
+            parent = parent[child]
+        return parent
+
     def set(self, prefix: str, uri: str, action: str, value: Any):
         self.put_list(prefix, uri, action, value)
         self.save()
