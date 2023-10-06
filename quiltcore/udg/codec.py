@@ -96,7 +96,7 @@ class Codec(Config):
                 logging.debug(f"AsStr.versionId: {versionId}")
                 return f"{object}?{cls.K_VER}={versionId}"
         if isinstance(object, Path):
-            object = str(object)
+            object = str(object.as_posix())
         if not isinstance(object, str):
             raise TypeError(f"Expected str, got {type(object)}:{object}")
         return object

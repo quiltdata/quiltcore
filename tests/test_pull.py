@@ -1,3 +1,5 @@
+import logging
+
 from tempfile import TemporaryDirectory
 from pytest import fixture, mark, raises
 
@@ -62,3 +64,10 @@ def test_pull_data_yaml(domain: Domain, udi: UDI):
     assert dest == TEST_PKG
     assert domain.data_yaml.get_uri(dest) == LOCAL_UDI
     assert domain.data_yaml.get_folder(LOCAL_UDI) == dest
+    logging.debug(f"domain.data_yaml: {domain.data_yaml.data}")
+    assert domain.data_yaml.get(dest) == {
+        "pull": {
+            "time": "now",
+            "user": "me"
+        }
+    }
