@@ -40,8 +40,8 @@ class Data(UnConf):
         self.save()
 
     def get_uri(self, prefix: str) -> str:
-        uri_dict = self.get(prefix)
-        return list(uri_dict.keys())[0]
+        uri_dict = self.data.get(prefix) or {}
+        return list(uri_dict.keys())[-1] if uri_dict else ""
     
     def get_folder(self, uri: str) -> str|None:
         for folder, uri_dict in self.data.items():

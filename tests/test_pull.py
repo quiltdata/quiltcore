@@ -1,5 +1,5 @@
 from tempfile import TemporaryDirectory
-from pytest import fixture, mark
+from pytest import fixture, mark, raises
 
 from quiltcore import (
     Domain,
@@ -16,6 +16,7 @@ def domain():
     with TemporaryDirectory() as tmpdirname:
         f = quilt["file"]
         dom = f[tmpdirname]
+        dom.is_mutable = True
         yield dom
 
 @fixture
@@ -45,10 +46,19 @@ def test_pull_call(domain: Domain, udi: UDI):
     result = domain.pull(udi)
     assert result
 
+
+def test_pull_raise(domain: Domain, udi: UDI):
+    domain.is_mutable = False
+    with raises(AssertionError):
+        domain.pull(udi, dest=None)
+
+
 def test_pull_data_yaml(domain: Domain, udi: UDI):
     assert domain.data_yaml
     assert domain.data_yaml.path
     assert not domain.data_yaml.path.exists()
-    result = domain.pull(udi)
+    dest = domain.pull(udi)
     assert domain.data_yaml.path.exists()
-    assert result
+    assert dest == TEST_PKG
+    assert domain.data_yaml.get_uri(dest) == LOCAL_UDI
+    assert domain.data_yaml.get_folder(LOCAL_UDI) == dest

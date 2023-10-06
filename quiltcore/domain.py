@@ -49,6 +49,18 @@ class Domain(Folder):
         self.is_mutable = kwargs.get(self.K_MUTABLE, False)
         self.data_yaml = Data(self.store)
 
-    def pull(self, udi: UDI):
+    def _store(self, action, udi: UDI, prefix: UPath, **kwargs):
+        """Store the UDI in the domain."""
+        uri = udi.uri
+        assert uri and isinstance(uri, str)
+        logging.debug(f"Domain._store: {action} {udi} {kwargs}")
+        self.data_yaml.set(str(prefix), uri, action, kwargs)
         self.data_yaml.save()
         return True
+    
+    def pull(self, udi: UDI, dest: UPath|None=None, **kwargs):
+        """Pull resource at the UDI into the domain."""
+        assert self.is_mutable, "Can not pull into read-only Domain"
+        path = dest or UPath(udi.package)
+        self._store("pull", udi, path, **kwargs)
+        return str(path)
