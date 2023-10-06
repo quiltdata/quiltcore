@@ -184,7 +184,6 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
 
     meta = qpkg._meta
     new_meta = man.codec.encode_dates(spec_new.metadata())
-    print(f"new_meta: {new_meta}")
     assert meta
     assert meta["user_meta"] == new_meta
     assert meta[vol.KEY_MSG] == msg

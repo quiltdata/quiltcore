@@ -24,7 +24,7 @@ class Manifest(ResourceKey):
         with path.open(mode="wb") as fo:
             with Writer(fo) as writer:
                 head_dict = head.to_dict()
-                print(f"head_dict: {head_dict}")
+                logging.debug(f"head_dict: {head_dict}")
                 writer.write(head_dict)
                 for row in rows:
                     if not isinstance(row, Dict3):

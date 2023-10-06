@@ -51,7 +51,6 @@ class Node(Verifiable):
             parent.set_dirty(state)
 
     def extend_parent_path(self, key: str) -> Path:
-        print(f"Node.extend_parent_path: {self.parent} + {key}")
         if self.parent is not None and hasattr(self.parent, "path"):
             return self.parent.path / key
         return self.DEFAULT_PATH

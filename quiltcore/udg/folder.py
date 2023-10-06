@@ -19,7 +19,6 @@ class Folder(Child):
     def _setup_dir(self, path: Path, key: str) -> Path:
         """Form dir and create if it does not exist."""
         dir = path / self.cf.get_path(self.KEY_DIR + key)
-        print(f"Folder._setup_dir[{key}]: {dir}")
         if not dir.exists():
             dir.mkdir(parents=True, exist_ok=True)
         return dir

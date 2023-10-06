@@ -92,8 +92,6 @@ def test_node_man():
     assert man.parent == ns
 
     path = man.extend_parent_path(TEST_HASH)
-    print(f"path = {path}")
-    print(f"man.path = {man.path}")
     assert path == man.path
     assert str(ns.manifests) in str(path)
 
