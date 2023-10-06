@@ -1,7 +1,5 @@
-import logging
-
 from tempfile import TemporaryDirectory
-from pytest import fixture, mark, raises
+from pytest import fixture, raises
 
 from quiltcore import (
     Domain,
@@ -21,9 +19,11 @@ def domain():
         dom.is_mutable = True
         yield dom
 
+
 @fixture
 def udi():
     return UDI.FromUri(LOCAL_UDI)
+
 
 def test_pull_domain():
     f = quilt["file"]

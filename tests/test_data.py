@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 from pytest import fixture
 from quiltcore import Data
 from upath import UPath
-from .conftest import LOCAL_UDI
+
 
 @fixture
 def data():
@@ -21,15 +21,18 @@ def test_data_saves(data: Data):
     data.save()
     assert data.path.exists()
 
+
 def test_data_put_list(data: Data):
     data.put_list("foo", "bar", "baz")
     data.save()
     assert data.get("foo/bar") == "baz"
 
+
 def test_data_get_list(data: Data):
     data.put_list("foo", "bar", "baz")
     data.save()
     assert data.get_list("foo", "bar") == "baz"
+
 
 def test_data_set(data: Data):
     status = {"time": "now", "user": "me"}
