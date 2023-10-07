@@ -1,6 +1,7 @@
 from pytest import fixture, mark
-from quiltcore import Codec, Entry, Header, Manifest, Registry
 from upath import UPath
+
+from quiltcore import Codec, Entry, Header, Manifest, Registry
 
 from .conftest import (
     LOCAL_ONLY,

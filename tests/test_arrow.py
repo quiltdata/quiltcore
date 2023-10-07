@@ -6,7 +6,8 @@ import pandas as pd
 import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
-from quiltcore import Table3, Resource
+
+from quiltcore import Resource, Table3
 
 from .conftest import TEST_MAN
 

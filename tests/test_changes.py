@@ -1,8 +1,9 @@
 from tempfile import TemporaryDirectory
 
 from pytest import fixture, raises
-from quiltcore import Changes, Delta, Entry
 from upath import UPath
+
+from quiltcore import Changes, Delta, Entry
 
 from .conftest import MockChanges
 

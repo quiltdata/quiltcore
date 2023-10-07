@@ -2,7 +2,7 @@ import logging
 from json import JSONEncoder
 from pathlib import Path
 
-from .codec import Codec, Multihash, Dict4
+from .codec import Codec, Dict4, Multihash
 from .keyed import Keyed
 
 
@@ -65,7 +65,7 @@ class Verifiable(Keyed):
             place=str(path),
             size=path.stat().st_size,
             multihash=self.digest_bytes(path.read_bytes()),
-            metadata={}
+            metadata={},
         )
 
     def hash(self) -> Multihash:

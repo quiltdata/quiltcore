@@ -17,6 +17,7 @@ class Header(ResourceKey):
     * user_meta: object
 
     """
+
     NAME = "."
     PLACE = "."
     SIZE = 0

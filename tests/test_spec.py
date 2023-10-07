@@ -3,8 +3,9 @@ from tempfile import TemporaryDirectory
 
 from pytest import fixture, skip
 from quilt3 import Package  # type: ignore
-from quiltcore import Builder, Changes, Entry, Header, Manifest, Registry, Spec, Volume
 from upath import UPath
+
+from quiltcore import Builder, Changes, Entry, Header, Manifest, Registry, Spec, Volume
 
 from .conftest import LOCAL_ONLY
 

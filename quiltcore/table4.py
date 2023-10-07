@@ -2,6 +2,7 @@ import logging  # noqa: F401
 from pathlib import Path
 
 import pyarrow as pa  # type: ignore
+
 # import parquet from pyarrow
 from pyarrow.parquet import ParquetFile  # type: ignore
 

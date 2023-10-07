@@ -2,7 +2,7 @@ from os import environ
 from pathlib import Path
 from sys import platform
 
-from quiltcore import Changes, UDI
+from quiltcore import UDI, Changes
 
 LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 
@@ -66,9 +66,7 @@ TEST_URI = (
 BKT_URI = f"quilt+s3://{T_BKT}"
 PKG_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}={T_PKG}@e1f83ce3dc7b"
 PKG2_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}=examples/echarts:latest"
-PTH_URI = (
-    f"quilt+s3://{T_BKT}#{UDI.K_PKG}={T_PKG}&{UDI.K_PTH}=README.md"
-)
+PTH_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}={T_PKG}&{UDI.K_PTH}=README.md"
 VER_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}={T_PKG}"
 PRP_URI = f"{VER_URI}&{UDI.K_PTH}=README.md&{UDI.K_PRP}=*"
 

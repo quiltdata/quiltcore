@@ -6,8 +6,9 @@ from re import compile
 from time import time
 from urllib.parse import parse_qs, urlparse
 
-import quiltcore
 from upath import UPath
+
+import quiltcore
 
 from .yaml.config import Config
 

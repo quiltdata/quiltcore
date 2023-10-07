@@ -1,8 +1,9 @@
 from pathlib import Path
 
 from pytest import fixture, mark
-from quiltcore import Entry, Manifest, Registry
 from upath import UPath
+
+from quiltcore import Entry, Manifest, Registry
 
 from .conftest import LOCAL_ONLY, TEST_BKT, TEST_KEY, TEST_MAN, TEST_OBJ_HASH
 

@@ -1,4 +1,6 @@
 import pytest
+from upath import UPath
+
 from quiltcore import (
     Codec,
     Domain,
@@ -10,7 +12,6 @@ from quiltcore import (
     Scheme,
     quilt,
 )
-from upath import UPath
 
 from .conftest import LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_TAG
 

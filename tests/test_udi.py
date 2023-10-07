@@ -1,13 +1,8 @@
 import pytest
+
 from quiltcore import UDI
 
-from .conftest import (
-    BKT_URI,
-    PTH_URI,
-    T_BKT,
-    T_PKG,
-    TEST_URI,
-)
+from .conftest import BKT_URI, PTH_URI, T_BKT, T_PKG, TEST_URI
 
 
 @pytest.fixture

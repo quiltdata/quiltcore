@@ -1,8 +1,8 @@
-from .codec import Codec, Dict4, List4
-from .keyed import Keyed
-
 from pathlib import Path
 from typing import Iterator
+
+from .codec import Codec, Dict4, List4
+from .keyed import Keyed
 
 
 class Tabular(Keyed):

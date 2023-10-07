@@ -1,4 +1,5 @@
 from pytest import fixture, raises
+
 from quiltcore import Manifest, Namespace, Registry
 
 from .conftest import TEST_PKG, TEST_VOL

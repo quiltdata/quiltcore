@@ -1,5 +1,4 @@
 import logging
-
 from pathlib import Path
 from re import compile
 from urllib.parse import parse_qs, urlparse

@@ -1,8 +1,9 @@
 from tempfile import TemporaryDirectory
 
 from pytest import fixture, mark, raises
-from quiltcore import Manifest, Volume
 from upath import UPath
+
+from quiltcore import Manifest, Volume
 
 from .conftest import LOCAL_ONLY, TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL, MockChanges
 

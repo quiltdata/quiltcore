@@ -1,13 +1,8 @@
-import pytest
-
 from tempfile import TemporaryDirectory
 
-from quiltcore import (
-    Domain,
-    Scheme,
-    quilt,
-    UDI
-)
+import pytest
+
+from quiltcore import UDI, Domain, Scheme, quilt
 
 from .conftest import LOCAL_UDI, LOCAL_VOL, TEST_HASH, TEST_PKG
 

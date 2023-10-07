@@ -2,6 +2,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from pytest import fixture, raises
+
 from quiltcore import Codec, Verifiable
 
 

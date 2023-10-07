@@ -2,10 +2,9 @@ import logging
 from pathlib import Path
 from typing import Iterator
 
-
 from .table3 import Table3
 from .udg.child import Child
-from .udg.codec import Multihash, List4
+from .udg.codec import List4, Multihash
 from .udg.tabular import Tabular
 
 

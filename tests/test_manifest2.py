@@ -1,9 +1,9 @@
-import pytest
-
 from tempfile import TemporaryDirectory
 
-from quiltcore import Codec, Domain, Entry2, Header, Manifest2, quilt
+import pytest
 from upath import UPath
+
+from quiltcore import Codec, Domain, Entry2, Header, Manifest2, quilt
 
 from .conftest import (
     LOCAL_ONLY,
@@ -55,7 +55,9 @@ def test_man_version(man: Manifest2):
     bad_path = UPath(TEST_OBJ)
     bad_version = Codec.StatVersion(bad_path)
     assert not bad_version
-    remote = quilt["s3"]["quilt-example"]["akarve/amazon-reviews"]["1570503102"]["camera-reviews"]
+    remote = quilt["s3"]["quilt-example"]["akarve/amazon-reviews"]["1570503102"][
+        "camera-reviews"
+    ]
     assert isinstance(remote, Entry2)
 
 
@@ -87,7 +89,7 @@ def test_man_install(man: Manifest2, tmpdir: UPath):
     # assert entry.path != clone.path
 
 
-@pytest.mark.skip('TODO: recalculate hash algorithm')
+@pytest.mark.skip("TODO: recalculate hash algorithm")
 def test_man_hash(man: Manifest2):
     hash = man.q3hash()
     assert hash == man.name

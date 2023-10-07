@@ -1,4 +1,5 @@
 from pytest import fixture
+
 from quiltcore import Manifest, Namespace, Registry
 
 from .conftest import TEST_HASH, TEST_PKG, TEST_TAG, TEST_VOL

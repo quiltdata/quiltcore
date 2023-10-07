@@ -1,8 +1,9 @@
 from tempfile import TemporaryDirectory
 
 from pytest import fixture
-from quiltcore import Data
 from upath import UPath
+
+from quiltcore import Data
 
 
 @fixture

@@ -1,4 +1,5 @@
 from pytest import fixture
+
 from quiltcore import Resource
 
 from .conftest import TEST_VOL, not_win
