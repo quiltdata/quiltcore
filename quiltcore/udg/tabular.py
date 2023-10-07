@@ -11,15 +11,16 @@ from .keyed import Keyed
 
 class Tabular(Keyed):
     """Abstract base class to wrap pa.Table with a dict-like interface."""
+    EXT4 = ".parquet"
 
     @staticmethod
-    def Write(list4: List4, path: Path):
+    def Write4(list4: List4, path: Path):
         """Write a list4 to a parquet file."""
         table = pa.Table.from_pydict(list4)
-        pq.write_table(table, path)
+        pq.write_table(table, path.with_suffix(Tabular.EXT4))
 
     @staticmethod
-    def Read(path: Path) -> pa.Table:
+    def Read4(path: Path) -> pa.Table:
         """Read a parquet file into a pa.Table."""
         with path.open(mode="rb") as fi:
             return ParquetFile(fi).read()

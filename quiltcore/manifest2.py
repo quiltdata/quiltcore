@@ -2,10 +2,9 @@ import logging
 from pathlib import Path
 from typing import Iterator
 
-from .table3 import Table3
+from .table3 import Table3, Tabular
 from .udg.child import Child, Node
 from .udg.codec import Multihash
-from .udg.tabular import Tabular
 
 
 class Manifest2(Child):
@@ -30,7 +29,7 @@ class Manifest2(Child):
         """Write relaxed table into mpath"""
         list4 = self.table().relax(dest)
         mpath = dest_ns.path / self.name
-        Tabular.Write(list4, mpath)
+        Tabular.Write4(list4, mpath)
         return Manifest2(self.name, dest_ns)
 
     #
@@ -38,10 +37,13 @@ class Manifest2(Child):
     #
 
     def table(self) -> Tabular:
-        """TODO: Dynamically detect Parquet vs JSON."""
+        """Load from Parquet or JSON."""
         if not hasattr(self, "_table") or self._table is None:
             try:
-                self._table = Table3(self.path, **self.args)
+                if self.path.suffix == Tabular.EXT4:
+                    self._table = Tabular.Read4(self.path)
+                else:
+                    self._table = Table3(self.path, **self.args)
             except FileNotFoundError:
                 logging.warning(f"Manifest not found: {self.path}")
         if not isinstance(self._table, Tabular):

@@ -12,7 +12,7 @@ class Table4(Tabular):
     def __init__(self, parquet_path: Path, **kwargs):
         """Read the manifest into a pyarrow Table."""
         super().__init__(parquet_path, **kwargs)
-        self.table = self.Read(self.path)
+        self.table = self.Read4(self.path)
         self.head = Dict4(**self.first(self.table))
         self.body = self.table.slice(1)
 

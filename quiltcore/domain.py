@@ -79,7 +79,7 @@ class Domain(Folder):
         """Return the status dictionary for this UDI event."""
         status = {
             "timestamp": self.TimeStamp(),
-            "user": os.getlogin(),
+            "user": os.environ.get("USER", "unknown"),
             **attrs,
             **kwargs,
         }
