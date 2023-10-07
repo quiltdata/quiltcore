@@ -27,8 +27,7 @@ class Table3(Tabular):
 
     def _get_head(self) -> pa.Table:
         """Extract header values into attributes."""
-        first = self.table.take([0]).to_pylist()[0]
-        return Header(self.path, first=first)
+        return Header(self.path, first=self.first(self.table))
 
     def _get_body(self) -> pa.Table:
         """
@@ -72,8 +71,7 @@ class Table3(Tabular):
 
     def relax(self, dest_dir: Path) -> List4:
         dict4s = [self.head.to_dict4()]
-        for name in self.names():
-            row = self[name]
+        for name, row in self.items():
             new_dest = dest_dir / name
             path = Resource.AsPath(row.place)
             with path.open("rb") as fi:

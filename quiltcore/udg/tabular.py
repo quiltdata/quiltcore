@@ -14,6 +14,9 @@ class Tabular(Keyed):
         self.path = path
         self.codec = Codec()
 
+    def first(self, table) -> dict:
+        return table.take([0]).to_pylist()[0]
+
     def names(self) -> list[str]:
         return list(self._cache.keys())
 
