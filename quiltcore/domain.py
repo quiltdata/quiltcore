@@ -72,7 +72,7 @@ class Domain(Folder):
         remote = self.GetManifest(udi)
         namespace = self.get(udi.package)
         assert namespace is not None
-        namespace.pull(remote, prefix)
+        namespace.pull(remote, prefix, no_copy=True)
         return prefix
 
     def _status(self, attrs: dict, **kwargs) -> dict:

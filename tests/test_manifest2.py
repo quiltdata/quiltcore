@@ -1,6 +1,7 @@
+import pytest
+
 from tempfile import TemporaryDirectory
 
-from pytest import fixture, mark
 from quiltcore import Codec, Domain, Entry2, Header, Manifest2, quilt
 from upath import UPath
 
@@ -15,13 +16,13 @@ from .conftest import (
 )
 
 
-@fixture
+@pytest.fixture
 def man() -> Manifest2:
     ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]
     return ns[TEST_HASH]
 
 
-@fixture
+@pytest.fixture
 def tmpdir():
     with TemporaryDirectory() as tmpdirname:
         yield UPath(tmpdirname)
@@ -45,7 +46,7 @@ def test_man_head(man: Manifest2):
     assert hashable["user_meta"]["Author"] == "Ernest"
 
 
-@mark.skipif(LOCAL_ONLY, reason="skip network tests")
+@pytest.mark.skipif(LOCAL_ONLY, reason="skip network tests")
 def test_man_version(man: Manifest2):
     path = UPath(TEST_S3VER)
     version = Codec.StatVersion(path)
@@ -86,7 +87,7 @@ def test_man_install(man: Manifest2, tmpdir: UPath):
     # assert entry.path != clone.path
 
 
-@mark.skip('TODO: recalculate hash algorithm')
+@pytest.mark.skip('TODO: recalculate hash algorithm')
 def test_man_hash(man: Manifest2):
     hash = man.q3hash()
     assert hash == man.name
@@ -98,5 +99,13 @@ def test_man_ns(man: Manifest2):
     ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]
     assert ns
     tag = ns.put(man)
-    tag2 = ns.pull(man)
+    tag2 = ns.pull(man, no_copy=True)
     assert tag == tag2
+
+
+@pytest.mark.skip(reason="Not implemented yet")
+def test_man_relax(man: Manifest2, tmpdir: UPath):
+    man2 = man.relax(tmpdir)
+    assert man2
+    assert man2.path.exists()
+    assert man2.path != man.path

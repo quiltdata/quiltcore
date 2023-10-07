@@ -47,8 +47,8 @@ class Table(ResourceKey):
             return self.codec.name_col.to_pylist()
         return []
 
-    def get_dict4(self, key: str) -> Dict4:
-        """Return the dict for a child resource."""
+    def get_dict3(self, key: str) -> Dict3:
+        """Return the dict3 for a child resource."""
         # TODO: cache to avoid continually re-calcluating
         index = self.codec.index_name(key).as_py()  # type: ignore
         if index < 0:
@@ -59,4 +59,25 @@ class Table(ResourceKey):
 
         logging.debug(f"pa_dict: {pa_dict}")
         pa_dict3 = Dict3(**pa_dict)
+        return pa_dict3
+
+    def get_dict4(self, key: str) -> Dict4:
+        """Return the dict4 for a child resource."""
+        pa_dict3 = self.get_dict3(key)
         return self.codec.decode_dict(pa_dict3)
+
+    #
+    # Translate Table
+    #
+
+    def relax(self, dest_dir: Path) -> list[Dict4]:
+        dict4s = []
+        for name in self.names():
+            row = self.get_dict4(name)
+            new_dest = dest_dir / name
+            path = self.AsPath(row.place)
+            with path.open("rb") as fi:
+                new_dest.write_bytes(fi.read())
+            row.place = self.codec.AsStr(new_dest)
+            dict4s.append(row)
+        return dict4s

@@ -26,7 +26,13 @@ class Manifest2(Child):
             return base / key
         raise ValueError(f"Parent has no manifests: {self.parent}")
 
-    def relax(self, dest, flags):
+    def relax(self, dest: Path) -> "Manifest2":
+        """
+        1. Relax table to new dest column
+        2. Write to Parquet file
+        """
+        self.table().relax(dest)
+
         return self
 
     #

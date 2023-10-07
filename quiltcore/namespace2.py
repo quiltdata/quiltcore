@@ -84,11 +84,13 @@ class Namespace2(Folder):
     # PULL via relaxation
     #
 
-    def pull(self, manifest: Manifest2, prefix: str = "", flags: dict = {}) -> Tag:
+    def pull(self, manifest: Manifest2, prefix: str = "", **flags) -> Tag:
         """PUT relaxed manifest into the namespace."""
         assert isinstance(manifest, Manifest2)
         subfolder = prefix if len(prefix) else self.name
         dest = Domain.FindStore(self) / subfolder
-        relaxed = manifest.relax(dest, flags)
-        assert relaxed is not None
-        return self.put(relaxed)
+        if not flags.get("no_copy", False):
+            dest.mkdir(parents=True, exist_ok=True)
+            manifest = manifest.relax(dest)
+            assert manifest is not None
+        return self.put(manifest)
