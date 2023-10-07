@@ -11,6 +11,7 @@ from .keyed import Keyed
 
 class Tabular(Keyed):
     """Abstract base class to wrap pa.Table with a dict-like interface."""
+
     EXT4 = ".parquet"
 
     @staticmethod
