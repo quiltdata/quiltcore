@@ -39,6 +39,15 @@ class Domain(Folder):
             return parent.store
         return cls.FindStore(parent)
 
+    @classmethod
+    def GetManifest(cls, udi: UDI) -> Manifest2:
+        """Return the manifest for the UDI."""
+        domain = cls.FromURI(udi.registry)
+        namespace = domain.get(udi.package)
+        tag = udi.attrs.get(udi.K_TAG, namespace.TAG_DEFAULT)
+        manifest = namespace.get(tag)
+        return manifest
+
     @staticmethod
     def TimeStamp() -> str:
         """Return a timestamp."""
@@ -58,8 +67,13 @@ class Domain(Folder):
         """Pull resource at the UDI into the domain."""
         assert self.is_mutable, "Can not pull into read-only Domain"
         path = dest or UPath(udi.package)
-        self._track_lineage("pull", udi, path, **kwargs)
-        return self.cf.AsStr(path)
+        prefix = self.cf.AsStr(path)
+        self._track_lineage("pull", udi, prefix, **kwargs)
+        remote = self.GetManifest(udi)
+        namespace = self.get(udi.package)
+        assert namespace is not None
+        namespace.pull(remote, prefix)
+        return prefix
 
     def _status(self, attrs: dict, **kwargs) -> dict:
         """Return the status dictionary for this UDI event."""
@@ -71,24 +85,13 @@ class Domain(Folder):
         }
         return status
 
-    def _track_lineage(self, action, udi: UDI, path: UPath, **kwargs):
+    def _track_lineage(self, action, udi: UDI, prefix: str, **kwargs):
         """Store the UDI in the domain."""
-        dest = self.cf.AsStr(path)
         uri = udi.uri
         assert uri and isinstance(uri, str)
         # TODO: store hash and other udi attributes
         opts = self._status(udi.attrs, **kwargs)
         logging.debug(f"Domain._track_lineage: {action} {udi} {opts}")
-        self.data_yaml.set(dest, uri, action, opts)
+        self.data_yaml.set(prefix, uri, action, opts)
         self.data_yaml.save()
         return True
-
-    def _remote_manifest(self, udi: UDI) -> Manifest2:
-        """Return the manifest for the remote."""
-        remote = Domain.FromURI(udi.uri)
-        manifest = remote.get(udi.package)
-        return manifest
-
-    def _translate_manifest(self, manifest: Manifest2) -> Manifest2:
-        """Translate the manifest to the local domain."""
-        return manifest

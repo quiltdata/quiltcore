@@ -1,5 +1,6 @@
+import pytest
+
 from tempfile import TemporaryDirectory
-from pytest import fixture, raises
 
 from quiltcore import (
     Domain,
@@ -11,7 +12,7 @@ from quiltcore import (
 from .conftest import LOCAL_UDI, LOCAL_VOL, TEST_HASH, TEST_PKG
 
 
-@fixture
+@pytest.fixture
 def domain():
     with TemporaryDirectory() as tmpdirname:
         f = quilt["file"]
@@ -20,7 +21,7 @@ def domain():
         yield dom
 
 
-@fixture
+@pytest.fixture
 def udi():
     return UDI.FromUri(LOCAL_UDI)
 
@@ -50,7 +51,7 @@ def test_pull_call(domain: Domain, udi: UDI):
 
 def test_pull_raise(domain: Domain, udi: UDI):
     domain.is_mutable = False
-    with raises(AssertionError):
+    with pytest.raises(AssertionError):
         domain.pull(udi, dest=None)
 
 

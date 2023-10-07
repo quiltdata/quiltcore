@@ -71,11 +71,13 @@ class Namespace2(Folder):
 
     def _put(self, tag: Tag, hash: str):
         hash_file = self.path / tag
+        hash_file.parent.mkdir(parents=True, exist_ok=True)
         hash_file.write_text(hash)
         logging.debug(f"Namespace2.put[{tag}]: {hash_file}")
 
     def _save(self, manifest: Manifest2, hash: str):
         man_file = self.manifests / hash
+        man_file.parent.mkdir(parents=True, exist_ok=True)
         man_file.write_bytes(manifest.to_bytes())
 
     #
@@ -84,8 +86,9 @@ class Namespace2(Folder):
 
     def pull(self, manifest: Manifest2, prefix: str = "", flags: dict = {}) -> Tag:
         """PUT relaxed manifest into the namespace."""
-        subfoler = prefix if len(prefix) else self.name
-        dest = Domain.FindStore(self) / subfoler
+        assert isinstance(manifest, Manifest2)
+        subfolder = prefix if len(prefix) else self.name
+        dest = Domain.FindStore(self) / subfolder
         relaxed = manifest.relax(dest, flags)
         assert relaxed is not None
         return self.put(relaxed)
