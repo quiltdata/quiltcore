@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import Iterator
 
 from .table3 import Table3
-from .udg.child import Child
-from .udg.codec import List4, Multihash
+from .udg.child import Child, Node
+from .udg.codec import Multihash
 from .udg.tabular import Tabular
 
 
@@ -14,7 +14,7 @@ class Manifest2(Child):
     list/get returns Entry with Path to the Place data actually lives
     """
 
-    def __init__(self, name: str, parent: Child, **kwargs):
+    def __init__(self, name: str, parent: Node, **kwargs):
         super().__init__(name, parent, **kwargs)
         self._table: Tabular | None = None
 
@@ -26,14 +26,12 @@ class Manifest2(Child):
             return base / key
         raise ValueError(f"Parent has no manifests: {self.parent}")
 
-    def relax(self, dest: Path) -> List4:
-        """
-        1. Relax table to new dest column
-        2. Write to Parquet file
-        """
-        dict4s = self.table().relax(dest)
-        logging.debug(f"dict4s: {dict4s}")
-        return dict4s
+    def relax(self, dest: Path, dest_ns: Node) -> "Manifest2":
+        """Write relaxed table into mpath"""
+        list4 = self.table().relax(dest)
+        mpath = dest_ns.path / self.name
+        Tabular.Write(list4, mpath)
+        return Manifest2(self.name, dest_ns)
 
     #
     # Initialize Table

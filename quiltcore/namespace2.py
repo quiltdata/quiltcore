@@ -91,6 +91,7 @@ class Namespace2(Folder):
         dest = Domain.FindStore(self) / subfolder
         if not flags.get("no_copy", False):
             dest.mkdir(parents=True, exist_ok=True)
-            manifest = manifest.relax(dest)
+            assert manifest.parent
+            manifest = manifest.relax(dest, manifest.parent)
             assert manifest is not None
         return self.put(manifest)

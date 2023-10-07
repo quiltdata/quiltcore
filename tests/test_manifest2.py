@@ -107,7 +107,8 @@ def test_man_ns(man: Manifest2):
 
 @pytest.mark.skip(reason="Not implemented yet")
 def test_man_relax(man: Manifest2, tmpdir: UPath):
-    man2 = man.relax(tmpdir)
+    assert man.parent
+    man2 = man.relax(tmpdir, man.parent)
     assert man2
     assert man2.path.exists()
     assert man2.path != man.path

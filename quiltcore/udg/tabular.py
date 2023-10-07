@@ -1,4 +1,8 @@
+import pyarrow as pa  # type: ignore
+import pyarrow.parquet as pq  # type: ignore
+
 from pathlib import Path
+from pyarrow.parquet import ParquetFile
 from typing import Iterator
 
 from .codec import Codec, Dict4, List4
@@ -7,6 +11,18 @@ from .keyed import Keyed
 
 class Tabular(Keyed):
     """Abstract base class to wrap pa.Table with a dict-like interface."""
+
+    @staticmethod
+    def Write(list4: List4, path: Path):
+        """Write a list4 to a parquet file."""
+        table = pa.Table.from_pydict(list4)
+        pq.write_table(table, path)
+
+    @staticmethod
+    def Read(path: Path) -> pa.Table:
+        """Read a parquet file into a pa.Table."""
+        with path.open(mode="rb") as fi:
+            return ParquetFile(fi).read()
 
     def __init__(self, path: Path, **kwargs):
         """Read the manifest into a pyarrow Table."""
