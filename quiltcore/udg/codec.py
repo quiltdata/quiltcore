@@ -104,6 +104,13 @@ class Codec(Config):
             raise TypeError(f"Expected str, got {type(object)}:{object}")
         return object
 
+    @staticmethod
+    def AsPath(key: str) -> Path:
+        """Return a Path from a string."""
+        if not isinstance(key, str):
+            raise TypeError(f"[{key}]Expected str, got {type(key)}")
+        return UPath(key, version_aware=True)
+
     def __init__(self, scheme="quilt3") -> None:
         super().__init__()
         self.scheme = scheme

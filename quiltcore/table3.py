@@ -5,7 +5,6 @@ import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
 from .header import Header
-from .resource import Resource
 from .udg.codec import Dict3, Dict4, List4
 from .udg.tabular import Tabular
 
@@ -70,12 +69,6 @@ class Table3(Tabular):
     #
 
     def relax(self, dest_dir: Path) -> List4:
-        dict4s = [self.head.to_dict4()]
-        for name, row in self.items():
-            new_dest = dest_dir / name
-            path = Resource.AsPath(row.place)
-            with path.open("rb") as fi:
-                new_dest.write_bytes(fi.read())
-            row.place = self.codec.AsStr(new_dest)
-            dict4s.append(row)
-        return dict4s
+        list4 = super().relax(dest_dir)
+        list4.insert(0, self.head.to_dict4())
+        return list4
