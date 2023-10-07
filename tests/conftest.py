@@ -52,6 +52,7 @@ class MockChanges(Changes):
         self.infile.write_text(self.FILETEXT)
         self.post(self.infile)
 
+
 T_BKT = "quilt-example"
 T_PKG = "examples/wellplates"
 FIRST_PKG = "akarve/amazon-reviews"

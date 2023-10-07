@@ -1,6 +1,5 @@
 import logging
 
-from dataclasses import dataclass, asdict
 from pathlib import Path
 from re import compile
 from urllib.parse import parse_qs, urlparse
@@ -10,8 +9,7 @@ from upath import UPath
 from .domain import Domain
 from .manifest2 import Manifest2
 from .udg.child import Child
-from .udg.codec import Dict3, Dict4
-
+from .udg.codec import Dict3, Dict4, asdict
 
 
 class Entry2(Child, Dict4):
@@ -34,7 +32,7 @@ class Entry2(Child, Dict4):
     def AsPath(cls, key: str) -> Path:
         """Return a Path from a string."""
         if not isinstance(key, str):
-            raise TypeError(f"[{key}]Expected str, got {type(key)}")           
+            raise TypeError(f"[{key}]Expected str, got {type(key)}")
         return UPath(key, version_aware=True)
 
     @classmethod
@@ -86,7 +84,7 @@ class Entry2(Child, Dict4):
         path = dir / self.name
         logging.debug(f"path: {path}")
         return path
-    
+
     def to_dict3(self) -> Dict3:
         return self.cf.encode(self)
 

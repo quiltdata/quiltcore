@@ -99,5 +99,4 @@ def test_man_ns(man: Manifest2):
     assert ns
     tag = ns.put(man)
     tag2 = ns.pull(man)
-
-
+    assert tag == tag2

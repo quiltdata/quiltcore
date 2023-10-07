@@ -25,7 +25,7 @@ class Manifest2(Child):
             assert base.exists()
             return base / key
         raise ValueError(f"Parent has no manifests: {self.parent}")
-    
+
     def relax(self, dest, flags):
         return self
 

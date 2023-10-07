@@ -58,14 +58,14 @@ class Verifiable(Keyed):
     def _multihash_contents(self) -> Multihash:
         """Calculate the multihash for this object's bytes."""
         return self.digest_bytes(self.to_bytes())
-    
+
     def to_dict4(self, path: Path) -> Dict4:
         return Dict4(
-            name = path.name,
-            place = str(path),
-            size = path.stat().st_size,
-            multihash = self.digest_bytes(path.read_bytes()),
-            metadata = {}
+            name=path.name,
+            place=str(path),
+            size=path.stat().st_size,
+            multihash=self.digest_bytes(path.read_bytes()),
+            metadata={}
         )
 
     def hash(self) -> Multihash:

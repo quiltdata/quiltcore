@@ -2,6 +2,7 @@
 
 from un_yaml import UnUri  # type: ignore
 
+
 class UDI():
     """
     Create and manage Quilt Resources from UnURI attrs.

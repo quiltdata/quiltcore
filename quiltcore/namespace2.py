@@ -6,6 +6,7 @@ from .udg.folder import Folder
 
 Tag = str
 
+
 class Namespace2(Folder):
     """
     Namespace of Manifests by Hash
@@ -22,7 +23,7 @@ class Namespace2(Folder):
         assert isinstance(self.parent, Domain)
         self.manifests = self._setup_dir(self.parent.base, "manifests")
         print(f"manifests: {self.manifests}")
-    
+
     #
     # GET based on hash
     #

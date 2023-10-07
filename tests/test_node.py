@@ -82,7 +82,7 @@ def test_node_names():
         ns.get_q3hash("not-a-hash")
     with pytest.raises(ValueError):
         ns.get_q3hash("92")  # ambiguous
-        
+
 
 def test_node_man():
     ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]

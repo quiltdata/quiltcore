@@ -112,7 +112,7 @@ class Resource:
 
     def param(self, key: str, default: str) -> str:
         """Return a param."""
-        return self.params[key] if key in self.params else default  # type: ignore
+        return self.params[key] if key in self.params else default
 
     def _setup_params(self):
         """Load Resource-specific params from config file."""

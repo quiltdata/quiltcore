@@ -4,13 +4,12 @@ from un_yaml import UnConf  # type: ignore
 from upath import UPath
 
 
-
 class Data(UnConf):
     DATA_FILE = "data.yaml"
     DEFAULTS = {
         "app": DATA_FILE,
         "app_version": "0.1.0",
-        "doc":"quiltcore",
+        "doc": "quiltcore",
         "doc_version": "0.1.0",
     }
 
@@ -29,7 +28,7 @@ class Data(UnConf):
         tail = keys.pop()
         for child in keys:
             logging.debug(f"child: {child} parent: {parent}")
-            if not child in parent:
+            if child not in parent:
                 parent[child] = {}
             parent = parent[child]
             logging.debug(f"+parent: {parent}")
@@ -38,7 +37,7 @@ class Data(UnConf):
     def get_list(self, *keys):
         parent = self.data
         for child in keys:
-            if not child in parent:
+            if child not in parent:
                 return None
             parent = parent[child]
         return parent
@@ -50,8 +49,8 @@ class Data(UnConf):
     def get_uri(self, prefix: str) -> str:
         uri_dict = self.data.get(prefix) or {}
         return list(uri_dict.keys())[-1] if uri_dict else ""
-    
-    def get_folder(self, uri: str) -> str|None:
+
+    def get_folder(self, uri: str) -> str | None:
         for folder, uri_dict in self.data.items():
             if uri in uri_dict:
                 return folder
