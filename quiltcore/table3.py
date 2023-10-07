@@ -6,17 +6,16 @@ import pyarrow.json as pj  # type: ignore
 
 from .header import Header
 from .resource import Resource
-from .udg.codec import Codec, Dict3, Dict4
+from .udg.codec import Dict3, Dict4
 from .udg.tabular import Tabular
 
 
 class Table3(Tabular):
     """Abstract away calls to, and encoding of, pyarrow."""
 
-    def __init__(self, path: Path, **kwargs):
+    def __init__(self, json_path: Path, **kwargs):
         """Read the manifest into a pyarrow Table."""
-        self.path = path
-        self.codec = Codec()
+        super().__init__(json_path, **kwargs)
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
         self.head = self._get_head()
@@ -46,7 +45,7 @@ class Table3(Tabular):
     def names(self) -> list[str]:
         if self.codec.name_col:
             return self.codec.name_col.to_pylist()
-        return []
+        return super().names()
 
     def get_dict3(self, key: str) -> Dict3:
         """Return the dict3 for a child resource."""
@@ -74,7 +73,7 @@ class Table3(Tabular):
     def relax(self, dest_dir: Path) -> list[Dict4]:
         dict4s = []
         for name in self.names():
-            row = self.get_dict4(name)
+            row = self[name]
             new_dest = dest_dir / name
             path = Resource.AsPath(row.place)
             with path.open("rb") as fi:

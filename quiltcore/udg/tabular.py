@@ -1,4 +1,4 @@
-from .codec import Dict3, Dict4
+from .codec import Codec, Dict4
 from .keyed import Keyed
 
 from pathlib import Path
@@ -8,15 +8,18 @@ from typing import Iterator
 class Tabular(Keyed):
     """Abstract base class to wrap pa.Table with a dict-like interface."""
 
+    def __init__(self, path: Path, **kwargs):
+        """Read the manifest into a pyarrow Table."""
+        super().__init__(**kwargs)
+        self.path = path
+        self.codec = Codec()
+
     def names(self) -> list[str]:
         return list(self._cache.keys())
 
-    def get_dict3(self, key: str) -> Dict3:
-        raise NotImplementedError
-
     def get_dict4(self, key: str) -> Dict4:
         raise NotImplementedError
- 
+
     def relax(self, dest: Path) -> list[Dict4]:
         raise NotImplementedError
 

@@ -47,7 +47,7 @@ class Entry2(Child, Dict4):
 
     def __init__(self, name: str, parent: Manifest2, **kwargs):
         Child.__init__(self, name, parent, **kwargs)
-        row = parent.table().get_dict4(name)
+        row = parent.table()[name]
         Dict4.__init__(self, **asdict(row))
 
     def _setup(self):
