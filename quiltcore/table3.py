@@ -5,16 +5,17 @@ import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
 from .header import Header
-from .resource_key import ResourceKey
+from .resource import Resource
 from .udg.codec import Codec, Dict3, Dict4
+from .udg.tabular import Tabular
 
 
-class Table(ResourceKey):
+class Table3(Tabular):
     """Abstract away calls to, and encoding of, pyarrow."""
 
     def __init__(self, path: Path, **kwargs):
         """Read the manifest into a pyarrow Table."""
-        super().__init__(path, **kwargs)
+        self.path = path
         self.codec = Codec()
         with self.path.open(mode="rb") as fi:
             self.table = pj.read_json(fi)
@@ -75,7 +76,7 @@ class Table(ResourceKey):
         for name in self.names():
             row = self.get_dict4(name)
             new_dest = dest_dir / name
-            path = self.AsPath(row.place)
+            path = Resource.AsPath(row.place)
             with path.open("rb") as fi:
                 new_dest.write_bytes(fi.read())
             row.place = self.codec.AsStr(new_dest)

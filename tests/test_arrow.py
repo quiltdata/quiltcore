@@ -6,7 +6,7 @@ import pandas as pd
 import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
-from quiltcore import Table
+from quiltcore import Table3, Resource
 
 from .conftest import TEST_MAN
 
@@ -43,9 +43,9 @@ def test_arrow_s3():
 
 
 def test_arrow_table():
-    path = Table.AsPath(TEST_MAN)
-    table = Table(path)
-    assert isinstance(table, Table)
+    path = Resource.AsPath(TEST_MAN)
+    table = Table3(path)
+    assert isinstance(table, Table3)
     head = table.head
     assert head.version == "v0"  # type: ignore
     assert len(head.message) > 0  # type: ignore
@@ -56,7 +56,7 @@ def test_arrow_table():
     assert body.num_rows == 1
     schema = body.schema
     assert schema
-    columns = table.cf.get_dict("quilt3/schema")
+    columns = table.codec.get_dict("quilt3/schema")
     for key in columns:
         assert key in schema.names
 

@@ -6,7 +6,7 @@ from jsonlines import Writer  # type: ignore
 from .entry import Entry
 from .header import Header
 from .resource_key import ResourceKey
-from .table import Table
+from .table3 import Table3
 from .udg.codec import Dict3, asdict
 
 
@@ -33,15 +33,15 @@ class Manifest(ResourceKey):
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self._table: Table | None = None
+        self._table: Table3 | None = None
 
-    def table(self) -> Table:
+    def table(self) -> Table3:
         if not hasattr(self, "_table") or self._table is None:
             try:
-                self._table = Table(self.path, **self.args)
+                self._table = Table3(self.path, **self.args)
             except FileNotFoundError:
                 logging.warning(f"Manifest not found: {self.path}")
-        if not isinstance(self._table, Table):
+        if not isinstance(self._table, Table3):
             raise TypeError(f"Expected Table, got {type(self._table)}")
         return self._table
 

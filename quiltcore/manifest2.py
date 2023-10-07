@@ -3,9 +3,10 @@ from pathlib import Path
 from typing import Iterator
 
 
-from .table import Table
+from .table3 import Table3
 from .udg.child import Child
 from .udg.codec import Multihash
+from .udg.tabular import Tabular
 
 
 class Manifest2(Child):
@@ -16,7 +17,7 @@ class Manifest2(Child):
 
     def __init__(self, name: str, parent: Child, **kwargs):
         super().__init__(name, parent, **kwargs)
-        self._table: Table | None = None
+        self._table: Tabular | None = None
 
     def extend_parent_path(self, key: str) -> Path:
         if hasattr(self.parent, "manifests"):
@@ -39,18 +40,21 @@ class Manifest2(Child):
     # Initialize Table
     #
 
-    def table(self) -> Table:
+    def table(self) -> Tabular:
         if not hasattr(self, "_table") or self._table is None:
             try:
-                self._table = Table(self.path, **self.args)
+                self._table = Table3(self.path, **self.args)
             except FileNotFoundError:
                 logging.warning(f"Manifest not found: {self.path}")
-        if not isinstance(self._table, Table):
+        if not isinstance(self._table, Tabular):
             raise TypeError(f"Expected Table, got {type(self._table)}")
         return self._table
 
     def head(self):
-        return self.table().head
+        table = self.table()
+        if isinstance(table, Table3):
+            return table.head
+        raise TypeError(f"Expected Table3, got {type(self.table())}")
 
     #
     # Hash functions
