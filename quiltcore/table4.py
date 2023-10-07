@@ -3,15 +3,12 @@ from pathlib import Path
 
 import pyarrow as pa  # type: ignore
 
-# import parquet from pyarrow
-
 from .udg.codec import Dict4
 from .udg.tabular import Tabular
 
 
 class Table4(Tabular):
     """Abstract away calls to, and encoding of, pyarrow."""
-
     def __init__(self, parquet_path: Path, **kwargs):
         """Read the manifest into a pyarrow Table."""
         super().__init__(parquet_path, **kwargs)

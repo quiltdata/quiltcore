@@ -38,6 +38,7 @@ class Manifest2(Child):
     #
 
     def table(self) -> Tabular:
+        """TODO: Dynamically detect Parquet vs JSON."""
         if not hasattr(self, "_table") or self._table is None:
             try:
                 self._table = Table3(self.path, **self.args)
