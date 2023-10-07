@@ -5,7 +5,7 @@ from typing import Iterator
 
 from .table3 import Table3
 from .udg.child import Child
-from .udg.codec import Multihash
+from .udg.codec import Multihash, List4
 from .udg.tabular import Tabular
 
 
@@ -27,14 +27,14 @@ class Manifest2(Child):
             return base / key
         raise ValueError(f"Parent has no manifests: {self.parent}")
 
-    def relax(self, dest: Path) -> "Manifest2":
+    def relax(self, dest: Path) -> List4:
         """
         1. Relax table to new dest column
         2. Write to Parquet file
         """
-        self.table().relax(dest)
-
-        return self
+        dict4s = self.table().relax(dest)
+        logging.debug(f"dict4s: {dict4s}")
+        return dict4s
 
     #
     # Initialize Table

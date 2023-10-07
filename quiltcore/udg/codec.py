@@ -40,6 +40,9 @@ class Dict4:
     metadata: Optional[dict]
 
 
+List4 = list[Dict4]
+
+
 class Codec(Config):
     """
     Manage manifest encode/decode

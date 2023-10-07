@@ -1,4 +1,4 @@
-from .codec import Codec, Dict4
+from .codec import Codec, Dict4, List4
 from .keyed import Keyed
 
 from pathlib import Path
@@ -20,7 +20,7 @@ class Tabular(Keyed):
     def get_dict4(self, key: str) -> Dict4:
         raise NotImplementedError
 
-    def relax(self, dest: Path) -> list[Dict4]:
+    def relax(self, dest: Path) -> List4:
         raise NotImplementedError
 
     def _get(self, key: str):

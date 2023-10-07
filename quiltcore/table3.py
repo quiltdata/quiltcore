@@ -6,7 +6,7 @@ import pyarrow.json as pj  # type: ignore
 
 from .header import Header
 from .resource import Resource
-from .udg.codec import Dict3, Dict4
+from .udg.codec import Dict3, Dict4, List4
 from .udg.tabular import Tabular
 
 
@@ -70,8 +70,8 @@ class Table3(Tabular):
     # Translate Table
     #
 
-    def relax(self, dest_dir: Path) -> list[Dict4]:
-        dict4s = []
+    def relax(self, dest_dir: Path) -> List4:
+        dict4s = [self.head.to_dict4()]
         for name in self.names():
             row = self[name]
             new_dest = dest_dir / name
