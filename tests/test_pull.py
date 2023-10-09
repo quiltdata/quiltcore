@@ -4,7 +4,7 @@ import pytest
 
 from quiltcore import UDI, Domain, Scheme, quilt
 
-from .conftest import LOCAL_UDI, LOCAL_VOL, TEST_HASH, TEST_PKG
+from .conftest import LOCAL_UDI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_VOL
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ def test_pull_udi(udi: UDI):
     assert udi
     assert udi.uri == LOCAL_UDI
     assert udi.package == TEST_PKG
-    assert udi.registry.startswith("file://" + LOCAL_VOL)
+    assert udi.registry.startswith("file://localhost" + TEST_VOL)
 
 
 def test_pull_call(domain: Domain, udi: UDI):

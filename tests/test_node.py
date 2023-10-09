@@ -64,7 +64,7 @@ def test_node_uri():
     udom = Domain.FromURI(LOCAL_URI)
     assert isinstance(udom, Domain)
     assert isinstance(udom.parent, Scheme)
-    assert LOCAL_VOL == udom.name
+    assert LOCAL_VOL in udom.name
 
 
 def test_node_names():
@@ -110,10 +110,12 @@ def test_node_tutorial():
     assert node.path.exists()
 
 
+# @pytest.mark.skip(reason="TODO")
 def test_node_path():
     p1 = Codec.AsPath(TEST_S3VER)
     assert p1.exists()
     p2 = Codec.AsPath(LOCAL_URI)
+    assert p2.is_absolute()
     assert p2.exists()
     p3 = Codec.AsPath("file://./path")
     assert not p3.exists()

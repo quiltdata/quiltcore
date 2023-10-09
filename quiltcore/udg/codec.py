@@ -4,19 +4,16 @@ import pyarrow.compute as pc  # type: ignore
 
 from dataclasses import asdict
 from datetime import datetime
-from pathlib import Path
 from urllib.parse import quote, unquote
 
-from re import compile
 from multiformats import multihash
 from typing_extensions import Any
-from upath import UPath
 
 from ..yaml.config import Config
-from .types import Dict3, Dict4, Hash3, Multihash
+from .types import Dict3, Dict4, Hash3, Multihash, Types
 
 
-class Codec(Config):
+class Codec(Config, Types):
     """
     Manage manifest encode/decode
 
@@ -35,56 +32,7 @@ class Codec(Config):
     size          | size
     hash          | multihash
     meta          | metadata
-
     """
-
-    IS_LOCAL = compile(r"file:\/*")
-
-    K_META = "meta"
-    K_SIZE = "size"
-    K_UVER = "VersionId"
-    K_VER = "versionId"
-    MH_DIG = "digest"
-    MH_PRE = "prefix"
-    T_HSH = "is_hash"
-    T_LST = "is_list"
-    T_OPT = "is_optional"
-    T_QTD = "is_quoted"
-
-    UNQUOTED = "/:?="
-
-    @classmethod
-    def StatVersion(cls, path: Path) -> str | None:
-        if not path.exists():
-            return None
-        stat: dict = path.stat()  # type: ignore
-        if isinstance(stat, dict):
-            return stat.get(cls.K_UVER, None)
-        if hasattr(stat, "cls.K_UVER"):
-            return getattr(stat, cls.K_UVER)
-        logging.warning(f"StatVersion: {path} -> {stat} has no {cls.K_UVER}")
-        return None
-
-    @classmethod
-    def AsStr(cls, object) -> str:
-        """Return a string from a simple object."""
-        if isinstance(object, UPath) and object.exists():
-            versionId = cls.StatVersion(object)
-            if versionId:
-                logging.debug(f"AsStr.versionId: {versionId}")
-                return f"{object}?{cls.K_VER}={versionId}"
-        if isinstance(object, Path):
-            object = str(object.as_posix())
-        if not isinstance(object, str):
-            raise TypeError(f"Expected str, got {type(object)}:{object}")
-        return object
-
-    @staticmethod
-    def AsPath(key: str) -> Path:
-        """Return a Path from a string."""
-        if not isinstance(key, str):
-            raise TypeError(f"[{key}]Expected str, got {type(key)}")
-        return UPath(key, version_aware=True)
 
     def __init__(self, scheme="quilt3") -> None:
         super().__init__()
