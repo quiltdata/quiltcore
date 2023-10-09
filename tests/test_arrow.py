@@ -6,8 +6,9 @@ import pandas as pd
 import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
+import pytest
 
-from quiltcore import Resource, Table3
+from quiltcore import Resource, Table3, Table4
 
 from .conftest import TEST_MAN
 
@@ -64,3 +65,13 @@ def test_arrow_table():
     col = table.names()
     assert col
     assert col[0] == "ONLYME.md"
+
+
+@pytest.mark.skip(reason="TODO")
+def test_arrow_relax():
+    path = Resource.AsPath(TEST_MAN)
+    table = Table3(path)
+    with TemporaryDirectory() as tmpdirname:
+        f = Path(tmpdirname)
+        list4 = table.relax(f)
+        Table4.Write4(list4, f / "test.parquet")

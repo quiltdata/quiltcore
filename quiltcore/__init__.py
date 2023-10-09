@@ -41,7 +41,8 @@ from .resource import Resource  # noqa: F401
 from .scheme import Scheme  # noqa: F401
 from .table3 import Table3  # noqa: F401
 from .table4 import Table4  # noqa: F401
-from .udg.codec import Codec, Dict3, Dict4, Hash3  # noqa: F401
+from .udg.types import Dict3, Dict4, Hash3, Multihash  # noqa: F401
+from .udg.codec import Codec  # noqa: F401
 from .udg.keyed import Keyed  # noqa: F401
 from .udg.node import Node  # noqa: F401
 from .udg.verifiable import Verifiable  # noqa: F401

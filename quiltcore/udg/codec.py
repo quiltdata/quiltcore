@@ -1,46 +1,19 @@
 import logging
-from dataclasses import asdict, dataclass
-from datetime import datetime
-from pathlib import Path
-from typing import Optional
-from urllib.parse import quote, unquote
-
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
+
+from dataclasses import asdict
+from datetime import datetime
+from pathlib import Path
+from urllib.parse import quote, unquote
+
+from re import compile
 from multiformats import multihash
 from typing_extensions import Any
 from upath import UPath
 
 from ..yaml.config import Config
-
-Multihash = str
-
-
-@dataclass
-class Hash3:
-    type: str
-    value: str
-
-
-@dataclass
-class Dict3:
-    logical_key: str
-    physical_keys: list[str]
-    size: int
-    hash: Hash3
-    meta: Optional[dict] = None
-
-
-@dataclass
-class Dict4:
-    name: str
-    place: str
-    size: int
-    multihash: str
-    metadata: Optional[dict]
-
-
-List4 = list[Dict4]
+from .types import Dict3, Dict4, Hash3, Multihash
 
 
 class Codec(Config):
@@ -64,6 +37,8 @@ class Codec(Config):
     meta          | metadata
 
     """
+
+    IS_LOCAL = compile(r"file:\/*")
 
     K_META = "meta"
     K_SIZE = "size"

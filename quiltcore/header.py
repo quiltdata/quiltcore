@@ -4,7 +4,7 @@ from pathlib import Path
 import pyarrow as pa  # type: ignore
 
 from .resource_key import ResourceKey
-from .udg.codec import Dict4
+from .udg.types import Dict4
 
 
 class Header(ResourceKey):

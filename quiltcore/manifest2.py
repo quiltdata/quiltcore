@@ -4,7 +4,7 @@ from typing import Iterator
 
 from .table3 import Table3, Tabular
 from .udg.child import Child, Node
-from .udg.codec import Multihash
+from .udg.types import Multihash
 
 
 class Manifest2(Child):

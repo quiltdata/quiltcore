@@ -5,7 +5,7 @@ import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
 from .header import Header
-from .udg.codec import Dict3, Dict4, List4
+from .udg.types import Dict3, Dict4, List4
 from .udg.tabular import Tabular
 
 

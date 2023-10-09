@@ -13,7 +13,7 @@ from quiltcore import (
     quilt,
 )
 
-from .conftest import LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_TAG
+from .conftest import LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_S3VER, TEST_TAG
 
 QKEYS = ["file", LOCAL_VOL, TEST_PKG, "latest"]
 QTYPE = [Scheme, Domain, Namespace2, Manifest2]
@@ -108,3 +108,12 @@ def test_node_tutorial():
         assert isinstance(node, QMAP[key])
     print(repr(node))
     assert node.path.exists()
+
+
+def test_node_path():
+    p1 = Codec.AsPath(TEST_S3VER)
+    assert p1.exists()
+    p2 = Codec.AsPath(LOCAL_URI)
+    assert p2.exists()
+    p3 = Codec.AsPath("file://./path")
+    assert not p3.exists()

@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-from re import compile
 from urllib.parse import parse_qs, urlparse
 
 from upath import UPath
@@ -23,7 +22,6 @@ class Entry2(Child, Dict4):
     * meta: dict
     """
 
-    IS_LOCAL = compile(r"file:\/*")
     IS_REL = "./"
     IS_URI = ":/"
 
@@ -56,8 +54,8 @@ class Entry2(Child, Dict4):
         self.versionId = self.GetQuery(key, self.cf.K_VER)
         if self.IS_REL not in key:
             return UPath(key)
-        if self.IS_LOCAL.match(key) is not None:
-            key = self.IS_LOCAL.sub("", key)
+        if self.cf.IS_LOCAL.match(key) is not None:
+            key = self.cf.IS_LOCAL.sub("", key)
         path = Domain.FindStore(self) / key
         logging.debug(f"{key} -> {path} [{path.absolute()}]")
         return path

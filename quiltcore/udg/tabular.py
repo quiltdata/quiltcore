@@ -5,8 +5,9 @@ from pathlib import Path
 from pyarrow.parquet import ParquetFile
 from typing import Iterator
 
-from .codec import Codec, Dict4, List4
+from .codec import Codec
 from .keyed import Keyed
+from .types import Dict4, List4
 
 
 class Tabular(Keyed):

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pyarrow as pa  # type: ignore
 
-from .udg.codec import Dict4
+from .udg.types import Dict4
 from .udg.tabular import Tabular
 
 
