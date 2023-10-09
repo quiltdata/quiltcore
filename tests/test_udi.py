@@ -2,7 +2,7 @@ import pytest
 
 from quiltcore import UDI
 
-from .conftest import BKT_URI, PTH_URI, T_BKT, T_PKG, TEST_URI
+from .conftest import BKT_URI, PTH_URI, T_BKT, T_PKG, TEST_URI, LOCAL_UDI
 
 
 @pytest.fixture
@@ -33,3 +33,10 @@ def test_udi_null():
     un = UDI({})
     assert un
     assert un.uri is None
+
+
+def test_udi_localhost():
+    local = UDI.FromUri(LOCAL_UDI)
+    assert local
+    assert local.uri == LOCAL_UDI
+    assert "localhost" not in local.registry

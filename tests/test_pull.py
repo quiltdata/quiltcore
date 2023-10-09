@@ -22,19 +22,19 @@ def udi():
 
 
 def test_pull_domain():
+    assert "quilt+file://" in LOCAL_UDI
     f = quilt["file"]
     dom = f[LOCAL_VOL]
     assert isinstance(dom, Domain)
     assert isinstance(dom.parent, Scheme)
-    assert LOCAL_VOL in dom.keys()
-    assert "quilt+file://" in LOCAL_UDI
+    assert LOCAL_VOL == str(dom.store)
 
 
 def test_pull_udi(udi: UDI):
     assert udi
     assert udi.uri == LOCAL_UDI
     assert udi.package == TEST_PKG
-    assert udi.registry.startswith("file://localhost" + TEST_VOL)
+    assert udi.registry == "file://" + TEST_VOL
 
 
 def test_pull_call(domain: Domain, udi: UDI):

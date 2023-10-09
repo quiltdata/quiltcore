@@ -27,7 +27,6 @@ class Node(Verifiable):
         self.parent = parent
         self.path = self.extend_parent_path(name)
         self.type = f"{self.cf.info('app')}.{self.class_key}"
-        logging.debug(f"Node.init: {repr(self)}")
         self._setup()
 
     def __repr__(self):
@@ -52,7 +51,9 @@ class Node(Verifiable):
 
     def extend_parent_path(self, key: str) -> Path:
         if self.parent is not None and hasattr(self.parent, "path"):
-            return self.parent.path / key
+            root = self.parent.path / key
+            root.mkdir(parents=True, exist_ok=True)
+            return root
         return self.DEFAULT_PATH
 
     def parent_name(self) -> str:

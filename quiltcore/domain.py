@@ -56,6 +56,7 @@ class Domain(Folder):
     def __init__(self, name, parent, **kwargs):
         super().__init__(name, parent, **kwargs)
         self.store = self.ToPath(self.parent_name(), name)
+        assert self.store.exists(), f"Domain store does not exist: {self.store}"
         logging.debug(f"Domain.root: {self.store}")
         self.base = self._setup_dir(self.store, "config")
         self.path = self._setup_dir(self.base, "names")

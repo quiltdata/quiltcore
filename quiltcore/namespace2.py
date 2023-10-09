@@ -22,7 +22,6 @@ class Namespace2(Folder):
         super().__init__(name, parent, **kwargs)
         assert isinstance(self.parent, Domain)
         self.manifests = self._setup_dir(self.parent.base, "manifests")
-        print(f"manifests: {self.manifests}")
 
     #
     # GET based on hash

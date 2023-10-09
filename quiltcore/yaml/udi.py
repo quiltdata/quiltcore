@@ -1,5 +1,7 @@
 # Create Universal Data Identifier from UnURI attributes
 
+import logging
+from pathlib import Path
 from un_yaml import UnUri  # type: ignore
 
 
@@ -14,6 +16,7 @@ class UDI:
     K_FILE = "file"
     K_FORCE = "force"
     K_FAIL = "fallible"
+    K_LOCAL = "localhost"
     K_REG = "registry"
 
     # Fragments
@@ -35,6 +38,8 @@ class UDI:
     K_PKG_NAME = "_package_name"
     K_PKG_PRE = "_package_prefix"
     K_PKG_SUF = "_package_suffix"
+
+    REL_ERROR = "Relative paths are only allowed for testing: "
 
     @classmethod
     def FromUnUri(cls, un: UnUri) -> "UDI":
@@ -81,9 +86,7 @@ class UDI:
         self.attrs = attrs
         self.uri = attrs.get(UnUri.K_URI)
         self.package = self.parse_package()
-        self.registry = f"{attrs.get(UnUri.K_PROT)}://{attrs.get(UnUri.K_HOST)}"
-        if self.K_PATHS in attrs and attrs[self.K_PATHS][0]:
-            self.registry += "/" + "/".join(attrs[self.K_PATHS])
+        self.registry = self.parse_registry()
 
     def __repr__(self):
         return f"UDI({self.uri})"
@@ -92,6 +95,26 @@ class UDI:
         if not isinstance(other, UDI):
             return NotImplemented
         return self.registry == other.registry and self.package == other.package
+
+    def parse_registry(self) -> str:
+        prot = self.attrs.get(UnUri.K_PROT, self.K_FILE)
+        host = self.attrs.get(UnUri.K_HOST, self.K_LOCAL)
+        path = ""
+        print(f"parse_registry: {prot} {host} [{path}]")
+
+        if self.K_PATHS in self.attrs and self.attrs[self.K_PATHS][0]:
+            path = "/" + "/".join(self.attrs[self.K_PATHS])
+        if prot == self.K_FILE:
+            if "." in host:
+                logging.warning(self.REL_ERROR + host)
+                host = Path(host).absolute()
+            if host == self.K_LOCAL:
+                host = ""
+            if path.startswith("/."):
+                logging.warning(self.REL_ERROR + path)
+                path = Path(path).absolute()
+
+        return f"{prot}://{host}{path}"
 
     def full_package(self) -> str | bool:
         return self.attrs.get(UDI.K_PKG) or False
