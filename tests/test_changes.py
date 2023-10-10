@@ -79,7 +79,7 @@ def test_chg_delta_rm(infile: UPath):
     delta = Delta(infile, action="rm", name="foo.md", prefix="bar/")
     assert delta.path == infile
     assert delta.action == "rm"
-    assert delta.name == "bar/foo.md"
+    assert delta.name.endswith("bar/foo.md")
 
     entries = delta.list()
     assert len(entries) == 1

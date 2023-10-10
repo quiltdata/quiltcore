@@ -38,7 +38,7 @@ class Tabular(Keyed):
 
     def _relax(self, row: Dict4, dest: Path) -> Dict4:
         if row.name == ".":
-            return row
+            return row       
         path = self.codec.AsPath(row.place)
         with path.open("rb") as fi:
             dest.write_bytes(fi.read())

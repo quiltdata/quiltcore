@@ -8,9 +8,10 @@ from .domain import Domain
 from .manifest2 import Manifest2
 from .udg.child import Child
 from .udg.codec import Dict3, Dict4, asdict
+from .udg.types import Types
 
 
-class Entry2(Child, Dict4):
+class Entry2(Child, Dict4, Types):
     """
     Represents a single row in a Manifest.
     Attributes:
@@ -24,13 +25,6 @@ class Entry2(Child, Dict4):
 
     IS_REL = "./"
     IS_URI = ":/"
-
-    @classmethod
-    def AsPath(cls, key: str) -> Path:
-        """Return a Path from a string."""
-        if not isinstance(key, str):
-            raise TypeError(f"[{key}]Expected str, got {type(key)}")
-        return UPath(key, version_aware=True)
 
     @classmethod
     def GetQuery(cls, uri: str, key: str) -> str:

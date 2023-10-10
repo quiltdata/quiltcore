@@ -6,14 +6,13 @@ from re import compile
 from time import time
 from urllib.parse import parse_qs, urlparse
 
-from upath import UPath
-
 import quiltcore
 
+from .udg.types import Types
 from .yaml.config import Config
 
 
-class Resource:
+class Resource(Types):
     """
     Base class for all Quilt resources.
     Manages configuration and provides common methods.
@@ -57,13 +56,6 @@ class Resource:
     def Now() -> str:
         "Return integer timestamp."
         return str(int(time()))
-
-    @classmethod
-    def AsPath(cls, key: str) -> Path:
-        """Return a Path from a string."""
-        if not isinstance(key, str):
-            raise TypeError(f"[{key}]Expected str, got {type(key)}")
-        return UPath(key, version_aware=True)
 
     @classmethod
     def CheckPath(cls, path) -> Path:
