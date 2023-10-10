@@ -110,7 +110,6 @@ def test_node_tutorial():
     assert node.path.exists()
 
 
-# @pytest.mark.skip(reason="TODO")
 def test_node_path():
     p1 = Codec.AsPath(TEST_S3VER)
     assert p1.exists()

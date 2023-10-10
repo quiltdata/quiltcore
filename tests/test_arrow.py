@@ -6,7 +6,7 @@ import pandas as pd
 import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
-import pytest
+import pytest  # noqa: F401
 
 from quiltcore import Resource, Table3, Table4
 
@@ -67,7 +67,6 @@ def test_arrow_table():
     assert col[0] == "ONLYME.md"
 
 
-@pytest.mark.skip(reason="TODO")
 def test_arrow_relax():
     path = Resource.AsPath(TEST_MAN)
     table = Table3(path)

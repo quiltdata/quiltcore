@@ -55,6 +55,19 @@ class UDI:
         un = UnUri(uri)
         return un.attrs
 
+    @classmethod
+    def ExpandRelative(cls, host: str, path: str = "") -> tuple[str, str]:
+        if "." in host:
+            logging.warning(cls.REL_ERROR + host)
+            host = str(Path(host).absolute())
+        if host == cls.K_LOCAL:
+            host = ""
+        if path.startswith("/."):
+            logging.warning(cls.REL_ERROR + path)
+            path = str(Path(path).absolute())
+
+        return host, path
+
     def __init__(self, attrs: dict):
         """
         Set local variables and additional attributes.
@@ -105,14 +118,7 @@ class UDI:
         if self.K_PATHS in self.attrs and self.attrs[self.K_PATHS][0]:
             path = "/" + "/".join(self.attrs[self.K_PATHS])
         if prot == self.K_FILE:
-            if "." in host:
-                logging.warning(self.REL_ERROR + host)
-                host = Path(host).absolute()
-            if host == self.K_LOCAL:
-                host = ""
-            if path.startswith("/."):
-                logging.warning(self.REL_ERROR + path)
-                path = Path(path).absolute()
+            host, path = self.ExpandRelative(host, path)
 
         return f"{prot}://{host}{path}"
 

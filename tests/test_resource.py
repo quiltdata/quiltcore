@@ -33,3 +33,13 @@ def test_res_version():
     assert res.read_opts()[Resource.KEY_S3VER] == v
 
     assert res == Resource.FromURI(S3_URI)
+
+
+def test_res_path():
+    TEST_LOCAL = "file://./tests/example"
+    path = Resource.AsPath(TEST_LOCAL)
+    res = Resource(path)
+    assert res
+    assert res.path == path
+    assert res.path.is_dir()
+    assert res.path.exists()
