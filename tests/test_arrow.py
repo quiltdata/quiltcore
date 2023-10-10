@@ -73,5 +73,8 @@ def test_arrow_relax():
     table = Table3(path)
     with TemporaryDirectory() as tmpdirname:
         f = Path(tmpdirname)
+        pout = f / "test.parquet"
         list4 = table.relax(f, "tests/example")
-        Table4.Write4(list4, f / "test.parquet")
+        Table4.Write4(list4, pout)
+        table4 = Table4.Read4(pout)
+        assert table4
