@@ -76,5 +76,6 @@ def test_arrow_relax():
         pout = f / "test.parquet"
         list4 = table.relax(f, "tests/example")
         Table4.Write4(list4, pout)
-        table4 = Table4.Read4(pout)
-        assert table4
+        table4 = Table4(pout)
+        for key in table4:
+            assert key in table.names()
