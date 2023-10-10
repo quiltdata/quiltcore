@@ -77,5 +77,9 @@ def test_arrow_relax():
         list4 = table.relax(f, "tests/example")
         Table4.Write4(list4, pout)
         table4 = Table4(pout)
-        for key in table4:
-            assert key in table.names()
+        meta = table4.head.metadata
+        assert meta
+        assert meta["version"] == "v0"
+        assert "ONLYME.md" in table4.keys()
+        entry = table4["ONLYME.md"]
+        assert entry

@@ -26,5 +26,5 @@ class Table4(Tabular):
 
     def get_dict4(self, key: str) -> Dict4:
         """Return the dict4 for a child resource."""
-        row = self.body.filter(pa.field("name") == key)
+        row = self.body.filter([pa.field("name", pa.string()) == key])
         return Dict4(**row.to_pydict())
