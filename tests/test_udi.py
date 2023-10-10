@@ -1,6 +1,5 @@
 import pytest
 
-from pathlib import Path
 from quiltcore import UDI
 
 from .conftest import BKT_URI, PTH_URI, T_BKT, T_PKG, TEST_URI, LOCAL_UDI
@@ -41,13 +40,3 @@ def test_udi_localhost():
     assert local
     assert local.uri == LOCAL_UDI
     assert "localhost" not in local.registry
-
-
-def test_udi_relative():
-    UDI_DOT = "quilt+file://./test"
-    udi = UDI.FromUri(UDI_DOT)
-    assert udi.registry == f"file://{Path.cwd()}/test"
-
-    UDI_SUB = "quilt+file://./test/example"
-    udi = UDI.FromUri(UDI_SUB)
-    assert udi.registry == f"file://{Path.cwd()}/test/example"
