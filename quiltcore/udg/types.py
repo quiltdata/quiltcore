@@ -40,7 +40,6 @@ Multihash = str
 
 
 class Types:
-
     IS_LOCAL = compile(r"file:\/*")
 
     K_META = "meta"

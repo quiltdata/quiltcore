@@ -69,8 +69,10 @@ def test_arrow_table():
 
 def test_arrow_relax():
     path = Resource.AsPath(TEST_MAN)
+    assert path.exists()
     table = Table3(path)
+    # Root at ./tests/examples, NOT Path.cwd()
     with TemporaryDirectory() as tmpdirname:
         f = Path(tmpdirname)
-        list4 = table.relax(f)
+        list4 = table.relax(f, "tests/example")
         Table4.Write4(list4, f / "test.parquet")

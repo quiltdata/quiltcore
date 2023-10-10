@@ -14,6 +14,7 @@ class Tabular(Keyed):
     """Abstract base class to wrap pa.Table with a dict-like interface."""
 
     EXT4 = ".parquet"
+    REL_PATH = "./"
 
     @staticmethod
     def Write4(list4: List4, path: Path):
@@ -32,21 +33,25 @@ class Tabular(Keyed):
         super().__init__(**kwargs)
         self.path = path
         self.codec = Codec()
+        self.prefix = self.REL_PATH
 
     def first(self, table) -> dict:
         return table.take([0]).to_pylist()[0]
 
     def _relax(self, row: Dict4, dest: Path) -> Dict4:
         if row.name == ".":
-            return row       
-        path = self.codec.AsPath(row.place)
+            return row
+        place = row.place.replace(self.REL_PATH, self.REL_PATH + self.prefix)
+        path = self.codec.AsPath(place)
+        assert path.exists(), f"_relax: source[{place}] not found at {path}"
         with path.open("rb") as fi:
             dest.write_bytes(fi.read())
         row.place = self.codec.AsStr(dest)
         return row
 
-    def relax(self, dest_dir: Path) -> List4:
+    def relax(self, dest_dir: Path, prefix: str = "") -> List4:
         assert dest_dir.exists() and dest_dir.is_dir()
+        self.prefix = prefix if prefix[-1] == "/" else prefix + "/"
         return [self._relax(r, dest_dir / n) for n, r in self.items()]
 
     def names(self) -> list[str]:

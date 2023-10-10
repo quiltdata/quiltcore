@@ -68,7 +68,7 @@ class Table3(Tabular):
     # Translate Table
     #
 
-    def relax(self, dest_dir: Path) -> List4:
-        list4 = super().relax(dest_dir)
+    def relax(self, dest_dir: Path, prefix: str = "") -> List4:
+        list4 = super().relax(dest_dir, prefix)
         list4.insert(0, self.head.to_dict4())
         return list4
