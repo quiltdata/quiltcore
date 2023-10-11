@@ -2,13 +2,13 @@ from os import environ
 from pathlib import Path
 from sys import platform
 
-from quiltcore import UDI, Changes
+from quiltcore import Changes, Types, UDI
 
 LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 
 TEST_BKT = "s3://udp-spec"
 LOCAL_VOL = "tests/example"
-TEST_VOL = str(Path.cwd() / LOCAL_VOL)
+TEST_VOL = Types.AsStr(Path.cwd() / LOCAL_VOL)
 LOCAL_URI = "file://" + TEST_VOL
 
 
