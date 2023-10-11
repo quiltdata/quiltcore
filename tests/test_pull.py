@@ -44,7 +44,6 @@ def test_pull_raise(domain: Domain, remote_udi: UDI):
         domain.pull(remote_udi, dest=None)
 
 
-@pytest.mark.skipif(not not_win(), reason="Does not work on Windows")
 def test_pull_data_yaml(domain: Domain, remote_udi: UDI):
     dy = domain.data_yaml
     assert dy

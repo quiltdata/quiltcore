@@ -1,6 +1,5 @@
 from os import environ
 from pathlib import Path
-from sys import platform
 
 from quiltcore import Changes, Types, UDI
 
@@ -8,7 +7,8 @@ LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 
 TEST_BKT = "s3://udp-spec"
 LOCAL_VOL = "tests/example"
-TEST_VOL = Types.AsStr(Path.cwd() / LOCAL_VOL)
+TEST_PATH = Path.cwd() / LOCAL_VOL
+TEST_VOL = Types.AsStr(TEST_PATH)
 LOCAL_URI = "file://" + TEST_VOL
 
 
@@ -38,7 +38,7 @@ LOCAL_UDI = f"quilt+{LOCAL_URI}#{UDI.K_PKG}={TEST_PKG}"
 
 
 def not_win():
-    return not platform.startswith("win")
+    return not Types.OnWindows()
 
 
 class MockChanges(Changes):

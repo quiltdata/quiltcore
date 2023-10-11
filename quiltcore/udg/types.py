@@ -3,6 +3,7 @@ import logging  # noqa: E402
 from dataclasses import dataclass
 from pathlib import Path
 from re import compile
+from sys import platform
 from typing import Optional
 from upath import UPath
 
@@ -55,18 +56,6 @@ class Types:
     URI_SPLIT = "://"
 
     @classmethod
-    def StatVersion(cls, path: Path) -> str | None:
-        if not path.exists():
-            return None
-        stat: dict = path.stat()  # type: ignore
-        if isinstance(stat, dict):
-            return stat.get(cls.K_UVER, None)
-        if hasattr(stat, "cls.K_UVER"):
-            return getattr(stat, cls.K_UVER)
-        logging.warning(f"StatVersion: {path} -> {stat} has no {cls.K_UVER}")
-        return None
-
-    @classmethod
     def AsStr(cls, object) -> str:
         """Return a string from a simple object."""
         if isinstance(object, UPath) and object.exists():
@@ -86,6 +75,22 @@ class Types:
         if not isinstance(key, str):
             raise TypeError(f"[{key}]Expected str, got {type(key)}")
         return UPath(key, version_aware=True).absolute()
+
+    @staticmethod
+    def OnWindows():
+        return platform.startswith("win")
+
+    @classmethod
+    def StatVersion(cls, path: Path) -> str | None:
+        if not path.exists():
+            return None
+        stat: dict = path.stat()  # type: ignore
+        if isinstance(stat, dict):
+            return stat.get(cls.K_UVER, None)
+        if hasattr(stat, "cls.K_UVER"):
+            return getattr(stat, cls.K_UVER)
+        logging.warning(f"StatVersion: {path} -> {stat} has no {cls.K_UVER}")
+        return None
 
     @classmethod
     def ToPath(cls, scheme: str, domain: str) -> Path:
