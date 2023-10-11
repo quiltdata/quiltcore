@@ -4,20 +4,24 @@ from pathlib import Path
 import pyarrow as pa  # type: ignore
 
 from .resource_key import ResourceKey
+from .udg.types import Dict4
 
 
 class Header(ResourceKey):
     """
-    Represents a single row in a Manifest.
+    Represents top-level metadata for a Manifest
     Attributes:
 
-    * name: str (logical_key)
-    * path: Path (physical_key)
-    * size: int
-    * hash: str[multihash]
-    * metadata: object
+    * info: str
+    * msg: str
+    * user_meta: object
 
     """
+
+    NAME = "."
+    PLACE = "."
+    SIZE = 0
+    MULTIHASH = "Qm"
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -42,11 +46,20 @@ class Header(ResourceKey):
     # Output
     #
 
+    def to_dict4(self) -> Dict4:
+        return Dict4(
+            name=self.NAME,
+            place=self.PLACE,
+            size=self.SIZE,
+            multihash=self.MULTIHASH,
+            metadata=self.headers,
+        )
+
     def to_dict(self) -> dict:
         raw_dict = {k: getattr(self, k) for k in self.headers.keys()}
         return self.codec.encode_dates(raw_dict)
 
-    def to_hashable(self) -> dict:
+    def hashable_dict(self) -> dict:
         meta = self.to_dict()
         if hasattr(self, self.KEY_USER):
             user_meta = getattr(self, self.KEY_USER)

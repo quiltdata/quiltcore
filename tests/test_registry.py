@@ -1,4 +1,5 @@
 from pytest import fixture, raises
+
 from quiltcore import Manifest, Namespace, Registry
 
 from .conftest import TEST_PKG, TEST_VOL
@@ -60,5 +61,7 @@ def test_reg_new(reg):
         reg.getResource(NEW_PKG)
     force = {Registry.KEY_FRC: True}
     new_pkg = reg.getResource(NEW_PKG, **force)
-    assert new_pkg != None
+    assert new_pkg is not None
     assert isinstance(new_pkg, Namespace)
+    assert NEW_PKG in str(new_pkg.path.as_posix())
+    new_pkg.path.rmdir()

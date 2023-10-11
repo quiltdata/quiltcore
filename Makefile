@@ -1,5 +1,5 @@
 sinclude .env # create from example.env
-.PHONY: install test watch all clean typecheck
+.PHONY: install lint test watch all clean typecheck
 PROJECT=quiltcore
 TEST_README=--codeblocks
 
@@ -12,7 +12,7 @@ all: install update test
 clean:
 	rm -f *.log
 	rm -rf .coverage* coverage* 
-	rm -rf quiltplus/.pytest_cache .mypy_cache
+	rm -rf quiltplus/.pytest_cache .mypy_cache .quilt
 
 install:
 	poetry install
@@ -20,7 +20,7 @@ install:
 update:
 	poetry update
 
-test: clean typecheck
+test: clean typecheck lint
 	poetry run pytest $(TEST_README) --cov --cov-report xml:coverage.xml
 
 test-readme:
@@ -28,6 +28,10 @@ test-readme:
 
 test-local:
 	export LOCAL_ONLY=True; poetry run pytest
+
+lint:
+	poetry run flake8 $(PROJECT) tests
+	poetry run black $(PROJECT) tests
 
 typecheck:
 	poetry run mypy $(PROJECT) tests

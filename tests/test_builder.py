@@ -1,8 +1,9 @@
 from tempfile import TemporaryDirectory
 
 from pytest import fixture
-from quiltcore import Builder, Manifest
 from upath import UPath
+
+from quiltcore import Builder, Manifest
 
 from .conftest import MockChanges
 

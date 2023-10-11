@@ -1,8 +1,8 @@
 ---
 _yaml:
   _version: 0.3.1
-  app: quiltcore
-  app_version: 0.2.0
+  app: quilt
+  app_version: 0.4.0
   doc: quilt3
   doc_version: 0.2.0
 multihash:
@@ -11,6 +11,19 @@ multihash:
   digest:
     SHA256: sha2-256
 resources:
+  Node:
+    child: Child
+  Factory:
+    child: Scheme
+  Scheme:
+    child: Domain
+  Domain:
+    child: Namespace2
+  Namespace2:
+    child: Manifest2
+  Manifest2:
+    child: Entry2
+
   Volume:
     child: Manifest
   Registry:

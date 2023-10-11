@@ -5,9 +5,9 @@ from json import JSONEncoder
 from pathlib import Path
 from typing import Iterator
 
-from .keyed import Keyed
 from .resource import Resource
-from .yaml.codec import Codec
+from .udg.codec import Codec
+from .udg.keyed import Keyed
 
 
 class ResourceKey(Resource, Keyed):
@@ -33,7 +33,7 @@ class ResourceKey(Resource, Keyed):
     def _child_dict(self, key: str) -> dict:
         """Return the dict for a child resource."""
         raise NotImplementedError
-    
+
     #
     # Mapping methods: __getitem__, __iter__, and __len__.
     #
@@ -41,11 +41,11 @@ class ResourceKey(Resource, Keyed):
     def __getitem__(self, key: str) -> Resource:
         """Return a child resource by name."""
         return self.child(key)
-    
+
     def __iter__(self) -> Iterator[str]:
         """Return an iterator over child resource names."""
         return iter(self._child_names())
-    
+
     def __len__(self) -> int:
         """Return the number of child resources."""
         return len(self._child_names())
@@ -70,7 +70,7 @@ class ResourceKey(Resource, Keyed):
     # Hash creation
     #
 
-    def digest(self, bstring: bytes) -> str:
+    def digest_bytes(self, bstring: bytes) -> str:
         """Return the multihash digest of `bstring`"""
         return self.codec.digest(bstring)
 
@@ -83,9 +83,9 @@ class ResourceKey(Resource, Keyed):
     def _hash_multihash(self) -> str:
         raise NotImplementedError("subclass must override")
 
-    def _hash_path(self) -> str:
+    def _hash_contents(self) -> str:
         """Return the multihash of the source file."""
-        return self.digest(self.to_bytes())
+        return self.digest_bytes(self.to_bytes())
 
     def _hash_manifest(self) -> str:
         hashable = b""
@@ -93,22 +93,22 @@ class ResourceKey(Resource, Keyed):
             self.head.hashable()  # type: ignore
         for entry in self.list():
             hashable += entry.hashable()  # type: ignore
-        return self.digest(hashable)
+        return self.digest_bytes(hashable)
 
     #
     # Hash retreival
     #
 
-    def to_hashable(self) -> dict:
+    def hashable_dict(self) -> dict:
         raise NotImplementedError
 
     def hashable(self) -> bytes:
-        source = self.to_hashable()
+        source = self.hashable_dict()
         return self.ENCODE(source).encode("utf-8")  # type: ignore
 
     def verify(self, bstring: bytes) -> bool:
         """Verify that multihash digest of bytes match the multihash"""
-        digest = self.digest(bstring)
+        digest = self.digest_bytes(bstring)
         logging.debug(f"verify.digest: {digest}")
         if not hasattr(self, self.KEY_MH):
             raise ValueError("no hash found for {self}")

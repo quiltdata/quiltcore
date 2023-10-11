@@ -5,30 +5,24 @@ import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
 from .header import Header
-from .resource_key import ResourceKey
-from .yaml.codec import Codec, Dict3, Dict4
+from .udg.types import Dict3, Dict4, List4
+from .udg.tabular import Tabular
 
 
-class Table(ResourceKey):
-    """Abstract away calls to, and encoding of, pyarrow."""
-
-    def __init__(self, path: Path, **kwargs):
-        """Read the manifest into a pyarrow Table."""
-        super().__init__(path, **kwargs)
-        self.codec = Codec()
-        with self.path.open(mode="rb") as fi:
-            self.table = pj.read_json(fi)
-        self.head = self._get_head()
-        self.body = self._get_body()
+class Table3(Tabular):
+    """Abstract Pyarrow table of quilt3 JSON manifest."""
 
     #
     # Parse Table
     #
 
+    def _get_table(self) -> pa.Table:
+        with self.path.open(mode="rb") as fi:
+            return pj.read_json(fi)
+
     def _get_head(self) -> pa.Table:
         """Extract header values into attributes."""
-        first = self.table.take([0]).to_pylist()[0]
-        return Header(self.path, first=first)
+        return Header(self.path, first=self.first())
 
     def _get_body(self) -> pa.Table:
         """
@@ -45,10 +39,10 @@ class Table(ResourceKey):
     def names(self) -> list[str]:
         if self.codec.name_col:
             return self.codec.name_col.to_pylist()
-        return []
+        return super().names()
 
-    def get_dict4(self, key: str) -> Dict4:
-        """Return the dict for a child resource."""
+    def get_dict3(self, key: str) -> Dict3:
+        """Return the dict3 for a child resource."""
         # TODO: cache to avoid continually re-calcluating
         index = self.codec.index_name(key).as_py()  # type: ignore
         if index < 0:
@@ -59,4 +53,18 @@ class Table(ResourceKey):
 
         logging.debug(f"pa_dict: {pa_dict}")
         pa_dict3 = Dict3(**pa_dict)
+        return pa_dict3
+
+    def get_dict4(self, key: str) -> Dict4:
+        """Return the dict4 for a child resource."""
+        pa_dict3 = self.get_dict3(key)
         return self.codec.decode_dict(pa_dict3)
+
+    #
+    # Translate Table
+    #
+
+    def relax(self, dest_dir: Path) -> List4:
+        list4 = super().relax(dest_dir)
+        list4.insert(0, self.head.to_dict4())
+        return list4

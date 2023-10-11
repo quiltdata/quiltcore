@@ -3,7 +3,7 @@ from pathlib import Path
 
 from .resource import Resource
 from .resource_key import ResourceKey
-from .yaml.codec import Dict3, asdict
+from .udg.codec import Dict3, asdict
 
 
 class Entry(ResourceKey):
@@ -24,7 +24,7 @@ class Entry(ResourceKey):
         if path.is_dir():
             raise ValueError(f"Entry cannot be a directory: {path}")
         self.name = kwargs.get(self.cf.K_NAM, self.path.name)
-        self.multihash: str = kwargs.get(self.KEY_MH, False) or self._hash_path()
+        self.multihash: str = kwargs.get(self.KEY_MH, False) or self._hash_contents()
         self.size = kwargs.get(self.KEY_SZ, False) or self.path.stat().st_size
         self.meta = kwargs.get(self.KEY_META, None)
 
@@ -40,7 +40,7 @@ class Entry(ResourceKey):
         # row[self.KEY_PATH] = self.path
         return row
 
-    def to_hashable(self) -> dict:
+    def hashable_dict(self) -> dict:
         if not self.multihash or not self.size:
             raise ValueError(f"Missing hash or size: {self}")
         hashable = {

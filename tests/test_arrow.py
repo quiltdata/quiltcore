@@ -6,7 +6,9 @@ import pandas as pd
 import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
-from quiltcore import Table
+import pytest  # noqa: F401
+
+from quiltcore import Resource, Table3, Table4
 
 from .conftest import TEST_MAN
 
@@ -43,9 +45,9 @@ def test_arrow_s3():
 
 
 def test_arrow_table():
-    path = Table.AsPath(TEST_MAN)
-    table = Table(path)
-    assert isinstance(table, Table)
+    path = Resource.AsPath(TEST_MAN)
+    table = Table3(path)
+    assert isinstance(table, Table3)
     head = table.head
     assert head.version == "v0"  # type: ignore
     assert len(head.message) > 0  # type: ignore
@@ -56,10 +58,28 @@ def test_arrow_table():
     assert body.num_rows == 1
     schema = body.schema
     assert schema
-    columns = table.cf.get_dict("quilt3/schema")
+    columns = table.codec.get_dict("quilt3/schema")
     for key in columns:
         assert key in schema.names
 
     col = table.names()
     assert col
     assert col[0] == "ONLYME.md"
+
+
+def test_arrow_relax():
+    path = Resource.AsPath(TEST_MAN)
+    assert path.exists()
+    table = Table3(path)
+    with TemporaryDirectory() as tmpdirname:
+        f = Path(tmpdirname)
+        pout = f / "test.parquet"
+        list4 = table.relax(f)
+        Table4.Write4(list4, pout)
+        table4 = Table4(pout)
+        meta = table4.head.metadata
+        assert meta
+        assert meta["version"] == "v0"
+        assert "ONLYME.md" in table4.keys()
+        entry = table4["ONLYME.md"]
+        assert entry

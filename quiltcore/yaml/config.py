@@ -5,7 +5,7 @@ from upath import UPath
 class Config(UnYaml):
     CONFIG_FILE = "quiltcore.yaml"
     K_CFG = "config"
-    K_HSH = "hash"
+    K_HASH = "hash"
     K_MAP = "map"
     K_NAM = "name"
     K_PLC = "place"

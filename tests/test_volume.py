@@ -1,10 +1,11 @@
 from tempfile import TemporaryDirectory
 
 from pytest import fixture, mark, raises
-from quiltcore import Manifest, Volume
 from upath import UPath
 
-from .conftest import LOCAL_ONLY, TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL, MockChanges
+from quiltcore import Manifest, Volume
+
+from .conftest import LOCAL_ONLY, TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL
 
 
 @fixture
@@ -86,7 +87,7 @@ def test_vol_put(dir: UPath):  # noqa: F401
     pkg_s3 = v_s3.registry.path / TEST_PKG
     assert pkg_s3.exists()
     man = v_s3.getResource(TEST_PKG)
-    assert man != None
+    assert man is not None
 
     v_tmp = Volume(dir)
     pkg_tmp = v_tmp.registry.path / TEST_PKG
@@ -101,18 +102,3 @@ def test_vol_put(dir: UPath):  # noqa: F401
     latest = pkg_tmp / Volume.TAG_DEFAULT
     assert latest.exists()
     assert man2.name == latest.read_text()
-
-@mark.skip("Not fully implemented")
-def test_vol_post(dir: UPath):  # noqa: F401
-    """Use Volume to create a new manifest from a folder in a Volume"""
-    vol = Volume(dir)
-    subdir = vol.path / "sub"
-    chg = MockChanges(subdir)
-
-    assert chg.path.exists()
-    man = vol.post(subdir, **chg.args)
-    assert man.path.exists()
-    assert isinstance(man, Manifest)
-    assert vol.registry.manifests / man.name == man.path
-
-

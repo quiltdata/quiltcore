@@ -1,44 +1,19 @@
 import logging
-from dataclasses import asdict, dataclass
-from datetime import datetime
-from pathlib import Path
-from typing import Optional
-from urllib.parse import quote, unquote
-
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
+
+from dataclasses import asdict
+from datetime import datetime
+from urllib.parse import quote, unquote
+
 from multiformats import multihash
 from typing_extensions import Any
-from upath import UPath
 
-from .config import Config
-
-
-@dataclass
-class Hash3:
-    type: str
-    value: str
+from ..yaml.config import Config
+from .types import Dict3, Dict4, Hash3, Multihash, Types
 
 
-@dataclass
-class Dict3:
-    logical_key: str
-    physical_keys: list[str]
-    size: int
-    hash: Hash3
-    meta: Optional[dict] = None
-
-
-@dataclass
-class Dict4:
-    name: str
-    place: str
-    size: int
-    multihash: str
-    metadata: Optional[dict]
-
-
-class Codec(Config):
+class Codec(Config, Types):
     """
     Manage manifest encode/decode
 
@@ -57,45 +32,7 @@ class Codec(Config):
     size          | size
     hash          | multihash
     meta          | metadata
-
     """
-
-    K_UVER = "VersionId"
-    K_VER = "versionId"
-    MH_DIG = "digest"
-    MH_PRE = "prefix"
-    T_HSH = "is_hash"
-    T_LST = "is_list"
-    T_OPT = "is_optional"
-    T_QTD = "is_quoted"
-
-    UNQUOTED = "/:?="
-
-    @classmethod
-    def StatVersion(cls, path: Path) -> str | None:
-        if not path.exists():
-            return None
-        stat: dict = path.stat()  # type: ignore
-        if isinstance(stat, dict):
-            return stat.get(cls.K_UVER, None)
-        if hasattr(stat, "cls.K_UVER"):
-            return getattr(stat, cls.K_UVER)
-        logging.warning(f"StatVersion: {path} -> {stat} has no {cls.K_UVER}")
-        return None
-
-    @classmethod
-    def AsStr(cls, object) -> str:
-        """Return a string from a simple object."""
-        if isinstance(object, UPath) and object.exists():
-            versionId = cls.StatVersion(object)
-            if versionId:
-                logging.debug(f"AsStr.versionId: {versionId}")
-                return f"{object}?{cls.K_VER}={versionId}"
-        if isinstance(object, Path):
-            object = str(object)
-        if not isinstance(object, str):
-            raise TypeError(f"Expected str, got {type(object)}:{object}")
-        return object
 
     def __init__(self, scheme="quilt3") -> None:
         super().__init__()
@@ -162,18 +99,23 @@ class Codec(Config):
         digest_type = self.hash_config(self.MH_DIG)[ht]
         return multihash.get(digest_type)
 
-    def digest(self, bstring: bytes) -> str:
+    def digest(self, bstring: bytes) -> Multihash:
         """return multihash digest as hex"""
         digester = self.digester()
         return digester.digest(bstring).hex()
 
-    def decode_hash(self, hash_data: Hash3) -> str:
+    def decode_q3hash(self, q3hash: str) -> Multihash:
+        hash_type = self.config("hash_type")
+        prefix = self.hash_config(self.MH_PRE)[hash_type]
+        return prefix + q3hash
+
+    def decode_hash(self, hash_data: Hash3) -> Multihash:
         """convert quilt3 hash_struct into multihash string"""
         hash_type = hash_data.type
         prefix = self.hash_config(self.MH_PRE)[hash_type]
         return prefix + hash_data.value
 
-    def encode_hash(self, mhash: str) -> dict:
+    def encode_hash(self, mhash: Multihash) -> dict:
         """Encode multihash string into a quilt3 hash_struct."""
         prefixes = self.hash_config(self.MH_PRE)
         prefix = mhash[0:4]

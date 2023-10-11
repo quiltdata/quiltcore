@@ -2,17 +2,16 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from re import compile
 from time import time
 from urllib.parse import parse_qs, urlparse
 
 import quiltcore
-from upath import UPath
 
+from .udg.types import Types
 from .yaml.config import Config
 
 
-class Resource:
+class Resource(Types):
     """
     Base class for all Quilt resources.
     Manages configuration and provides common methods.
@@ -43,7 +42,6 @@ class Resource:
     KEY_VER = "versionId"
 
     TAG_DEFAULT = "latest"
-    IS_LOCAL = compile(r"file:\/*")
     IS_REL = "./"
     IS_URI = ":/"
 
@@ -56,13 +54,6 @@ class Resource:
     def Now() -> str:
         "Return integer timestamp."
         return str(int(time()))
-
-    @classmethod
-    def AsPath(cls, key: str) -> Path:
-        """Return a Path from a string."""
-        if not isinstance(key, str):
-            raise TypeError(f"[{key}]Expected str, got {type(key)}")
-        return UPath(key, version_aware=True)
 
     @classmethod
     def CheckPath(cls, path) -> Path:
@@ -112,7 +103,7 @@ class Resource:
 
     def param(self, key: str, default: str) -> str:
         """Return a param."""
-        return self.params[key] if key in self.params else default  # type: ignore
+        return self.params[key] if key in self.params else default
 
     def _setup_params(self):
         """Load Resource-specific params from config file."""

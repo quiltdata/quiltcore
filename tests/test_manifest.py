@@ -1,6 +1,7 @@
 from pytest import fixture, mark
-from quiltcore import Codec, Entry, Header, Manifest, Registry
 from upath import UPath
+
+from quiltcore import Codec, Entry, Header, Manifest, Registry
 
 from .conftest import (
     LOCAL_ONLY,
@@ -32,15 +33,15 @@ def man(opts: dict) -> Manifest:
 def test_man(man: Manifest):
     assert man
     assert "manifest" in man.args
-    assert man._table != None
-    assert man.table() != None
+    assert man._table is not None
+    assert man.table() is not None
 
 
 def test_man_head(man: Manifest):
     head = man.head()
     assert isinstance(head, Header)
 
-    hashable = head.to_hashable()
+    hashable = head.hashable_dict()
     assert hashable
     assert isinstance(hashable, dict)
     assert hashable["user_meta"]["Author"] == "Ernest"

@@ -1,9 +1,10 @@
+---
 version: "1"
 successors:
   s3://quilt-ernest-staging:
-    title: Test WRITE_BUCKET 
-is_workflow_required: False
-# default_workflow: my-workflow 
+    title: Test WRITE_BUCKET
+is_workflow_required: false
+# default_workflow: my-workflow
 workflows:
   my-workflow:
     name: My Test Workflow

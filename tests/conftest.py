@@ -1,15 +1,17 @@
 from os import environ
 from pathlib import Path
-from sys import platform
 
-from quiltcore import Changes
+from quiltcore import Changes, Types, UDI
 
 LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 
 TEST_BKT = "s3://udp-spec"
 LOCAL_VOL = "tests/example"
+TEST_PATH = Path.cwd() / LOCAL_VOL
+TEST_VOL = Types.AsStr(TEST_PATH)
+LOCAL_URI = "file://" + TEST_VOL
 
-TEST_VOL = str(Path.cwd() / LOCAL_VOL)
+
 TEST_PKG = "manual/force"
 TEST_TAG = "1689722104"
 TEST_HASH = "5f1b1e4928dbb5d700cfd37ed5f5180134d1ad93a0a700f17e43275654c262f4"
@@ -32,9 +34,11 @@ TEST_ROW = {
     },
 }
 
+LOCAL_UDI = f"quilt+{LOCAL_URI}#{UDI.K_PKG}={TEST_PKG}"
+
 
 def not_win():
-    return not platform.startswith("win")
+    return not Types.OnWindows()
 
 
 class MockChanges(Changes):
@@ -48,3 +52,23 @@ class MockChanges(Changes):
         self.infile = (dir / self.FILENAME).resolve()
         self.infile.write_text(self.FILETEXT)
         self.post(self.infile)
+
+
+T_BKT = "quilt-example"
+T_PKG = "examples/wellplates"
+FIRST_PKG = "akarve/amazon-reviews"
+
+CATALOG_URL = f"https://open.quiltdata.com/b/{T_BKT}/packages/{T_PKG}"
+TEST_URI = (
+    f"quilt+s3://{T_BKT}#package={T_PKG}"
+    + "@e1f83ce3dc7b9487e5732d58effabad64065d2e7401996fa5afccd0ceb92645c"
+    + "&path=README.md&catalog=open.quiltdata.com"
+)
+BKT_URI = f"quilt+s3://{T_BKT}"
+PKG_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}={T_PKG}@e1f83ce3dc7b"
+PKG2_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}=examples/echarts:latest"
+PTH_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}={T_PKG}&{UDI.K_PTH}=README.md"
+VER_URI = f"quilt+s3://{T_BKT}#{UDI.K_PKG}={T_PKG}"
+PRP_URI = f"{VER_URI}&{UDI.K_PTH}=README.md&{UDI.K_PRP}=*"
+
+TEST_URIS = [TEST_URI, BKT_URI, PKG_URI, PKG2_URI, PTH_URI, PRP_URI, VER_URI]

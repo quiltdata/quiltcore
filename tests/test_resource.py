@@ -1,4 +1,5 @@
 from pytest import fixture
+
 from quiltcore import Resource
 
 from .conftest import TEST_VOL, not_win
@@ -32,3 +33,13 @@ def test_res_version():
     assert res.read_opts()[Resource.KEY_S3VER] == v
 
     assert res == Resource.FromURI(S3_URI)
+
+
+def test_res_path():
+    TEST_LOCAL = "./tests/example"
+    path = Resource.AsPath(TEST_LOCAL)
+    res = Resource(path)
+    assert res
+    assert res.path == path
+    assert res.path.is_dir()
+    assert res.path.exists()
