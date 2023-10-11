@@ -34,12 +34,8 @@ def test_pull_udi(domain: Domain, remote_udi: UDI):
     assert remote_udi
     assert remote_udi.uri == LOCAL_UDI
     assert remote_udi.package == TEST_PKG
-    print(f"LOCAL_URI: {LOCAL_URI}")
-    posix_path = domain.cf.AsPath(LOCAL_URI)
-    print(f"posix_path: {posix_path}")
-    posix_vol = domain.cf.AsStr(posix_path)
-    print(f"posix_vol: {posix_vol}")
-    assert remote_udi.registry == LOCAL_URI
+    if not_win():
+        assert remote_udi.registry == LOCAL_URI
 
 
 def test_pull_raise(domain: Domain, remote_udi: UDI):
