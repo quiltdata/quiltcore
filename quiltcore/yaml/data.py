@@ -2,7 +2,7 @@ import logging
 from typing import Any
 
 from un_yaml import UnConf  # type: ignore
-from upath import UPath
+from pathlib import Path
 
 
 class Data(UnConf):
@@ -14,7 +14,7 @@ class Data(UnConf):
         "doc_version": "0.1.0",
     }
 
-    def __init__(self, path: UPath) -> None:
+    def __init__(self, path: Path) -> None:
         assert path.exists() and path.is_dir()
         super().__init__(path / self.DATA_FILE, **self.DEFAULTS)
 

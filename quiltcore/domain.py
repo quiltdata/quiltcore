@@ -19,19 +19,13 @@ class Domain(Folder):
 
     @classmethod
     def FromURI(cls, uri):
+        """Return a domain from a URI."""
         scheme, path = uri.split(cls.URI_SPLIT)
+        print(f"Domain.FromURI: {scheme} {cls.URI_SPLIT} {path} -> {uri}")
         return quilt[scheme][path]
 
     @classmethod
-    def ToPath(cls, scheme, domain):
-        if scheme == "file":
-            return UPath(domain)
-        uri = f"{scheme}{cls.URI_SPLIT}{domain}"
-        logging.debug(f"Domain.ToPath: {uri}")
-        return UPath(uri)
-
-    @classmethod
-    def FindStore(cls, next: Node) -> UPath:
+    def FindStore(cls, next: Node) -> Path:
         """Return the datastore path."""
         parent = next.parent
         if parent is None:
@@ -58,7 +52,7 @@ class Domain(Folder):
     def __init__(self, name, parent, **kwargs):
         super().__init__(name, parent, **kwargs)
         print(f"Domain.__init__: {name}, {parent}, {kwargs}")
-        self.store = self.ToPath(self.parent_name(), name)
+        self.store = self.cf.ToPath(self.parent_name(), name)
         print(f"Domain.store: {self.store}")
         assert self.store.exists(), f"Domain store does not exist: {self.store}"
         logging.debug(f"Domain.root: {self.store}")

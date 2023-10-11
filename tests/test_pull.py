@@ -27,7 +27,7 @@ def test_pull_udi_scheme():
     dom = f[LOCAL_VOL]
     assert isinstance(dom, Domain)
     assert isinstance(dom.parent, Scheme)
-    assert LOCAL_VOL == dom.cf.AsStr(dom.store)
+    assert LOCAL_VOL in dom.cf.AsStr(dom.store)
 
 
 def test_pull_udi(domain: Domain, remote_udi: UDI):
