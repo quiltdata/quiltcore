@@ -60,6 +60,31 @@ class Domain(Folder):
         self.is_mutable = kwargs.get(self.K_MUTABLE, False)
         self.data_yaml = Data(self.store)
 
+#
+# Descriptors
+#
+
+    def get_uri(self) -> str:
+        """Return the URI for this domain."""
+        return self.store.as_uri()
+
+    def get_udi_string(self, package_name: str = "", ppath: str = "") -> str:
+        udi = f"quilt+{self.get_uri()}"
+        if package_name:
+            udi += f"#package={package_name}"
+            if ppath:
+                udi += f"&path={ppath}"
+        return udi
+
+    def get_udi(self, package_name: str = "", ppath: str = "") -> UDI:
+        """Return the UDI for this domain."""
+        udi_string = self.get_udi_string(package_name, ppath)
+        return UDI.FromUri(udi_string)
+
+#
+# Pull
+#
+
     def pull(self, udi: UDI, install_folder: UPath | None = None, **kwargs):
         """Pull resource at the UDI into the domain at path."""
         assert self.is_mutable, "Can not pull into read-only Domain"

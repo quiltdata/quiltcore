@@ -35,12 +35,28 @@ def test_pull_udi_scheme():
     assert LOCAL_VOL in dom.cf.AsStr(dom.store)
 
 
-def test_pull_udi(domain: Domain, remote_udi: UDI):
+def test_pull_remote_udi(remote_udi: UDI):
     assert remote_udi
     assert remote_udi.uri == LOCAL_UDI
     assert remote_udi.package == TEST_PKG
     if not_win():
         assert remote_udi.registry == LOCAL_URI
+
+
+def test_pull_uri(domain: Domain):
+    uri = domain.get_uri()
+    assert uri.startswith("file:///")
+    domain2 = Domain.FromURI(uri)
+    assert domain2.store == domain.store
+
+
+def test_pull_udi(domain: Domain):
+    udi = domain.get_udi_string()
+    assert udi.startswith("quilt+file:///")
+    udip = domain.get_udi_string(TEST_PKG)
+    assert udip.endswith(f"#package={TEST_PKG}")
+    udipp = domain.get_udi_string(TEST_PKG, "README.md")
+    assert udipp.endswith(f"#package={TEST_PKG}&path=README.md")
 
 
 def test_pull_raise(domain: Domain, remote_udi: UDI):
@@ -70,7 +86,13 @@ def test_pull_data_yaml(domain: Domain, remote_udi: UDI):
 
 
 def test_pull_push():
-    remote = make_domain()
-    local = make_domain()
-    assert remote
-    assert local
+    for dom in make_domain():
+        remote = dom
+        assert isinstance(remote, Domain)
+        for dom in make_domain():
+            local = dom
+            assert isinstance(local, Domain)
+            remote_udi = remote.get_udi(TEST_PKG)
+            assert remote_udi
+            local_path = local.pull(remote_udi)
+            assert local_path
