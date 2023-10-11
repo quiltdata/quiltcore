@@ -1,4 +1,5 @@
 # Create Universal Data Identifier from UnURI attributes
+import logging
 
 from un_yaml import UnUri  # type: ignore
 
@@ -96,7 +97,7 @@ class UDI:
         prot = self.attrs.get(UnUri.K_PROT, self.K_FILE)
         host = self.attrs.get(UnUri.K_HOST, self.K_LOCAL)
         path = ""
-        print(f"parse_registry: {prot} {host} [{path}]")
+        logging.debug(f"parse_registry: {prot} {host} [{path}]")
 
         if self.K_PATHS in self.attrs and self.attrs[self.K_PATHS][0]:
             path = "/" + "/".join(self.attrs[self.K_PATHS])

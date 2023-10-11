@@ -97,6 +97,7 @@ class Tabular(Keyed):
     #
 
     def as_path(self, place: str) -> Path:
+        """Convert a place string into a Path."""
         assert isinstance(place, str)
         assert len(place) > 1
         match place[0]:
@@ -108,6 +109,7 @@ class Tabular(Keyed):
                 return self.codec.AsPath(place)
 
     def as_place(self, path: Path) -> str:
+        """Convert a Path back into a place string."""
         if self.base in path.parents:
             path = path.relative_to(self.base)
         return self.codec.AsStr(path)
@@ -115,15 +117,17 @@ class Tabular(Keyed):
     # Relaxation
 
     def _relax(self, row: Dict4, install_path: Path) -> Dict4:
+        """Relax remote_path of each row into local install_path."""
         if row.name == ".":
             return row
-        path = self.as_path(row.place)
-        assert path.exists(), f"_relax: {path} not found for {row.place}"
-        with path.open("rb") as fi:
+        remote_path = self.as_path(row.place)
+        assert remote_path.exists(), f"_relax: {remote_path} not found for {row.place}"
+        with remote_path.open("rb") as fi:
             install_path.write_bytes(fi.read())
         row.place = self.as_place(install_path)
         return row
 
     def relax(self, install_dir: Path) -> List4:
+        """Relax each row of this remote Table into local install_dir."""
         assert install_dir.exists() and install_dir.is_dir()
         return [self._relax(row, install_dir / name) for name, row in self.items()]

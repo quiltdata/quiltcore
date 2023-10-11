@@ -104,9 +104,8 @@ def test_node_tutorial():
     node = quilt
     for key in QMAP:
         node_type = QMAP[key]
-        print(f"{key} -> {node_type.__name__} -> {node.name}")
         node = node[key]
-        assert isinstance(node, QMAP[key])
+        assert isinstance(node, node_type)
     print(repr(node))
     assert node.path.exists()
 

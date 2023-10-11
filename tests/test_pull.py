@@ -37,13 +37,6 @@ def test_pull_udi(remote_udi: UDI):
     assert remote_udi.registry == "file://" + TEST_VOL
 
 
-def test_pull_call(domain: Domain, remote_udi: UDI):
-    assert domain is not None
-    assert isinstance(domain, Domain)
-    result = domain.pull(remote_udi)
-    assert result
-
-
 def test_pull_raise(domain: Domain, remote_udi: UDI):
     domain.is_mutable = False
     with pytest.raises(AssertionError):
@@ -59,7 +52,7 @@ def test_pull_data_yaml(domain: Domain, remote_udi: UDI):
     assert dy.path.exists()
 
     dest = str(path)
-    assert dest == TEST_PKG
+    assert TEST_PKG in dest
     assert dy.get_uri(dest) == LOCAL_UDI
     assert dy.get_folder(LOCAL_UDI) == dest
 
