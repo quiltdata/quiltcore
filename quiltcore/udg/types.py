@@ -73,14 +73,12 @@ class Types:
     @classmethod
     def AsPath(cls, key: str) -> UPath:
         """Return a Path from a string."""
-        print(f"AsPath: {key}")
         if not isinstance(key, str):
             raise TypeError(f"[{key}]Expected str, got {type(key)}")
+        # TODO: Fix Windows Relative Paths
         drives = cls.IS_WINDRIVE.match(key)
-        print(f"AsPath.drives: {drives}")
         if drives:
             key = key.replace(drives[0], drives[1] + ":")
-        print(f"AsPath.key: {key}")
         return UPath(key, version_aware=True).absolute()
 
     @staticmethod
@@ -102,7 +100,7 @@ class Types:
     @classmethod
     # Windows string: d\a\quiltcore\quiltcore\tests\example
     def ToPath(cls, scheme: str, domain: str) -> Path:
-        print(f"Domain.ToPath: {scheme} {cls.URI_SPLIT} {domain}")
+        logging.debug(f"Domain.ToPath: {scheme} {cls.URI_SPLIT} {domain}")
         if scheme == "file":
             return cls.AsPath(domain)
         uri = f"{scheme}{cls.URI_SPLIT}{domain}"

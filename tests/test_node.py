@@ -10,6 +10,7 @@ from quiltcore import (
     Namespace2,
     Node,
     Scheme,
+    Types,
     quilt,
 )
 
@@ -105,15 +106,14 @@ def test_node_tutorial():
         node_type = QMAP[key]
         node = node[key]
         assert isinstance(node, node_type)
-    print(repr(node))
     assert node.path.exists()
 
 
 def test_node_path():
-    p1 = Codec.AsPath(TEST_S3VER)
+    p1 = Types.AsPath(TEST_S3VER)
     assert p1.exists()
-    p2 = Codec.AsPath(LOCAL_URI)
+    p2 = Types.AsPath(LOCAL_URI)
     assert p2.is_absolute()
     assert p2.exists()
-    p3 = Codec.AsPath("file://./path")
+    p3 = Types.AsPath("file://./path")
     assert not p3.exists()

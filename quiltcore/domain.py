@@ -21,7 +21,7 @@ class Domain(Folder):
     def FromURI(cls, uri):
         """Return a domain from a URI."""
         scheme, path = uri.split(cls.URI_SPLIT)
-        print(f"Domain.FromURI: {scheme} {cls.URI_SPLIT} {path} -> {uri}")
+        logging.debug(f"Domain.FromURI: {scheme} {cls.URI_SPLIT} {path} -> {uri}")
         return quilt[scheme][path]
 
     @classmethod
@@ -51,11 +51,9 @@ class Domain(Folder):
 
     def __init__(self, name, parent, **kwargs):
         super().__init__(name, parent, **kwargs)
-        print(f"Domain.__init__: {name}, {parent}, {kwargs}")
         self.store = self.cf.ToPath(self.parent_name(), name)
-        print(f"Domain.store: {self.store}")
         assert self.store.exists(), f"Domain store does not exist: {self.store}"
-        logging.debug(f"Domain.root: {self.store}")
+        logging.debug(f"Domain.store: {self.store}")
         self.base = self._setup_dir(self.store, "config")
         self.path = self._setup_dir(self.base, "names")
         self.remotes = self._setup_dir(self.base, "remotes")
