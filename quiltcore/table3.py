@@ -10,23 +10,19 @@ from .udg.tabular import Tabular
 
 
 class Table3(Tabular):
-    """Abstract away calls to, and encoding of, pyarrow."""
-
-    def __init__(self, json_path: Path, **kwargs):
-        """Read the manifest into a pyarrow Table."""
-        super().__init__(json_path, **kwargs)
-        with self.path.open(mode="rb") as fi:
-            self.table = pj.read_json(fi)
-        self.head = self._get_head()
-        self.body = self._get_body()
+    """Abstract Pyarrow table of quilt3 JSON manifest."""
 
     #
     # Parse Table
     #
 
+    def _get_table(self) -> pa.Table:
+        with self.path.open(mode="rb") as fi:
+            return pj.read_json(fi)
+
     def _get_head(self) -> pa.Table:
         """Extract header values into attributes."""
-        return Header(self.path, first=self.first(self.table))
+        return Header(self.path, first=self.first())
 
     def _get_body(self) -> pa.Table:
         """

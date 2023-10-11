@@ -54,7 +54,8 @@ def test_pull_data_yaml(domain: Domain, udi: UDI):
     assert domain.data_yaml
     assert domain.data_yaml.path
     assert not domain.data_yaml.path.exists()
-    dest = domain.pull(udi, hash=TEST_HASH)
+    path = domain.pull(udi, hash=TEST_HASH)
+    dest = str(path)
     assert domain.data_yaml.path.exists()
     assert dest == TEST_PKG
     assert domain.data_yaml.get_uri(dest) == LOCAL_UDI

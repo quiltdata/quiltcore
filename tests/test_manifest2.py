@@ -23,9 +23,12 @@ def man() -> Manifest2:
 
 
 @pytest.fixture
-def tmpdir():
+def domain():
     with TemporaryDirectory() as tmpdirname:
-        yield UPath(tmpdirname)
+        f = quilt["file"]
+        dom = f[tmpdirname]
+        dom.is_mutable = True
+        yield dom
 
 
 def test_man(man: Manifest2):
@@ -37,7 +40,7 @@ def test_man(man: Manifest2):
 
 
 def test_man_head(man: Manifest2):
-    head = man.head()
+    head = man.header()
     assert isinstance(head, Header)
 
     hashable = head.hashable_dict()
@@ -76,14 +79,14 @@ def test_man_list(man: Manifest2):
     assert TEST_KEY in str(entry.path)
 
 
-def test_man_install(man: Manifest2, tmpdir: UPath):
+def test_man_install(man: Manifest2, domain: Domain):
     entry = man[TEST_KEY]
     assert "manifest2" in entry.args
     assert isinstance(entry, Entry2)
     assert TEST_KEY in str(entry.path)
 
-    dest = tmpdir / "data"
-    assert not dest.exists()
+    dest = domain.store
+    assert dest.exists()
     clone = entry.install(str(dest))
     assert TEST_KEY in str(clone.path)
     # assert entry.path != clone.path
@@ -97,18 +100,10 @@ def test_man_hash(man: Manifest2):
     assert entry.multihash == entry.hash()
 
 
-def test_man_ns(man: Manifest2):
-    ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]
-    assert ns
-    tag = ns.put(man)
-    tag2 = ns.pull(man, no_copy=True)
-    assert tag == tag2
-
-
-@pytest.mark.skip(reason="Not implemented yet")
-def test_man_relax(man: Manifest2, tmpdir: UPath):
-    assert man.parent
-    man2 = man.relax(tmpdir, man.parent)
-    assert man2
-    assert man2.path.exists()
-    assert man2.path != man.path
+def test_man_relax(man: Manifest2, domain: Domain):
+    ns = domain[TEST_PKG]
+    local_man = man.relax(domain.store, ns.manifests, ns)
+    assert local_man is not None
+    assert isinstance(local_man, Manifest2)
+    assert local_man.path.exists()
+    assert domain.store in local_man.path.parents
