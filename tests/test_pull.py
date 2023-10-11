@@ -17,11 +17,11 @@ def domain():
 
 
 @pytest.fixture
-def udi():
+def remote_udi():
     return UDI.FromUri(LOCAL_UDI)
 
 
-def test_pull_domain():
+def test_pull_udi_scheme():
     assert "quilt+file://" in LOCAL_UDI
     f = quilt["file"]
     dom = f[LOCAL_VOL]
@@ -30,39 +30,40 @@ def test_pull_domain():
     assert LOCAL_VOL == str(dom.store)
 
 
-def test_pull_udi(udi: UDI):
-    assert udi
-    assert udi.uri == LOCAL_UDI
-    assert udi.package == TEST_PKG
-    assert udi.registry == "file://" + TEST_VOL
+def test_pull_udi(remote_udi: UDI):
+    assert remote_udi
+    assert remote_udi.uri == LOCAL_UDI
+    assert remote_udi.package == TEST_PKG
+    assert remote_udi.registry == "file://" + TEST_VOL
 
 
-def test_pull_call(domain: Domain, udi: UDI):
+def test_pull_call(domain: Domain, remote_udi: UDI):
     assert domain is not None
     assert isinstance(domain, Domain)
-    result = domain.pull(udi)
+    result = domain.pull(remote_udi)
     assert result
 
 
-def test_pull_raise(domain: Domain, udi: UDI):
+def test_pull_raise(domain: Domain, remote_udi: UDI):
     domain.is_mutable = False
     with pytest.raises(AssertionError):
-        domain.pull(udi, dest=None)
+        domain.pull(remote_udi, dest=None)
 
 
-def test_pull_data_yaml(domain: Domain, udi: UDI):
-    assert domain.data_yaml
-    assert domain.data_yaml.path
-    assert not domain.data_yaml.path.exists()
-    path = domain.pull(udi, hash=TEST_HASH)
+def test_pull_data_yaml(domain: Domain, remote_udi: UDI):
+    dy = domain.data_yaml
+    assert dy
+    assert dy.path
+    assert not dy.path.exists()
+    path = domain.pull(remote_udi, hash=TEST_HASH)
+    assert dy.path.exists()
+
     dest = str(path)
-    assert domain.data_yaml.path.exists()
     assert dest == TEST_PKG
-    assert domain.data_yaml.get_uri(dest) == LOCAL_UDI
-    assert domain.data_yaml.get_folder(LOCAL_UDI) == dest
-    print(f"domain.data_yaml: {domain.data_yaml.data}")
-    status = domain.data_yaml.get_list(dest, LOCAL_UDI, "pull")
-    print(f"status: {status}")
+    assert dy.get_uri(dest) == LOCAL_UDI
+    assert dy.get_folder(LOCAL_UDI) == dest
+
+    status = dy.get_list(dest, LOCAL_UDI, "pull")
     assert isinstance(status, dict)
     assert "timestamp" in status
     assert "user" in status

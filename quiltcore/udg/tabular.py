@@ -118,12 +118,12 @@ class Tabular(Keyed):
         if row.name == ".":
             return row
         path = self.as_path(row.place)
-        assert path.exists(), f"_relax: {path} not found for {row}"
+        assert path.exists(), f"_relax: {path} not found for {row.place}"
         with path.open("rb") as fi:
             install_path.write_bytes(fi.read())
         row.place = self.as_place(install_path)
         return row
 
-    def relax(self, install_dir: Path, prefix: str = "") -> List4:
+    def relax(self, install_dir: Path) -> List4:
         assert install_dir.exists() and install_dir.is_dir()
         return [self._relax(row, install_dir / name) for name, row in self.items()]
