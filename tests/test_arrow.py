@@ -74,7 +74,7 @@ def test_arrow_relax():
     with TemporaryDirectory() as tmpdirname:
         f = Path(tmpdirname)
         pout = f / "test.parquet"
-        list4 = table.relax(f, "tests/example")
+        list4 = table.relax(f)
         Table4.Write4(list4, pout)
         table4 = Table4(pout)
         meta = table4.head.metadata

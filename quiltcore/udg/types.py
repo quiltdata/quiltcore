@@ -6,8 +6,6 @@ from re import compile
 from typing import Optional
 from upath import UPath
 
-from ..yaml.udi import UDI
-
 
 @dataclass
 class Hash3:
@@ -87,19 +85,12 @@ class Types:
         """Return a Path from a string."""
         if not isinstance(key, str):
             raise TypeError(f"[{key}]Expected str, got {type(key)}")
-        if cls.IS_LOCAL.match(key) is not None:
-            tail = cls.IS_LOCAL.sub("", key)
-            parts = tail.split(UDI.SEP_PKG, 1)
-            keys = UDI.ExpandRelative(*parts)
-            key = UDI.SEP_PKG + UDI.SEP_PKG.join(keys)
         return UPath(key, version_aware=True).absolute()
 
     @classmethod
     def ToPath(cls, scheme: str, domain: str) -> Path:
         if scheme == "file":
-            host, path = UDI.ExpandRelative(domain)
-            if host:
-                return cls.AsPath(host)
+            return cls.AsPath(domain)
         uri = f"{scheme}{cls.URI_SPLIT}{domain}"
         logging.debug(f"Domain.ToPath: {uri}")
         return cls.AsPath(uri)

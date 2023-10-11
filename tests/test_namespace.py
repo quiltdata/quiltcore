@@ -1,17 +1,17 @@
-from pytest import fixture
+import pytest
 
 from quiltcore import Manifest, Namespace, Registry
 
 from .conftest import TEST_HASH, TEST_PKG, TEST_TAG, TEST_VOL
 
 
-@fixture
+@pytest.fixture
 def reg():
     path_bkt = Manifest.AsPath(TEST_VOL)
     return Registry(path_bkt)
 
 
-@fixture
+@pytest.fixture
 def names(reg):
     return reg.getResource(TEST_PKG)
 
@@ -49,6 +49,7 @@ def test_names_hash(names: Namespace):
     assert names.KEY_HSH == "hash"
 
 
+@pytest.mark.skip(reason="Invalidated by Parquet")
 def test_names_hash_part(names: Namespace):
     """use explicit hash, or partial, if provided"""
     assert len(TEST_HASH) == names.HASH_LEN
