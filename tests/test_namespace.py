@@ -49,7 +49,6 @@ def test_names_hash(names: Namespace):
     assert names.KEY_HSH == "hash"
 
 
-@pytest.mark.skip(reason="Invalidated by Parquet")
 def test_names_hash_part(names: Namespace):
     """use explicit hash, or partial, if provided"""
     assert len(TEST_HASH) == names.HASH_LEN
