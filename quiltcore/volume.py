@@ -1,8 +1,6 @@
 import logging
 from pathlib import Path
 
-from .builder import Builder
-from .changes import Changes
 from .manifest import Manifest
 from .namespace import Namespace
 from .registry import Registry
@@ -177,15 +175,3 @@ class Volume(ResourceKey):
         entries = [entry.install(dest) for entry in man.list()]  # type: ignore
         Manifest.WriteToPath(man.head(), entries, path)  # type: ignore
         return Manifest(path, **self.args)
-
-    #
-    # POST and helpers - create a new Manifest from a folder's Changeset
-    #
-
-    def post(self, path: Path, **kwargs) -> Manifest:
-        chg = Changes(self.path, **self.args)
-        builder = Builder(chg, **kwargs)
-        man = builder.post(self.registry.path)
-        if not isinstance(man, Manifest):
-            raise ValueError("Builder.post did not return a Manifest")
-        return man
