@@ -7,12 +7,17 @@ from quiltcore import UDI, Domain, Scheme, quilt
 from .conftest import LOCAL_UDI, LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, not_win
 
 
-@pytest.fixture
-def domain():
+def make_domain():
     with TemporaryDirectory() as tmpdirname:
         f = quilt["file"]
         dom = f[tmpdirname]
         dom.is_mutable = True
+        yield dom
+
+
+@pytest.fixture
+def domain():
+    for dom in make_domain():
         yield dom
 
 
@@ -62,3 +67,10 @@ def test_pull_data_yaml(domain: Domain, remote_udi: UDI):
     assert "timestamp" in status
     assert "user" in status
     assert status["hash"] == TEST_HASH
+
+
+def test_pull_push():
+    remote = make_domain()
+    local = make_domain()
+    assert remote
+    assert local
