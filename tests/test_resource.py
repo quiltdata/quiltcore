@@ -36,7 +36,7 @@ def test_res_version():
 
 
 def test_res_path():
-    TEST_LOCAL = "file://./tests/example"
+    TEST_LOCAL = "./tests/example"
     path = Resource.AsPath(TEST_LOCAL)
     res = Resource(path)
     assert res

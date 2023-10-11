@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Iterator
 
 from .table3 import Table3, Tabular
+from .table4 import Table4
 from .udg.child import Child, Node
 from .udg.types import Multihash
 
@@ -22,15 +23,23 @@ class Manifest2(Child):
             base = getattr(self.parent, "manifests")
             assert isinstance(base, Path)
             assert base.exists()
-            return base / key
+            path = Tabular.FindTablePath(base / key)
+            assert path.exists(), f"Manifest not found: {path}"
+            return path
         raise ValueError(f"Parent has no manifests: {self.parent}")
 
-    def relax(self, dest: Path, dest_ns: Node) -> "Manifest2":
-        """Write relaxed table into mpath"""
-        list4 = self.table().relax(dest)
-        mpath = dest_ns.path / self.name
-        Tabular.Write4(list4, mpath)
-        return Manifest2(self.name, dest_ns)
+    def relax(self, install_dir: Path, manifests: Path, parent: Node) -> "Manifest2":
+        """
+        1. Relax this remote Manifest into local install_dir
+        2. Calculate local manifest path
+        3. Write relaxed table to Mpath
+        4. Return new local Manifest inside local Namespace
+        """
+        list4 = self.table().relax(install_dir)
+        local_manifest = manifests / self.name
+        Tabular.Write4(list4, local_manifest)
+        # Requires `parent` to be the Namespace containing `manifests`
+        return Manifest2(self.name, parent)
 
     #
     # Initialize Table
@@ -40,21 +49,16 @@ class Manifest2(Child):
         """Load from Parquet or JSON."""
         if not hasattr(self, "_table") or self._table is None:
             try:
-                if self.path.suffix == Tabular.EXT4:
-                    self._table = Tabular.Read4(self.path)
-                else:
-                    self._table = Table3(self.path, **self.args)
+                factory = Table4 if self.path.suffix == Tabular.EXT4 else Table3
+                self._table = factory(self.path, **self.args)
             except FileNotFoundError:
                 logging.warning(f"Manifest not found: {self.path}")
         if not isinstance(self._table, Tabular):
             raise TypeError(f"Expected Table, got {type(self._table)}")
         return self._table
 
-    def head(self):
-        table = self.table()
-        if isinstance(table, Table3):
-            return table.head
-        raise TypeError(f"Expected Table3, got {type(self.table())}")
+    def header(self):
+        return self.table().head
 
     #
     # Hash functions

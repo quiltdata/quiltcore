@@ -1,7 +1,6 @@
 # Create Universal Data Identifier from UnURI attributes
-
 import logging
-from pathlib import Path
+
 from un_yaml import UnUri  # type: ignore
 
 
@@ -39,8 +38,6 @@ class UDI:
     K_PKG_PRE = "_package_prefix"
     K_PKG_SUF = "_package_suffix"
 
-    REL_ERROR = "Relative paths are only allowed for testing: "
-
     @classmethod
     def FromUnUri(cls, un: UnUri) -> "UDI":
         return cls(un.attrs)
@@ -54,19 +51,6 @@ class UDI:
     def AttrsFromUri(uri: str) -> dict:
         un = UnUri(uri)
         return un.attrs
-
-    @classmethod
-    def ExpandRelative(cls, host: str, path: str = "") -> tuple[str, str]:
-        if "." in host:
-            logging.warning(cls.REL_ERROR + host)
-            host = str(Path(host).absolute())
-        if host == cls.K_LOCAL:
-            host = ""
-        if path.startswith("/."):
-            logging.warning(cls.REL_ERROR + path)
-            path = str(Path(path).absolute())
-
-        return host, path
 
     def __init__(self, attrs: dict):
         """
@@ -113,12 +97,12 @@ class UDI:
         prot = self.attrs.get(UnUri.K_PROT, self.K_FILE)
         host = self.attrs.get(UnUri.K_HOST, self.K_LOCAL)
         path = ""
-        print(f"parse_registry: {prot} {host} [{path}]")
+        logging.debug(f"parse_registry: {prot} {host} [{path}]")
 
         if self.K_PATHS in self.attrs and self.attrs[self.K_PATHS][0]:
             path = "/" + "/".join(self.attrs[self.K_PATHS])
-        if prot == self.K_FILE:
-            host, path = self.ExpandRelative(host, path)
+        if host == self.K_LOCAL:
+            host = ""
 
         return f"{prot}://{host}{path}"
 

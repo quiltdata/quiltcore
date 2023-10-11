@@ -1,5 +1,7 @@
 import logging
 
+from pathlib import Path
+
 from .domain import Domain
 from .manifest2 import Manifest2
 from .udg.folder import Folder
@@ -55,10 +57,11 @@ class Namespace2(Folder):
     #
 
     def _valid(self, options: dict) -> bool:
+        """TODO: Validate workflow before setting 'latest' tag."""
         return True
 
     def put(self, manifest: Manifest2, options: dict = {}) -> Tag:
-        """Put a manifest into the namespace."""
+        """Store a manifest under this namespace."""
         tag = self.Now()
         hash = manifest.q3hash()
         logging.debug(f"Namespace2.put: {hash}")
@@ -69,6 +72,7 @@ class Namespace2(Folder):
         return tag
 
     def _put(self, tag: Tag, hash: str):
+        """Put a hash into the namespace via a tag."""
         hash_file = self.path / tag
         hash_file.parent.mkdir(parents=True, exist_ok=True)
         hash_file.write_text(hash)
@@ -83,14 +87,10 @@ class Namespace2(Folder):
     # PULL via relaxation
     #
 
-    def pull(self, manifest: Manifest2, prefix: str = "", **flags) -> Tag:
+    def pull(self, remote: Manifest2, install_dir: Path, **flags) -> Tag:
         """PUT relaxed manifest into the namespace."""
-        assert isinstance(manifest, Manifest2)
-        subfolder = prefix if len(prefix) else self.name
-        dest = Domain.FindStore(self) / subfolder
+        assert isinstance(remote, Manifest2)
         if not flags.get("no_copy", False):
-            dest.mkdir(parents=True, exist_ok=True)
-            assert manifest.parent
-            manifest = manifest.relax(dest, manifest.parent)
-            assert manifest is not None
-        return self.put(manifest)
+            remote = remote.relax(install_dir, self.manifests, self)
+            assert remote is not None
+        return self.put(remote)
