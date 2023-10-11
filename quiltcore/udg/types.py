@@ -40,6 +40,7 @@ Multihash = str
 
 class Types:
     IS_LOCAL = compile(r"file:\/*")
+    IS_WINDRIVE = compile(r"^([a-z])\\")
 
     K_META = "meta"
     K_SIZE = "size"
@@ -72,8 +73,12 @@ class Types:
     @classmethod
     def AsPath(cls, key: str) -> UPath:
         """Return a Path from a string."""
+        logging.debug(f"AsPath: {key}")
         if not isinstance(key, str):
             raise TypeError(f"[{key}]Expected str, got {type(key)}")
+        drives = cls.IS_WINDRIVE.match(key)
+        if drives:
+            key = key.replace(drives[0], drives[1] + ":")
         return UPath(key, version_aware=True).absolute()
 
     @staticmethod
@@ -93,6 +98,7 @@ class Types:
         return None
 
     @classmethod
+    # Windows string: d\a\quiltcore\quiltcore\tests\example
     def ToPath(cls, scheme: str, domain: str) -> Path:
         if scheme == "file":
             return cls.AsPath(domain)

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from re import compile
 from time import time
 from urllib.parse import parse_qs, urlparse
 
@@ -43,7 +42,6 @@ class Resource(Types):
     KEY_VER = "versionId"
 
     TAG_DEFAULT = "latest"
-    IS_LOCAL = compile(r"file:\/*")
     IS_REL = "./"
     IS_URI = ":/"
 
