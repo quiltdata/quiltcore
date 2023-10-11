@@ -52,7 +52,6 @@ class Node(Verifiable):
     def extend_parent_path(self, key: str) -> Path:
         if self.parent is not None and hasattr(self.parent, "path"):
             root = self.parent.path / key
-            root.mkdir(parents=True, exist_ok=True)
             return root
         return self.DEFAULT_PATH
 
