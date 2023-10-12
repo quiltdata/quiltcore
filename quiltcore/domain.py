@@ -89,14 +89,21 @@ class Domain(Folder):
         """Pull resource at the UDI into the domain at path."""
         assert self.is_mutable, "Can not pull into read-only Domain"
         no_copy = kwargs.get("no_copy", False)
-        remote = self.GetRemoteManifest(udi)
-        namespace = self.get(udi.package)
-        assert namespace is not None
         install_dir = install_folder or self.store / udi.package
         install_dir.mkdir(parents=True, exist_ok=True)
         assert install_dir.is_dir(), f"install_dir not a directory: {install_dir}"
         self._track_lineage("pull", udi, install_dir, **kwargs)
-        namespace.pull(remote, install_dir, no_copy=no_copy)
+        try:
+            remote = self.GetRemoteManifest(udi)
+            namespace = self.get(udi.package)
+            assert namespace is not None
+            namespace.pull(remote, install_dir, no_copy=no_copy)
+        except ValueError as e:
+            msg = f"Domain.pull.failed[{e}]: {udi}"
+            if not kwargs.get("new_ok", False):
+                raise ValueError(msg)
+            logging.warning(msg)
+
         return install_dir
 
     def _status(self, attrs: dict, **kwargs) -> dict:

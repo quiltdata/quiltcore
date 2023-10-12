@@ -94,5 +94,5 @@ def test_pull_push():
             assert isinstance(local, Domain)
             remote_udi = remote.get_udi(TEST_PKG)
             assert remote_udi
-            local_path = local.pull(remote_udi)
+            local_path = local.pull(remote_udi, new_ok=True)
             assert local_path
