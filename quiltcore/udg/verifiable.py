@@ -65,7 +65,10 @@ class Verifiable(Keyed):
             place=str(path),
             size=path.stat().st_size,
             multihash=self.digest_bytes(path.read_bytes()),
-            metadata={},
+            metadata={
+                "timestamp": self.Now(),
+                "user_meta": self.DEFAULT_DICT
+            },
         )
 
     def hash(self) -> Multihash:

@@ -9,8 +9,6 @@ class Root:
     Contains definitions and static methods.
     """
 
-    PREFIX = "quilt"
-
     @staticmethod
     def ClassFromName(name: str) -> type:
         """Return a class from a string."""
