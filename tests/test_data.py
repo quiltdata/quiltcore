@@ -41,5 +41,5 @@ def test_data_set(data: Data):
     data.save()
     assert data.get("folder/uri/action") == status
     assert data.get("folder/uri") == {"action": status}
-    assert data.get_uri("folder") == "uri"
-    assert data.get_folder("uri") == "folder"
+    assert data.folder2uri("folder") == "uri"
+    assert data.uri2folder("uri") == "folder"
