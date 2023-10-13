@@ -82,6 +82,11 @@ class Types:
         return UPath(key, version_aware=True).absolute()
 
     @staticmethod
+    def RelativePath(path: Path, base: Path) -> Path:
+        """Return a relative path, if inside base."""
+        return path.relative_to(base)if base in path.parents else path
+
+    @staticmethod
     def OnWindows():
         return platform.startswith("win")
 

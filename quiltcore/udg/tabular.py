@@ -110,8 +110,7 @@ class Tabular(Keyed):
 
     def as_place(self, path: Path) -> str:
         """Convert a Path back into a place string."""
-        if self.base in path.parents:
-            path = path.relative_to(self.base)
+        path = self.codec.RelativePath(path, self.base)
         return self.codec.AsStr(path)
 
     # Relaxation
