@@ -18,11 +18,6 @@ class Header(ResourceKey):
 
     """
 
-    NAME = "."
-    PLACE = "."
-    SIZE = 0
-    MULTIHASH = "Qm"
-
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.cols: list[str] = []
@@ -47,12 +42,17 @@ class Header(ResourceKey):
     #
 
     def to_dict4(self) -> Dict4:
+        meta = {
+            **self.headers,
+            self.K_USER_META: {},
+        }
+        meta[self.K_VERSION] = self.HEADER_V4
         return Dict4(
-            name=self.NAME,
-            place=self.PLACE,
+            name=self.HEADER_NAME,
+            place=self.HEADER_NAME,
             size=self.SIZE,
             multihash=self.MULTIHASH,
-            metadata=self.headers,
+            metadata=meta,
         )
 
     def to_dict(self) -> dict:

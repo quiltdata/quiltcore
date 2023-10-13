@@ -39,15 +39,22 @@ Multihash = str
 
 
 class Types:
+    HEADER_NAME = "."
+    HEADER_V4 = "v4"
+    MULTIHASH = "Qm"
+
     IS_LOCAL = compile(r"file:\/*")
     IS_WINDRIVE = compile(r"^([a-z])\\")
 
     K_META = "meta"
     K_SIZE = "size"
+    K_USER_META = "user_meta"
     K_UVER = "VersionId"
     K_VER = "versionId"
+    K_VERSION = "version"
     MH_DIG = "digest"
     MH_PRE = "prefix"
+    SIZE = 0
     T_HSH = "is_hash"
     T_LST = "is_list"
     T_OPT = "is_optional"

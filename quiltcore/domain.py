@@ -165,7 +165,11 @@ class Domain(Folder):
         glob = kwargs.get(self.K_PATTERN, self.DEFAULT_GLOB)
         body4 = self.to_list4(path, glob)
 
-        # udi = self.folder2udi(path)
+        if not pkg:
+            udi = self.folder2udi(path)
+            assert udi is not None, f"UDI not found for: {path}"
+            pkg = udi.package
+
         namespace = self.get(pkg)
         assert namespace is not None, f"Namespace not found for: {pkg}"
         return namespace.put_list4(body4, msg)

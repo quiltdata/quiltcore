@@ -101,7 +101,7 @@ class Tabular(Keyed):
         assert isinstance(place, str)
         assert len(place) > 1
         match place[0]:
-            case ".":
+            case self.HEADER_NAME:
                 return self.base / place[2:]
             case "/":
                 return Path(place)
@@ -117,7 +117,7 @@ class Tabular(Keyed):
 
     def _relax(self, row: Dict4, install_path: Path) -> Dict4:
         """Relax remote_path of each row into local install_path."""
-        if row.name == ".":
+        if row.name == self.HEADER_NAME:
             return row
         remote_path = self.as_path(row.place)
         assert remote_path.exists(), f"_relax: {remote_path} not found for {row.place}"
