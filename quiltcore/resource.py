@@ -7,11 +7,11 @@ from urllib.parse import parse_qs, urlparse
 
 import quiltcore
 
-from .udg.types import Types
-from .yaml.config import Config
+from .udg.verifiable import Verifiable
+from .udg.codec import Codec
 
 
-class Resource(Types):
+class Resource(Verifiable):
     """
     Base class for all Quilt resources.
     Manages configuration and provides common methods.
@@ -79,6 +79,8 @@ class Resource(Types):
         return cls(path, **opts)
 
     def __init__(self, path: Path, **kwargs):
+        self.codec = Codec()
+        Verifiable.__init__(self, self.codec, **kwargs)
         self.path = self.CheckPath(path)
         self.args = kwargs
         self.name = path.name
@@ -88,7 +90,6 @@ class Resource(Types):
         key = kwargs.get(self.KEY_KEY, None)
         if key is not None:
             self.args[f"{self.class_key}.{self.KEY_KEY}"] = key
-        self.cf = Config()
         self._setup_params()
         logging.debug(f"Resource: {repr(self)}")
 

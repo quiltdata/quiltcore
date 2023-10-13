@@ -40,6 +40,8 @@ resources:
     child: Delta
   Builder:
     child: Entry
+  FolderBuilder:
+    child: Manifest2
 quilt3:
   dirs:
     config: .quilt

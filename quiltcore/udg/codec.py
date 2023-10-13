@@ -129,7 +129,18 @@ class Codec(Config, Types):
     # Encoder Methods
     #
 
-    def encode(self, obj) -> Dict3:
+    def encode_hashable(self, obj: Dict4) -> dict:
+        if not obj.multihash or not obj.size:
+            raise ValueError(f"Missing hash or size: {obj}")
+        hashable = {
+            self.config("map")["name"]: obj.name,
+            self.K_HASH: self.encode_hash(obj.multihash),
+            self.K_SIZE: obj.size,
+        }
+        hashable[self.K_META] = obj.metadata  # or {}
+        return hashable
+
+    def encode(self, obj: Dict4) -> Dict3:
         """Encode Dict4 attributes into Dict3 for a manifest row."""
         row: dict[str, Any] = {}
         for key3, opts in self.coding.items():

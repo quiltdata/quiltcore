@@ -59,15 +59,7 @@ class Entry2(Child, Dict4, Types):
     #
 
     def hashable_dict(self) -> dict:
-        if not self.multihash or not self.size:
-            raise ValueError(f"Missing hash or size: {self}")
-        hashable = {
-            self.cf.config("map")["name"]: self.name,
-            self.cf.K_HASH: self.cf.encode_hash(self.multihash),
-            self.cf.K_SIZE: self.size,
-        }
-        hashable[self.cf.K_META] = self.metadata  # or {}
-        return hashable
+        return self.cf.encode_hashable(self)
 
     def to_path(self, key: str) -> Path:
         dir = self.AsPath(key)

@@ -3,10 +3,10 @@ from pathlib import Path
 
 from .resource import Resource
 from .resource_key import ResourceKey
-from .udg.codec import Dict3, asdict
+from .udg.codec import Dict3, Dict4, asdict
 
 
-class Entry(ResourceKey):
+class Entry(ResourceKey, Dict4):
     """
     Represents a single row in a Manifest.
     Attributes:

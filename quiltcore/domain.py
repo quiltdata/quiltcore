@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from upath import UPath
 
+from .builder2 import FolderBuilder
 from .factory import quilt
 from .manifest2 import Manifest2
 from .udg.folder import Folder
@@ -15,11 +16,9 @@ from .yaml.udi import UDI
 
 
 class Domain(Folder):
-    K_MESSAGE = "msg"
     K_MUTABLE = "mutable"
     K_NOCOPY = "no_copy"
     K_NEWOK = "new_ok"
-    K_PATTERN = "pattern"
     K_PACKAGE = "package"
     URI_SPLIT = "://"
 
@@ -157,13 +156,15 @@ class Domain(Folder):
 
     def to_list4(self, path: Path, glob=Folder.DEFAULT_GLOB) -> List4:
         """Generate to_dict4 for each file in path matching glob."""
-        return [self.to_dict4(file) for file in path.rglob(glob)]
+        return [self.dict4_from_path(file) for file in path.rglob(glob)]
 
     def commit(self, path: Path, **kwargs):
+        """Writes manifest for folder into `package` namespace."""
+        builder = FolderBuilder(path, self)
         pkg = kwargs.get(self.K_PACKAGE, None)
         msg = kwargs.get(self.K_MESSAGE, self._message(kwargs))
-        glob = kwargs.get(self.K_PATTERN, self.DEFAULT_GLOB)
-        body4 = self.to_list4(path, glob)
+
+        builder.commit(msg, {})
 
         if not pkg:
             udi = self.folder2udi(path)
@@ -172,7 +173,7 @@ class Domain(Folder):
 
         namespace = self.get(pkg)
         assert namespace is not None, f"Namespace not found for: {pkg}"
-        return namespace.put_list4(body4, msg)
+        return builder.save_to(namespace, **kwargs)
 
     def push(self, path: Path, **kwargs):
         """

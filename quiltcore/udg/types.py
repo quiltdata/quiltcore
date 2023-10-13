@@ -40,12 +40,14 @@ Multihash = str
 
 class Types:
     HEADER_NAME = "."
+    HEADER_V3 = "v0"
     HEADER_V4 = "v4"
     MULTIHASH = "Qm"
 
     IS_LOCAL = compile(r"file:\/*")
     IS_WINDRIVE = compile(r"^([a-z])\\")
 
+    K_MESSAGE = "message"
     K_META = "meta"
     K_SIZE = "size"
     K_USER_META = "user_meta"
@@ -91,7 +93,7 @@ class Types:
     @staticmethod
     def RelativePath(path: Path, base: Path) -> Path:
         """Return a relative path, if inside base."""
-        return path.relative_to(base)if base in path.parents else path
+        return path.relative_to(base) if base in path.parents else path
 
     @staticmethod
     def OnWindows():

@@ -14,7 +14,7 @@ def res():
 
 
 def test_res(res):
-    assert res
+    assert res is not None
     assert res.cf
     assert res.path.is_dir()
     assert "resource" in res.args
@@ -29,7 +29,7 @@ def test_res_version():
     path = Resource.AsPath(S3_URI)
     opts = {Resource.KEY_VER: v}
     res = Resource(path, **opts)
-    assert res
+    assert res is not None
     assert res.read_opts()[Resource.KEY_S3VER] == v
 
     assert res == Resource.FromURI(S3_URI)
@@ -39,7 +39,7 @@ def test_res_path():
     TEST_LOCAL = "./tests/example"
     path = Resource.AsPath(TEST_LOCAL)
     res = Resource(path)
-    assert res
+    assert res is not None
     assert res.path == path
     assert res.path.is_dir()
     assert res.path.exists()
