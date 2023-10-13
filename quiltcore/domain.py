@@ -9,12 +9,18 @@ from .factory import quilt
 from .manifest2 import Manifest2
 from .udg.folder import Folder
 from .udg.node import Node
+from .udg.types import List4
 from .yaml.data import Data
 from .yaml.udi import UDI
 
 
 class Domain(Folder):
+    K_MESSAGE = "msg"
     K_MUTABLE = "mutable"
+    K_NOCOPY = "no_copy"
+    K_NEWOK = "new_ok"
+    K_PATTERN = "pattern"
+    K_PACKAGE = "package"
     URI_SPLIT = "://"
 
     @classmethod
@@ -60,9 +66,9 @@ class Domain(Folder):
         self.is_mutable = kwargs.get(self.K_MUTABLE, False)
         self.data_yaml = Data(self.store)
 
-#
-# Descriptors
-#
+    #
+    # Descriptors
+    #
 
     def get_uri(self) -> str:
         """Return the URI for this domain."""
@@ -81,15 +87,20 @@ class Domain(Folder):
         udi_string = self.get_udi_string(package_name, ppath)
         return UDI.FromUri(udi_string)
 
-#
-# Pull
-#
+    #
+    # Pull
+    #
+
+    def package_path(self, pkg_name: str) -> Path:
+        """Return the path for this package."""
+        folder = self.store / pkg_name
+        folder.mkdir(parents=True, exist_ok=True)
+        return folder
 
     def pull(self, udi: UDI, install_folder: UPath | None = None, **kwargs):
         """Pull resource at the UDI into the domain at path."""
         assert self.is_mutable, "Can not pull into read-only Domain"
-        no_copy = kwargs.get("no_copy", False)
-        install_dir = install_folder or self.store / udi.package
+        install_dir = install_folder or self.package_path(udi.package)
         install_dir.mkdir(parents=True, exist_ok=True)
         assert install_dir.is_dir(), f"install_dir not a directory: {install_dir}"
         self._track_lineage("pull", udi, install_dir, **kwargs)
@@ -97,10 +108,11 @@ class Domain(Folder):
             remote = self.GetRemoteManifest(udi)
             namespace = self.get(udi.package)
             assert namespace is not None
+            no_copy = kwargs.get(self.K_NOCOPY, False)
             namespace.pull(remote, install_dir, no_copy=no_copy)
         except ValueError as e:
             msg = f"Domain.pull.failed[{e}]: {udi}"
-            if not kwargs.get("new_ok", False):
+            if not kwargs.get(self.K_NEWOK, False):
                 raise ValueError(msg)
             logging.warning(msg)
 
@@ -127,3 +139,48 @@ class Domain(Folder):
         self.data_yaml.set(folder, uri, action, opts)
         self.data_yaml.save()
         return folder
+
+    #
+    # Push
+    #
+
+    def _message(self, attrs) -> str:
+        """Return the message for this push."""
+        status = self._status(attrs)
+        return str(status)
+
+    def folder2udi(self, path: Path) -> UDI:
+        """Return the URI for this path."""
+        uri = self.data_yaml.folder2uri(str(path))
+        assert uri, f"URI not found for path: {path}"
+        return UDI.FromUri(uri)
+
+    def to_list4(self, path: Path, glob=Folder.DEFAULT_GLOB) -> List4:
+        """Generate to_dict4 for each file in path matching glob."""
+        return [self.to_dict4(file) for file in path.rglob(glob)]
+
+    def commit(self, path: Path, **kwargs):
+        pkg = kwargs.get(self.K_PACKAGE, None)
+        msg = kwargs.get(self.K_MESSAGE, self._message(kwargs))
+        glob = kwargs.get(self.K_PATTERN, self.DEFAULT_GLOB)
+        body4 = self.to_list4(path, glob)
+
+        # udi = self.folder2udi(path)
+        namespace = self.get(pkg)
+        assert namespace is not None, f"Namespace not found for: {pkg}"
+        return namespace.put_list4(body4, msg)
+
+    def push(self, path: Path, **kwargs):
+        """
+        `push` is actually syntactic sugar for:
+
+        1. Find the Domain associated with the local folder
+        2. Find the remote UDI associated with that folder
+        3. Create or find the remote Domain for that UDI
+        4. Tell the remote Domain to pull data (manifest and files) from the local Domain
+        """
+        remote_udi = self.folder2udi(path)
+        remote = self.FromURI(remote_udi.registry)
+        local_udi = self.get_udi(remote_udi.package)
+        print(f"remote.pull({local_udi}, **kwargs)")
+        return remote

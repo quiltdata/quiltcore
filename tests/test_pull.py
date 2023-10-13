@@ -75,8 +75,8 @@ def test_pull_data_yaml(domain: Domain, remote_udi: UDI):
 
     dest = str(path)
     assert TEST_PKG in dest
-    assert dy.get_uri(dest) == LOCAL_UDI
-    assert dy.get_folder(LOCAL_UDI) == dest
+    assert dy.folder2uri(dest) == LOCAL_UDI
+    assert dy.uri2folder(LOCAL_UDI) == dest
 
     status = dy.get_list(dest, LOCAL_UDI, "pull")
     assert isinstance(status, dict)
@@ -86,13 +86,14 @@ def test_pull_data_yaml(domain: Domain, remote_udi: UDI):
 
 
 def test_pull_push():
-    for dom in make_domain():
-        remote = dom
+    for local in make_domain():
+        local_path = local.package_path(TEST_PKG)
+        assert local_path.exists()
+        readme = local_path / "README.md"
+        readme.write_text("Hello World")
+        local.commit(local_path, package=TEST_PKG, msg=f"test_pull_push {Domain.Now()}")
+        # local.push(local_path)
+    for remote in make_domain():
         assert isinstance(remote, Domain)
-        for dom in make_domain():
-            local = dom
-            assert isinstance(local, Domain)
-            remote_udi = remote.get_udi(TEST_PKG)
-            assert remote_udi
-            local_path = local.pull(remote_udi, new_ok=True)
-            assert local_path
+        remote_udi = remote.get_udi(TEST_PKG)
+        assert remote_udi

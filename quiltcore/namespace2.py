@@ -5,6 +5,7 @@ from pathlib import Path
 from .domain import Domain
 from .manifest2 import Manifest2
 from .udg.folder import Folder
+from .udg.types import List4
 
 Tag = str
 
@@ -44,6 +45,7 @@ class Namespace2(Folder):
                 hash = match.name
             else:
                 raise ValueError(f"Multiple matches for hash: {key}")
+                # TODO: prefer Parquet if both present
         if hash is not None:
             return hash
         raise ValueError(f"Tag/Hash not found: {key}")
@@ -83,6 +85,13 @@ class Namespace2(Folder):
         man_file.parent.mkdir(parents=True, exist_ok=True)
         man_file.write_bytes(manifest.to_bytes())
 
+    def put_list4(self, list4: List4, msg: str = "") -> Tag:
+        """
+        Create header from message
+        Calculate hash
+        """
+        tag = self.Now()
+        return tag
     #
     # PULL via relaxation
     #
