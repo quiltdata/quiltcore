@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## 0.5.0 (2023-10-14)
+
+- Remove legacy code
+- Update README
+- Redo spec
+
 ## 0.4.1 (2023-10-12)
 
 - domain.commit(folder, msg="") -> infers URI
