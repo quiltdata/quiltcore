@@ -20,6 +20,7 @@ class Domain(Folder):
     K_NOCOPY = "no_copy"
     K_NEWOK = "new_ok"
     K_PACKAGE = "package"
+    K_REMOTE = "remote"
     URI_SPLIT = "://"
 
     @classmethod
@@ -148,15 +149,30 @@ class Domain(Folder):
         status = self._status(attrs)
         return str(status)
 
-    def folder2udi(self, path: Path) -> UDI:
+    def folder2udi(self, path: Path) -> UDI | None:
         """Return the URI for this path."""
         uri = self.data_yaml.folder2uri(str(path))
-        assert uri, f"URI not found for path: {path}"
         return UDI.FromUri(uri)
 
     def to_list4(self, path: Path, glob=Folder.DEFAULT_GLOB) -> List4:
         """Generate to_dict4 for each file in path matching glob."""
         return [self.dict4_from_path(file) for file in path.rglob(glob)]
+
+    def get_pkg_name(self, path: Path, **kwargs) -> str:
+        pkg = kwargs.get(self.K_PACKAGE, None)
+        if not pkg:
+            udi = self.folder2udi(path)
+            assert udi is not None, f"UDI not found for: {path}"
+            pkg = udi.package
+        return pkg
+
+    def get_remote_udi(self, path: Path, **kwargs) -> UDI:
+        """Return the UDI for this path."""
+        udi = kwargs.get(self.K_REMOTE, None)
+        if not udi:
+            udi = self.folder2udi(path)
+            assert udi is not None, f"UDI not found for: {path}"
+        return udi
 
     def commit(self, path: Path, **kwargs):
         """Writes manifest for folder into `package` namespace."""
@@ -164,12 +180,7 @@ class Domain(Folder):
         msg = kwargs.get(self.K_MESSAGE, self._message(kwargs))
         builder.commit(msg, {})
 
-        pkg = kwargs.get(self.K_PACKAGE, None)
-        if not pkg:
-            udi = self.folder2udi(path)
-            assert udi is not None, f"UDI not found for: {path}"
-            pkg = udi.package
-
+        pkg = self.get_pkg_name(path, **kwargs)
         namespace = self.get(pkg)
         assert namespace is not None, f"Namespace not found for: {pkg}"
         return builder.save_to(namespace, **kwargs)
@@ -184,7 +195,8 @@ class Domain(Folder):
         4. Tell the remote Domain to pull data (manifest and files)
            from the local Domain
         """
-        remote_udi = self.folder2udi(path)
+        remote_udi = self.get_remote_udi(path, **kwargs)
+        assert remote_udi is not None, f"UDI not found for: {path}"
         remote = self.FromURI(remote_udi.registry)
         local_udi = self.get_udi(remote_udi.package)
         print(f"remote.pull({local_udi}, **kwargs)")

@@ -14,7 +14,7 @@ from quiltcore import (
     quilt,
 )
 
-from .conftest import LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_S3VER, TEST_TAG
+from .conftest import LOCAL_ONLY, LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_S3VER, TEST_TAG
 
 QKEYS = ["file", LOCAL_VOL, TEST_PKG, "latest"]
 QTYPE = [Scheme, Domain, Namespace2, Manifest2]
@@ -109,6 +109,7 @@ def test_node_tutorial():
     assert node.path.exists()
 
 
+@pytest.mark.skipif(LOCAL_ONLY, reason="skip network tests")
 def test_node_path():
     p1 = Types.AsPath(TEST_S3VER)
     assert p1.exists()
