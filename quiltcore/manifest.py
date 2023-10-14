@@ -7,7 +7,7 @@ from .entry import Entry
 from .header import Header
 from .resource_key import ResourceKey
 from .table3 import Table3
-from .udg.codec import Dict3, asdict
+from .udg.codec import Dict3
 
 
 class Manifest(ResourceKey):
@@ -29,7 +29,7 @@ class Manifest(ResourceKey):
                 for row in rows:
                     if not isinstance(row, Dict3):
                         raise ValueError("")
-                    writer.write(asdict(row))
+                    writer.write(row.to_dict())
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -80,7 +80,7 @@ class Manifest(ResourceKey):
         """Return the dict for a child resource."""
         row = self.table().get_dict4(key)
         place = row.place
-        drow = asdict(row)
+        drow = row.to_dict()
         drow[self.codec.K_PLC] = self._child_place(place)
         v = self.GetVersion(place)
         if len(v) > 0:

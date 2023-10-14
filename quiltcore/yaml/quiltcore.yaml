@@ -47,7 +47,11 @@ quilt4:
   place: string
   size: int64
   multihash: string
-  metadata: string
+  metadata:
+    message: string
+    user_meta: struct
+    version: string
+  _metadata: string
 quilt3:
   dirs:
     config: .quilt

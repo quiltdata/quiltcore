@@ -7,7 +7,7 @@ from pathlib import Path
 from pyarrow.parquet import ParquetFile
 from typing import Iterator
 
-from .codec import Codec, asdict
+from .codec import Codec
 from .keyed import Keyed
 from .types import Dict4, List4
 
@@ -22,7 +22,7 @@ class Tabular(Keyed):
     def Write4(list4: List4, path: Path) -> Path:
         """Write a list4 to a parquet file."""
         parquet_path = path.with_suffix(Tabular.EXT4)
-        dicts = [asdict(dict4) for dict4 in list4]
+        dicts = [dict4.to_dict() for dict4 in list4]
         table = pa.Table.from_pylist(dicts)
         pq.write_table(table, parquet_path)
         return parquet_path

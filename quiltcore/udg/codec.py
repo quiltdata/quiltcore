@@ -2,7 +2,6 @@ import logging
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 
-from dataclasses import asdict
 from datetime import datetime
 from urllib.parse import quote, unquote
 
@@ -123,7 +122,7 @@ class Codec(Config, Types):
             raise ValueError(f"Prefix[{prefix}] not in [{prefixes}]: {mhash}")
         keys = [key for key, value in prefixes.items() if value == prefix]
         hash3 = Hash3(type=keys[0], value=mhash.removeprefix(prefix))
-        return asdict(hash3)
+        return hash3.to_dict()
 
     #
     # Encoder Methods
@@ -198,7 +197,7 @@ class Codec(Config, Types):
     def decode_dict(self, row: Dict3) -> Dict4:
         """Return a dict of decoded values."""
         decoded: dict[str, Any] = {}
-        for key, value in asdict(row).items():
+        for key, value in row.to_dict().items():
             opts = self.coding.get(key, {})
             name = opts.get(self.K_NAM, key)
             decoded[name] = self.decode_value(value, opts)

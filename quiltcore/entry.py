@@ -3,7 +3,7 @@ from pathlib import Path
 
 from .resource import Resource
 from .resource_key import ResourceKey
-from .udg.codec import Dict3, Dict4, asdict
+from .udg.codec import Dict3, Dict4
 
 
 class Entry(ResourceKey, Dict4):
@@ -66,7 +66,7 @@ class Entry(ResourceKey, Dict4):
         """Copy contents of resource's path into _key_ directory."""
         path = self.to_path(key)
         path.write_bytes(self.to_bytes())  # for binary files
-        kwargs = asdict(self.to_dict3())
+        kwargs = self.to_dict3().to_dict()
         clone = Entry(path.resolve(), **kwargs)
         logging.debug(f"clone[{type(path)}]: {path.stat()}")
         clone.args[self.cf.K_PLC] = self.codec.AsStr(path)

@@ -1,6 +1,6 @@
 import logging  # noqa: E402
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from pathlib import Path
 from re import compile
 from sys import platform
@@ -9,13 +9,19 @@ from upath import UPath
 
 
 @dataclass
-class Hash3:
+class DataDict:
+    def to_dict(self):
+        return asdict(self)
+
+
+@dataclass
+class Hash3(DataDict):
     type: str
     value: str
 
 
 @dataclass
-class Dict3:
+class Dict3(DataDict):
     logical_key: str
     physical_keys: list[str]
     size: int
@@ -24,7 +30,7 @@ class Dict3:
 
 
 @dataclass
-class Dict4:
+class Dict4(DataDict):
     name: str
     place: str
     size: int
