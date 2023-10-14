@@ -181,7 +181,8 @@ class Domain(Folder):
         1. Find the Domain associated with the local folder
         2. Find the remote UDI associated with that folder
         3. Create or find the remote Domain for that UDI
-        4. Tell the remote Domain to pull data (manifest and files) from the local Domain
+        4. Tell the remote Domain to pull data (manifest and files)
+           from the local Domain
         """
         remote_udi = self.folder2udi(path)
         remote = self.FromURI(remote_udi.registry)

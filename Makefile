@@ -1,5 +1,5 @@
 sinclude .env # create from example.env
-.PHONY: install lint test watch all clean typecheck
+.PHONY: install lint test watch all clean check typecheck
 PROJECT=quiltcore
 TEST_README=--codeblocks
 
@@ -20,7 +20,12 @@ install:
 update:
 	poetry update
 
-test: clean typecheck lint
+check:
+	poetry check
+	make typecheck
+	make lint
+
+test: clean check
 	poetry run pytest $(TEST_README) --cov --cov-report xml:coverage.xml
 
 test-readme:
