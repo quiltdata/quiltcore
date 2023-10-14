@@ -47,11 +47,11 @@ class Data(UnConf):
         self.put_list(prefix, uri, action, value)
         self.save()
 
-    def get_uri(self, prefix: str) -> str:
-        uri_dict = self.data.get(prefix) or {}
+    def folder2uri(self, folder: str) -> str:
+        uri_dict = self.data.get(folder) or {}
         return list(uri_dict.keys())[-1] if uri_dict else ""
 
-    def get_folder(self, uri: str) -> str | None:
+    def uri2folder(self, uri: str) -> str | None:
         for folder, uri_dict in self.data.items():
             if uri in uri_dict:
                 return folder

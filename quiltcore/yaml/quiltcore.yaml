@@ -40,6 +40,18 @@ resources:
     child: Delta
   Builder:
     child: Entry
+  FolderBuilder:
+    child: Manifest2
+quilt4:
+  name: string
+  place: string
+  size: int64
+  multihash: string
+  metadata:
+    message: string
+    user_meta: struct
+    version: string
+  _metadata: string
 quilt3:
   dirs:
     config: .quilt

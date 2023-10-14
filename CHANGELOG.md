@@ -1,6 +1,12 @@
 # CHANGELOG.md
 
-## 0.4.0 (2023-08-25+)
+## 0.4.1 (2023-10-12)
+
+- domain.commit(folder, msg="") -> infers URI
+- domain.push() -> infers folder?
+- fix invalid pulls
+
+## 0.4.0 (2023-10-11)
 
 - KOMD Algebra, Part 1
 - start converting to mappings

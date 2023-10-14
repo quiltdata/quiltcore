@@ -82,7 +82,7 @@ def test_entry_hashable(entry: Entry):
 
 def test_entry_digest_verify(entry: Entry):
     entry.multihash = HASH_HW
-    assert entry.verify(DATA_HW)
+    assert entry.legacy_verify(DATA_HW)
 
 
 def test_entry_verify(entry: Entry, tmpdir: UPath):
@@ -90,4 +90,4 @@ def test_entry_verify(entry: Entry, tmpdir: UPath):
     clone = entry.install(str(tmpdir))
     assert clone.path.exists()
     bstring = clone.to_bytes()
-    assert entry.verify(bstring)
+    assert entry.legacy_verify(bstring)

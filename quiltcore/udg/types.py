@@ -1,6 +1,7 @@
 import logging  # noqa: E402
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
+from json import dumps as json_dumps
 from pathlib import Path
 from re import compile
 from sys import platform
@@ -8,46 +9,27 @@ from typing import Optional
 from upath import UPath
 
 
-@dataclass
-class Hash3:
-    type: str
-    value: str
-
-
-@dataclass
-class Dict3:
-    logical_key: str
-    physical_keys: list[str]
-    size: int
-    hash: Hash3
-    meta: Optional[dict] = None
-
-
-@dataclass
-class Dict4:
-    name: str
-    place: str
-    size: int
-    multihash: str
-    metadata: Optional[dict]
-
-
-List4 = list[Dict4]
-
-
-Multihash = str
-
-
 class Types:
+    HEADER_NAME = "."
+    HEADER_V3 = "v0"
+    HEADER_V4 = "v4"
+    MULTIHASH = "Qm"
+
     IS_LOCAL = compile(r"file:\/*")
     IS_WINDRIVE = compile(r"^([a-z])\\")
 
+    K_METADATA = "metadata"
+    K_META_JSON = "meta.json"
+    K_MESSAGE = "message"
     K_META = "meta"
     K_SIZE = "size"
+    K_USER_META = "user_meta"
     K_UVER = "VersionId"
     K_VER = "versionId"
+    K_VERSION = "version"
     MH_DIG = "digest"
     MH_PRE = "prefix"
+    SIZE = 0
     T_HSH = "is_hash"
     T_LST = "is_list"
     T_OPT = "is_optional"
@@ -82,6 +64,11 @@ class Types:
         return UPath(key, version_aware=True).absolute()
 
     @staticmethod
+    def RelativePath(path: Path, base: Path) -> Path:
+        """Return a relative path, if inside base."""
+        return path.relative_to(base) if base in path.parents else path
+
+    @staticmethod
     def OnWindows():
         return platform.startswith("win")
 
@@ -106,3 +93,45 @@ class Types:
         uri = f"{scheme}{cls.URI_SPLIT}{domain}"
         logging.debug(f"Domain.ToPath: {uri}")
         return cls.AsPath(uri)
+
+
+@dataclass
+class DataDict:
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+@dataclass
+class Hash3(DataDict):
+    type: str
+    value: str
+
+
+@dataclass
+class Dict3(DataDict):
+    logical_key: str
+    physical_keys: list[str]
+    size: int
+    hash: Hash3
+    meta: Optional[dict] = None
+
+
+@dataclass
+class Dict4(DataDict):
+    name: str
+    place: str
+    size: int
+    multihash: str
+    metadata: Optional[dict]
+
+    def to_parquet_dict(self):
+        map = self.to_dict()
+        map[Types.K_META_JSON] = json_dumps(map[Types.K_METADATA])
+        del map[Types.K_METADATA]
+        return map
+
+
+List4 = list[Dict4]
+
+
+Multihash = str

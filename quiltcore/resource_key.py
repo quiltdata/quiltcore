@@ -1,25 +1,19 @@
 from __future__ import annotations
 
 import logging
-from json import JSONEncoder
 from pathlib import Path
 from typing import Iterator
 
 from .resource import Resource
-from .udg.codec import Codec
-from .udg.keyed import Keyed
 
 
-class ResourceKey(Resource, Keyed):
+class ResourceKey(Resource):
     """
     Get/List child resources by key in Manifest
     """
 
-    ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
-
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
-        self.codec = Codec()
         self.headers = self.cf.get_dict("quilt3/headers")
 
     #
@@ -70,10 +64,6 @@ class ResourceKey(Resource, Keyed):
     # Hash creation
     #
 
-    def digest_bytes(self, bstring: bytes) -> str:
-        """Return the multihash digest of `bstring`"""
-        return self.codec.digest(bstring)
-
     def hash_quilt3(self) -> str:
         """Return the hash of the source file."""
         mh = self._hash_multihash()
@@ -99,14 +89,7 @@ class ResourceKey(Resource, Keyed):
     # Hash retreival
     #
 
-    def hashable_dict(self) -> dict:
-        raise NotImplementedError
-
-    def hashable(self) -> bytes:
-        source = self.hashable_dict()
-        return self.ENCODE(source).encode("utf-8")  # type: ignore
-
-    def verify(self, bstring: bytes) -> bool:
+    def legacy_verify(self, bstring: bytes) -> bool:
         """Verify that multihash digest of bytes match the multihash"""
         digest = self.digest_bytes(bstring)
         logging.debug(f"verify.digest: {digest}")

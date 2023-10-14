@@ -2,7 +2,6 @@ import logging
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 
-from dataclasses import asdict
 from datetime import datetime
 from urllib.parse import quote, unquote
 
@@ -123,13 +122,24 @@ class Codec(Config, Types):
             raise ValueError(f"Prefix[{prefix}] not in [{prefixes}]: {mhash}")
         keys = [key for key, value in prefixes.items() if value == prefix]
         hash3 = Hash3(type=keys[0], value=mhash.removeprefix(prefix))
-        return asdict(hash3)
+        return hash3.to_dict()
 
     #
     # Encoder Methods
     #
 
-    def encode(self, obj) -> Dict3:
+    def encode_hashable(self, obj: Dict4) -> dict:
+        if not obj.multihash or not obj.size:
+            raise ValueError(f"Missing hash or size: {obj}")
+        hashable = {
+            self.config("map")["name"]: obj.name,
+            self.K_HASH: self.encode_hash(obj.multihash),
+            self.K_SIZE: obj.size,
+        }
+        hashable[self.K_META] = obj.metadata  # or {}
+        return hashable
+
+    def encode(self, obj: Dict4) -> Dict3:
         """Encode Dict4 attributes into Dict3 for a manifest row."""
         row: dict[str, Any] = {}
         for key3, opts in self.coding.items():
@@ -187,7 +197,7 @@ class Codec(Config, Types):
     def decode_dict(self, row: Dict3) -> Dict4:
         """Return a dict of decoded values."""
         decoded: dict[str, Any] = {}
-        for key, value in asdict(row).items():
+        for key, value in row.to_dict().items():
             opts = self.coding.get(key, {})
             name = opts.get(self.K_NAM, key)
             decoded[name] = self.decode_value(value, opts)

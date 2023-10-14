@@ -19,6 +19,7 @@ class Namespace2(Folder):
     HASH_LEN = 64
     Q3HASH_KEY = "hash"
     TAG_DEFAULT = "latest"
+    K_SAVE = "save"
 
     def __init__(self, name, parent, **kwargs):
         super().__init__(name, parent, **kwargs)
@@ -44,6 +45,7 @@ class Namespace2(Folder):
                 hash = match.name
             else:
                 raise ValueError(f"Multiple matches for hash: {key}")
+                # TODO: prefer Parquet if both present
         if hash is not None:
             return hash
         raise ValueError(f"Tag/Hash not found: {key}")
@@ -60,15 +62,19 @@ class Namespace2(Folder):
         """TODO: Validate workflow before setting 'latest' tag."""
         return True
 
-    def put(self, manifest: Manifest2, options: dict = {}) -> Tag:
+    def put(self, manifest: Manifest2, **options) -> Tag:
         """Store a manifest under this namespace."""
-        tag = self.Now()
         hash = manifest.q3hash()
         logging.debug(f"Namespace2.put: {hash}")
+        tag = self.tag(hash, **options)
+        self._save(manifest, hash)
+        return tag
+
+    def tag(self, hash: str, **options) -> Tag:
+        tag = self.Now()
         self._put(tag, hash)
         if self._valid(options):
             self._put(self.TAG_DEFAULT, hash)
-        self._save(manifest, hash)
         return tag
 
     def _put(self, tag: Tag, hash: str):

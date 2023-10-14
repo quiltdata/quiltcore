@@ -77,7 +77,7 @@ In particular, we assume that the Domain is 'sovereign' over the data it contain
 This means that Domains "pull" Objects from other domains, rather than "push" data into them.
 Pull is stricter than mere "install", because it includes copying over Manifests.
 
-Note: stricly speaking, the Namespace does the pulling on behalf of the Domain.
+Note: strictly speaking, the Namespace does the pulling on behalf of the Domain.
 
 A "fully-relaxed pull" involves three steps:
 

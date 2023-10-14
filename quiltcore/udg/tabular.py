@@ -1,4 +1,5 @@
 import logging  # noqa: F401
+import json
 
 import pyarrow as pa  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
@@ -7,9 +8,9 @@ from pathlib import Path
 from pyarrow.parquet import ParquetFile
 from typing import Iterator
 
-from .codec import Codec, asdict
+from .codec import Codec
 from .keyed import Keyed
-from .types import Dict4, List4
+from .types import Dict4, List4, Types
 
 
 class Tabular(Keyed):
@@ -22,16 +23,28 @@ class Tabular(Keyed):
     def Write4(list4: List4, path: Path) -> Path:
         """Write a list4 to a parquet file."""
         parquet_path = path.with_suffix(Tabular.EXT4)
-        dicts = [asdict(dict4) for dict4 in list4]
+        dicts = [dict4.to_parquet_dict() for dict4 in list4]
         table = pa.Table.from_pylist(dicts)
         pq.write_table(table, parquet_path)
         return parquet_path
 
     @staticmethod
+    def UnparseTable(table: pa.Table) -> pa.Table:
+        """Unaparse K_METADATA column."""
+        json_col = table.column(Types.K_META_JSON)
+        table = table.append_column(
+            Types.K_METADATA,
+            pa.array([json.loads(x.as_py()) for x in json_col]),
+        )
+        table = table.remove_column(table.num_columns - 2)
+        return table
+
+    @staticmethod
     def Read4(path: Path) -> pa.Table:
         """Read a parquet file into a pa.Table."""
         with path.open(mode="rb") as fi:
-            return ParquetFile(fi).read()
+            table = ParquetFile(fi).read()
+            return Tabular.UnparseTable(table)
 
     @staticmethod
     def FindTablePath(path: Path) -> Path:
@@ -101,7 +114,7 @@ class Tabular(Keyed):
         assert isinstance(place, str)
         assert len(place) > 1
         match place[0]:
-            case ".":
+            case self.HEADER_NAME:
                 return self.base / place[2:]
             case "/":
                 return Path(place)
@@ -110,15 +123,14 @@ class Tabular(Keyed):
 
     def as_place(self, path: Path) -> str:
         """Convert a Path back into a place string."""
-        if self.base in path.parents:
-            path = path.relative_to(self.base)
+        path = self.codec.RelativePath(path, self.base)
         return self.codec.AsStr(path)
 
     # Relaxation
 
     def _relax(self, row: Dict4, install_path: Path) -> Dict4:
         """Relax remote_path of each row into local install_path."""
-        if row.name == ".":
+        if row.name == self.HEADER_NAME:
             return row
         remote_path = self.as_path(row.place)
         assert remote_path.exists(), f"_relax: {remote_path} not found for {row.place}"

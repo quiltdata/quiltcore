@@ -10,6 +10,10 @@ class Verifiable(Keyed):
     DEFAULT_DICT: dict = {}
     ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
 
+    @classmethod
+    def EncodeDict(cls, source: dict) -> bytes:
+        return cls.ENCODE(source).encode("utf-8")
+
     def __init__(self, codec: Codec, **kwargs):
         super().__init__(**kwargs)
         self.cf = codec
@@ -43,7 +47,7 @@ class Verifiable(Keyed):
         if values := self.hashable_values():
             return values.encode("utf-8")
         if source := self.hashable_dict():
-            return self.ENCODE(source).encode("utf-8")  # type: ignore
+            return self.EncodeDict(source)  # type: ignore
 
         raise ValueError("No bytes to hash for {self}")
 
@@ -59,13 +63,13 @@ class Verifiable(Keyed):
         """Calculate the multihash for this object's bytes."""
         return self.digest_bytes(self.to_bytes())
 
-    def to_dict4(self, path: Path) -> Dict4:
+    def dict4_from_path(self, path: Path) -> Dict4:
         return Dict4(
             name=path.name,
             place=str(path),
             size=path.stat().st_size,
             multihash=self.digest_bytes(path.read_bytes()),
-            metadata={},
+            metadata={"timestamp": self.Now(), "user_meta": self.DEFAULT_DICT},
         )
 
     def hash(self) -> Multihash:
@@ -74,11 +78,13 @@ class Verifiable(Keyed):
             self._hash = self._multihash_contents()
         return self._hash
 
-    def q3hash(self) -> str:
-        """Return the value portion of the legacy quilt3 hash."""
-        mh = self.hash()
+    def q3hash_from_hash(self, mh: Multihash) -> str:
         hash_struct = self.cf.encode_hash(mh)
         return hash_struct["value"]
+
+    def q3hash(self) -> str:
+        """Return the value portion of the legacy quilt3 hash."""
+        return self.q3hash_from_hash(self.hash())
 
     #
     # Hash retrieval
@@ -86,7 +92,7 @@ class Verifiable(Keyed):
 
     def hashable(self) -> bytes:
         source = self.hashable_dict()
-        return self.ENCODE(source).encode("utf-8")  # type: ignore
+        return self.EncodeDict(source)
 
     def verify(self, contents: bytes) -> bool:
         """Verify that multihash digest of bytes match the current multihash"""

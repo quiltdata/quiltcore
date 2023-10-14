@@ -18,10 +18,26 @@ class Header(ResourceKey):
 
     """
 
-    NAME = "."
-    PLACE = "."
-    SIZE = 0
-    MULTIHASH = "Qm"
+    @classmethod
+    def ToDict4(cls, message: str = "Updated") -> Dict4:
+        return Dict4(
+            name=cls.HEADER_NAME,
+            place=cls.HEADER_NAME,
+            size=cls.SIZE,
+            multihash=cls.MULTIHASH,
+            metadata={
+                cls.K_VERSION: cls.HEADER_V4,
+                cls.K_MESSAGE: message,
+                cls.K_USER_META: {},
+            },
+        )
+
+    @classmethod
+    def First(cls, message: str = "N/A") -> dict:
+        return {
+            cls.K_VERSION: cls.HEADER_V3,
+            cls.K_MESSAGE: message,
+        }
 
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
@@ -47,13 +63,7 @@ class Header(ResourceKey):
     #
 
     def to_dict4(self) -> Dict4:
-        return Dict4(
-            name=self.NAME,
-            place=self.PLACE,
-            size=self.SIZE,
-            multihash=self.MULTIHASH,
-            metadata=self.headers,
-        )
+        return self.ToDict4(self.headers[self.K_MESSAGE])
 
     def to_dict(self) -> dict:
         raw_dict = {k: getattr(self, k) for k in self.headers.keys()}
@@ -68,3 +78,6 @@ class Header(ResourceKey):
                     user_meta[k] = self.codec.encode_date(v)
             meta[self.KEY_USER] = user_meta
         return meta
+
+    def to_bytes(self) -> bytes:
+        return self.EncodeDict(self.hashable_dict())

@@ -7,7 +7,7 @@ from upath import UPath
 from .domain import Domain
 from .manifest2 import Manifest2
 from .udg.child import Child
-from .udg.codec import Dict3, Dict4, asdict
+from .udg.codec import Dict3, Dict4
 from .udg.types import Types
 
 
@@ -39,7 +39,7 @@ class Entry2(Child, Dict4, Types):
     def __init__(self, name: str, parent: Manifest2, **kwargs):
         Child.__init__(self, name, parent, **kwargs)
         row = parent.table()[name]
-        Dict4.__init__(self, **asdict(row))
+        Dict4.__init__(self, **row.to_dict())
 
     def _setup(self):
         pass
@@ -59,15 +59,7 @@ class Entry2(Child, Dict4, Types):
     #
 
     def hashable_dict(self) -> dict:
-        if not self.multihash or not self.size:
-            raise ValueError(f"Missing hash or size: {self}")
-        hashable = {
-            self.cf.config("map")["name"]: self.name,
-            self.cf.K_HASH: self.cf.encode_hash(self.multihash),
-            self.cf.K_SIZE: self.size,
-        }
-        hashable[self.cf.K_META] = self.metadata  # or {}
-        return hashable
+        return self.cf.encode_hashable(self)
 
     def to_path(self, key: str) -> Path:
         dir = self.AsPath(key)

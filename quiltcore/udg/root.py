@@ -2,14 +2,14 @@ from time import time
 
 import quiltcore
 
+from .types import Types
 
-class Root:
+
+class Root(Types):
     """
     Base class for Universal Data Graph.
     Contains definitions and static methods.
     """
-
-    PREFIX = "quilt"
 
     @staticmethod
     def ClassFromName(name: str) -> type:
