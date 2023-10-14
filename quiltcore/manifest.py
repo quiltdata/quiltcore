@@ -81,6 +81,7 @@ class Manifest(ResourceKey):
         row = self.table().get_dict4(key)
         place = row.place
         drow = row.to_dict()
+        assert isinstance(drow, dict)
         drow[self.codec.K_PLC] = self._child_place(place)
         v = self.GetVersion(place)
         if len(v) > 0:

@@ -85,7 +85,7 @@ def test_pull_data_yaml(domain: Domain, remote_udi: UDI):
     assert status["hash"] == TEST_HASH
 
 
-@pytest.mark.skip(reason="Fix user_meta encoding")
+# @pytest.mark.skip(reason="Fix user_meta encoding")
 def test_pull_push():
     for local in make_domain():
         local_path = local.package_path(TEST_PKG)

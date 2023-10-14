@@ -1,4 +1,5 @@
 import logging  # noqa: F401
+import json
 
 import pyarrow as pa  # type: ignore
 import pyarrow.parquet as pq  # type: ignore
@@ -9,7 +10,7 @@ from typing import Iterator
 
 from .codec import Codec
 from .keyed import Keyed
-from .types import Dict4, List4
+from .types import Dict4, List4, Types
 
 
 class Tabular(Keyed):
@@ -22,16 +23,28 @@ class Tabular(Keyed):
     def Write4(list4: List4, path: Path) -> Path:
         """Write a list4 to a parquet file."""
         parquet_path = path.with_suffix(Tabular.EXT4)
-        dicts = [dict4.to_dict() for dict4 in list4]
+        dicts = [dict4.to_parquet_dict() for dict4 in list4]
         table = pa.Table.from_pylist(dicts)
         pq.write_table(table, parquet_path)
         return parquet_path
 
     @staticmethod
+    def UnparseTable(table: pa.Table) -> pa.Table:
+        """Unaparse K_METADATA column."""
+        json_col = table.column(Types.K_META_JSON)
+        table = table.append_column(
+            Types.K_METADATA,
+            pa.array([json.loads(x.as_py()) for x in json_col]),
+        )
+        table = table.remove_column(table.num_columns - 2)
+        return table
+
+    @staticmethod
     def Read4(path: Path) -> pa.Table:
         """Read a parquet file into a pa.Table."""
         with path.open(mode="rb") as fi:
-            return ParquetFile(fi).read()
+            table = ParquetFile(fi).read()
+            return Tabular.UnparseTable(table)
 
     @staticmethod
     def FindTablePath(path: Path) -> Path:

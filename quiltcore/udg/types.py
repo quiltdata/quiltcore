@@ -1,47 +1,12 @@
 import logging  # noqa: E402
 
 from dataclasses import dataclass, asdict
+from json import dumps as json_dumps
 from pathlib import Path
 from re import compile
 from sys import platform
 from typing import Optional
 from upath import UPath
-
-
-@dataclass
-class DataDict:
-    def to_dict(self):
-        return asdict(self)
-
-
-@dataclass
-class Hash3(DataDict):
-    type: str
-    value: str
-
-
-@dataclass
-class Dict3(DataDict):
-    logical_key: str
-    physical_keys: list[str]
-    size: int
-    hash: Hash3
-    meta: Optional[dict] = None
-
-
-@dataclass
-class Dict4(DataDict):
-    name: str
-    place: str
-    size: int
-    multihash: str
-    metadata: Optional[dict]
-
-
-List4 = list[Dict4]
-
-
-Multihash = str
 
 
 class Types:
@@ -53,6 +18,8 @@ class Types:
     IS_LOCAL = compile(r"file:\/*")
     IS_WINDRIVE = compile(r"^([a-z])\\")
 
+    K_METADATA = "metadata"
+    K_META_JSON = "meta.json"
     K_MESSAGE = "message"
     K_META = "meta"
     K_SIZE = "size"
@@ -126,3 +93,45 @@ class Types:
         uri = f"{scheme}{cls.URI_SPLIT}{domain}"
         logging.debug(f"Domain.ToPath: {uri}")
         return cls.AsPath(uri)
+
+
+@dataclass
+class DataDict:
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+@dataclass
+class Hash3(DataDict):
+    type: str
+    value: str
+
+
+@dataclass
+class Dict3(DataDict):
+    logical_key: str
+    physical_keys: list[str]
+    size: int
+    hash: Hash3
+    meta: Optional[dict] = None
+
+
+@dataclass
+class Dict4(DataDict):
+    name: str
+    place: str
+    size: int
+    multihash: str
+    metadata: Optional[dict]
+
+    def to_parquet_dict(self):
+        map = self.to_dict()
+        map[Types.K_META_JSON] = json_dumps(map[Types.K_METADATA])
+        del map[Types.K_METADATA]
+        return map
+
+
+List4 = list[Dict4]
+
+
+Multihash = str
