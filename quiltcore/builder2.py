@@ -40,6 +40,7 @@ class FolderBuilder(Folder):
     def save_to(self, namespace: Node, **kwargs) -> Path:
         """Create manifest at path in namespace."""
         root = namespace.path
+        root.mkdir(parents=True, exist_ok=True)
         base = root / self.q3hash()
         path = Tabular.Write4(self._list4(), base)
         return path

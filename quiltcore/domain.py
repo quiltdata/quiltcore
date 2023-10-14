@@ -161,11 +161,10 @@ class Domain(Folder):
     def commit(self, path: Path, **kwargs):
         """Writes manifest for folder into `package` namespace."""
         builder = FolderBuilder(path, self)
-        pkg = kwargs.get(self.K_PACKAGE, None)
         msg = kwargs.get(self.K_MESSAGE, self._message(kwargs))
-
         builder.commit(msg, {})
 
+        pkg = kwargs.get(self.K_PACKAGE, None)
         if not pkg:
             udi = self.folder2udi(path)
             assert udi is not None, f"UDI not found for: {path}"
