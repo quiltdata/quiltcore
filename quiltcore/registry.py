@@ -10,7 +10,6 @@ class Registry(ResourcePath):
     Top-level Resource reperesenting a Quilt Registry.
     Defines core paths containing Namespaces and Manifests.
     `list` and `get` return Namespace objects
-    TODO: Rename as "Domain"?
     """
 
     DIR_PREFIX = "quilt3/dirs/"

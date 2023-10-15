@@ -11,6 +11,7 @@ from .conftest import (
     TEST_HASH,
     TEST_KEY,
     TEST_OBJ,
+    TEST_OBJ_HASH,
     TEST_PKG,
     TEST_S3VER,
 )
@@ -95,9 +96,18 @@ def test_man_install(man: Manifest2, domain: Domain):
 def test_man_hash(man: Manifest2):
     hash = man.q3hash()
     assert hash == man.name
+
+
+def test_man_entry_hash(man: Manifest2):
     entry = man[TEST_KEY]
-    assert entry.hash()
-    # assert entry.multihash == entry.hash()
+    hashable = entry.hashable_dict()
+    assert hashable
+    assert isinstance(hashable, dict)
+    assert hashable["logical_key"] == TEST_KEY
+    assert hashable["size"] == 30
+    assert hashable["hash"]["value"] == TEST_OBJ_HASH
+    assert hashable["meta"] == {}
+    assert entry.multihash == entry.hash()
 
 
 def test_man_relax(man: Manifest2, domain: Domain):
@@ -107,3 +117,4 @@ def test_man_relax(man: Manifest2, domain: Domain):
     assert isinstance(local_man, Manifest2)
     assert local_man.path.exists()
     assert domain.store in local_man.path.parents
+    assert local_man.hash() == man.hash()  # TODO: force recalculation
