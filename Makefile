@@ -35,8 +35,8 @@ test-local:
 	export LOCAL_ONLY=True; poetry run pytest
 
 lint:
-	poetry run flake8 $(PROJECT) tests
 	poetry run black $(PROJECT) tests
+	poetry run flake8 $(PROJECT) tests
 
 typecheck:
 	poetry run mypy $(PROJECT) tests

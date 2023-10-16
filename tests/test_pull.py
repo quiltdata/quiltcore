@@ -94,7 +94,7 @@ def test_pull_push():
         readme.write_text("Hello World")
         local.commit(local_path, package=TEST_PKG, msg=f"test_pull_push {Domain.Now()}")
         for remote in make_domain():
-            remote_udi = remote.get_udi(TEST_PKG)       
+            remote_udi = remote.get_udi(TEST_PKG)
             assert isinstance(remote, Domain)
             assert remote_udi
             local.push(local_path, remote=remote_udi)

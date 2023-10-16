@@ -14,7 +14,15 @@ from quiltcore import (
     quilt,
 )
 
-from .conftest import LOCAL_ONLY, LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_S3VER, TEST_TAG
+from .conftest import (
+    LOCAL_ONLY,
+    LOCAL_URI,
+    LOCAL_VOL,
+    TEST_HASH,
+    TEST_PKG,
+    TEST_S3VER,
+    TEST_TAG,
+)
 
 QKEYS = ["file", LOCAL_VOL, TEST_PKG, "latest"]
 QTYPE = [Scheme, Domain, Namespace2, Manifest2]
