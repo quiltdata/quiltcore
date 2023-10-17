@@ -46,12 +46,20 @@ class Entry2(Child, Dict4, Types):
 
     def extend_parent_path(self, key: str) -> Path:
         self.versionId = self.GetQuery(key, self.cf.K_VER)
-        if self.IS_REL not in key:
+        # Check if key is a URI or absolute path
+        if self.IS_URI in key or Path(key).is_absolute():
             return UPath(key)
         if self.cf.IS_LOCAL.match(key) is not None:
             key = self.cf.IS_LOCAL.sub("", key)
-        path = Domain.FindStore(self) / key
-        logging.debug(f"{key} -> {path} [{path.absolute()}]")
+        assert self.parent is not None, "Missing parent Manifest"
+        namespace = self.parent.parent
+        assert namespace is not None, "Missing grandparent Namespace"
+        store = Domain.FindStore(namespace)
+        print(f"store: {store}")
+        if namespace.name not in str(store):
+            store = store / namespace.name
+        path = store / key
+        print(f"extend_parent_path: {key} -> {path} [{path.absolute()}]")
         return path
 
     #

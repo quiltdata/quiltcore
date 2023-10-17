@@ -2,9 +2,9 @@
 _yaml:
   _version: 0.3.1
   app: quiltcore
-  app_version: 0.2.1
+  app_version: 0.5.0
   doc: quiltspec
-  doc_version: 0.1.0
+  doc_version: 0.2.0
 config:
   udi: quilt+s3://udp-spec#package=spec/catalog:1689200152
   registry: s3://udp-spec

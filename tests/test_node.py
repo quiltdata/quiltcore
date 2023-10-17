@@ -4,6 +4,7 @@ from upath import UPath
 from quiltcore import (
     Codec,
     Domain,
+    Entry2,
     Factory,
     Keyed,
     Manifest2,
@@ -108,7 +109,20 @@ def test_node_man():
     assert man.path.exists()
 
 
-def test_node_tutorial():
+def test_node_entry():
+    man = Domain.FromURI(LOCAL_URI)[TEST_PKG][TEST_TAG]
+    store = Domain.FindStore(man)
+    assert store
+    for key in man:
+        entry = man[key]
+        assert entry is not None
+        assert entry.name == key
+        assert isinstance(entry, Entry2)
+        assert entry.path.exists()
+        assert entry.path.is_relative_to(store)
+
+
+def test_node_children():
     node = quilt
     for key in QMAP:
         node_type = QMAP[key]
