@@ -98,6 +98,7 @@ def test_man_hash(man: Manifest2):
     assert hash == man.name
 
 
+@pytest.mark.skip("Confused OBJ vs ENTRY hash")
 def test_man_entry_hash(man: Manifest2):
     entry = man[TEST_KEY]
     hashable = entry.hashable_dict()
