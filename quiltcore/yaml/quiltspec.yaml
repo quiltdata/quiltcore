@@ -14,12 +14,12 @@ config:
   update: timestamp.txt
 files:
   READ ME.md: This is the README for QuiltSpec.
-  timestamp.txt: 2023-07-12T20:12:07+0000
+  timestamp.txt: 2023-07-13T23:09:50+0000
 metadata:
   _package:
     Author: Ernest
     Count: 1
-    Date: 2023-07-12 00:00:00
+    Date: 2023-07-12
   timestamp.txt:
     format: iso8601
 workflow:

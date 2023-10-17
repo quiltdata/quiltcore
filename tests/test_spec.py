@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from json import JSONEncoder
 from tempfile import TemporaryDirectory
 
@@ -135,18 +136,26 @@ def test_spec_read(spec: Spec, man2: Manifest2):
     assert isinstance(head.user_meta, dict)  # type: ignore
     for key, value in spec.metadata().items():
         assert key in head.user_meta  # type: ignore
-        assert head.user_meta[key] == value  # type: ignore
+        actual = head.user_meta[key]  # type: ignore
+        print(f"{key} value:{value}@{type(value)} actual:{actual}@{type(actual)}")
+        if isinstance(value, date) and isinstance(actual, datetime):
+            actual = actual.date()
+        if isinstance(value, date) and isinstance(actual, str):
+            value = str(value)
+        assert actual == value  # type: ignore
 
     for key, value in spec.files().items():
         entry = man2[key]
         assert entry.name in spec.files().keys()
         assert isinstance(entry, Entry2)
         assert hasattr(entry, entry.K_VER)
-        assert value == entry.path.read_text()
+        actual = entry.path.read_text().strip()
+        print(f"{key} value:{value} actual:{actual}")
+        assert actual == value
         if hasattr(entry, entry.K_USER_META):
             meta = spec.metadata(key)
             assert meta
-            # assert entry.user_meta == meta  # type: ignore
+            assert entry.user_meta == meta  # type: ignore
 
 
 def test_spec_write(spec_new: Spec, tmpdir: UPath):
