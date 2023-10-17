@@ -6,6 +6,7 @@ _yaml:
   doc: quiltspec
   doc_version: 0.1.0
 config:
+  udi: quilt+s3://udp-spec#package=spec/catalog:1689200152
   registry: s3://udp-spec
   namespace: spec/catalog
   tag: 1689200152
