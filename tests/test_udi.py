@@ -51,5 +51,5 @@ def test_udi_dump_yaml(udi: UDI):
         tmpfile = tmpdir / "udi.yaml"
         yaml.safe_dump(udi, tmpfile.open("w"))
         print("test_udi_dump_yaml", tmpfile.read_text())
-        udi2 = yaml.safe_load(tmpfile.open("r"))
-        assert udi == udi2
+        udi_str = yaml.safe_load(tmpfile.open("r"))
+        assert str(udi) == udi_str

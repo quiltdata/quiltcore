@@ -98,6 +98,9 @@ class UDI:
     def __repr__(self):
         return f"UDI({self.uri})"
 
+    def __str__(self):
+        return self.uri
+
     def __eq__(self, other: object):
         if not isinstance(other, UDI):
             return NotImplemented
