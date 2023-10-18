@@ -3,7 +3,7 @@ import logging
 
 from un_yaml import UnUri  # type: ignore
 
-import yaml
+from yaml.representer import SafeRepresenter
 
 
 def default_representer(dumper, data):
@@ -11,7 +11,7 @@ def default_representer(dumper, data):
     return dumper.represent_scalar("tag:yaml.org,2002:str", str(data))
 
 
-yaml.representer.SafeRepresenter.add_representer(None, default_representer)  # type: ignore
+SafeRepresenter.add_representer(None, default_representer)  # type: ignore
 
 
 class UDI:
