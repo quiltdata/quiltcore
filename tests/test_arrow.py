@@ -85,3 +85,4 @@ def test_arrow_relax():
         assert "ONLYME.md" in table4.keys()
         entry = table4["ONLYME.md"]
         assert entry
+        assert entry.name == "ONLYME.md"

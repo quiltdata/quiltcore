@@ -30,7 +30,14 @@ class Table4(Tabular):
     def names(self) -> list[str]:
         return self.body.column("name").to_pylist()
 
+    def get_row(self, key: str) -> dict:
+        """Return the row for a child resource."""
+        condition = pa.compute.equal(self.body.column("name"), key)
+        result = self.body.filter(condition).to_pylist()
+        assert len(result) == 1
+        return result[0]
+
     def get_dict4(self, key: str) -> Dict4:
         """Return the dict4 for a child resource."""
-        row = self.body.filter([pa.field("name", pa.string()) == key])
-        return Dict4(**row.to_pydict())
+        row = self.get_row(key)
+        return Dict4(**row)

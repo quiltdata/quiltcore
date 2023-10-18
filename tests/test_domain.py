@@ -111,6 +111,12 @@ def test_dom_get(domain: Domain):
     assert TEST_PKG in domain.keys()
 
 
+def test_dom_build(committed: Domain):
+    local_path = committed.package_path(TEST_PKG)
+    builder = committed.build(local_path)
+    assert builder
+
+
 def test_dom_commit(committed: Domain):
     assert committed is not None
     assert committed.path.exists()
@@ -122,19 +128,19 @@ def test_dom_commit(committed: Domain):
     assert len(namespace) == 2
     latest = namespace[committed.TAG_DEFAULT]
     assert latest
+    assert len(latest) == 1
 
 
-@pytest.mark.skip(reason="TODO")
 def test_dom_push(committed: Domain):
-    local_path = committed.package_path(TEST_PKG)
     for remote in make_domain():
         remote_udi = remote.get_udi(TEST_PKG)
         assert isinstance(remote, Domain)
         assert remote_udi
+        local_path = committed.package_path(TEST_PKG)
         committed.push(local_path, remote=remote_udi)
         # read it back
         remote_path = remote.package_path(TEST_PKG)
         assert remote_path.exists()
         remote_readme = remote_path / "README.md"
         assert remote_readme.exists()
-        # assert remote_readme.read_text() == updated_text
+        assert remote_readme.read_text() == MESSAGE

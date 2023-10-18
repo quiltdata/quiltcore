@@ -67,6 +67,12 @@ class Tabular(Keyed):
         self.body = self._get_body()
         logging.debug(f"Tabular.__init__: {self.base} <- {self.path}")
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.path})"
+
+    def __str__(self) -> str:
+        return self.table.__str__()
+
     #
     # Parse Table
     #
