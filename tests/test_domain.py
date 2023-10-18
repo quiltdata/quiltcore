@@ -40,7 +40,7 @@ def commited() -> Domain:
     raise ValueError("No domain")
 
 
-def test_pull_udi_scheme():
+def test_dom_udi_scheme():
     assert "quilt+file://" in LOCAL_UDI
     f = quilt["file"]
     dom = f[LOCAL_VOL]
@@ -49,7 +49,7 @@ def test_pull_udi_scheme():
     assert LOCAL_VOL in dom.cf.AsString(dom.store)
 
 
-def test_pull_remote_udi(remote_udi: UDI):
+def test_dom_remote_udi(remote_udi: UDI):
     assert remote_udi
     assert remote_udi.uri == LOCAL_UDI
     assert remote_udi.package == TEST_PKG
@@ -57,14 +57,14 @@ def test_pull_remote_udi(remote_udi: UDI):
         assert remote_udi.registry == LOCAL_URI
 
 
-def test_pull_uri(domain: Domain):
+def test_dom_uri(domain: Domain):
     uri = domain.get_uri()
     assert uri.startswith("file:///")
     domain2 = Domain.FromURI(uri)
     assert domain2.store == domain.store
 
 
-def test_pull_udi(domain: Domain):
+def test_dom_udi(domain: Domain):
     udi = domain.get_udi_string()
     assert udi.startswith("quilt+file:///")
     udip = domain.get_udi_string(TEST_PKG)
@@ -73,13 +73,13 @@ def test_pull_udi(domain: Domain):
     assert udipp.endswith(f"#package={TEST_PKG}&path=README.md")
 
 
-def test_pull_raise(domain: Domain, remote_udi: UDI):
+def test_dom_raise(domain: Domain, remote_udi: UDI):
     domain.is_mutable = False
     with pytest.raises(AssertionError):
         domain.pull(remote_udi, dest=None)
 
 
-def test_pull_data_yaml(domain: Domain, remote_udi: UDI):
+def test_dom_data_yaml(domain: Domain, remote_udi: UDI):
     dy = domain.data_yaml
     assert dy
     assert dy.path
@@ -99,13 +99,13 @@ def test_pull_data_yaml(domain: Domain, remote_udi: UDI):
     assert status["hash"] == TEST_HASH
 
 
-def test_pull_commit(commited: Domain):
+def test_dom_commit(commited: Domain):
     local_path = commited.package_path(TEST_PKG)
     assert local_path.exists()
 
 
 @pytest.mark.skip(reason="TODO")
-def test_pull_push(commited: Domain):
+def test_dom_push(commited: Domain):
     local_path = commited.package_path(TEST_PKG)
     for remote in make_domain():
         remote_udi = remote.get_udi(TEST_PKG)
