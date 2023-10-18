@@ -69,5 +69,5 @@ class Entry(ResourceKey, Dict4):
         kwargs = self.to_dict3().to_dict()
         clone = Entry(path.resolve(), **kwargs)
         logging.debug(f"clone[{type(path)}]: {path.stat()}")
-        clone.args[self.cf.K_PLC] = self.codec.AsStr(path)
+        clone.args[self.cf.K_PLC] = self.codec.AsString(path)
         return clone

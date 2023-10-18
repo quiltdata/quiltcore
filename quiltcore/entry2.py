@@ -93,5 +93,5 @@ class Entry2(Child, Dict4, Types):
         assert isinstance(self.parent, Manifest2)
         clone = Entry2(self.name, self.parent)
         logging.debug(f"clone[{type(path)}]: {path.stat()}")
-        clone.args[self.cf.K_PLC] = self.cf.AsStr(path)
+        clone.args[self.cf.K_PLC] = self.cf.AsString(path)
         return clone

@@ -39,12 +39,12 @@ class Types:
     URI_SPLIT = "://"
 
     @classmethod
-    def AsStr(cls, object) -> str:
+    def AsString(cls, object) -> str:
         """Return a string from a simple object."""
         if isinstance(object, UPath) and object.exists():
             versionId = cls.StatVersion(object)
             if versionId:
-                logging.debug(f"AsStr.versionId: {versionId}")
+                logging.debug(f"AsString.versionId: {versionId}")
                 return f"{object}?{cls.K_VER}={versionId}"
         if isinstance(object, Path):
             object = str(object.as_posix())

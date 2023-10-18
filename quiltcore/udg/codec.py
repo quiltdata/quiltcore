@@ -182,7 +182,7 @@ class Codec(Config, Types):
         if isinstance(value, datetime):
             value = self.encode_date(value)
         if self.check(self.T_QTD):
-            value = self.AsStr(value)
+            value = self.AsString(value)
             value = quote(value, safe=self.UNQUOTED)
 
         if self.check(self.T_LST):
@@ -227,7 +227,7 @@ class Codec(Config, Types):
                 raise TypeError(f"Expected list, got {type(value)}: {value}")
 
         if self.check(self.T_QTD):
-            value = self.AsStr(value)
+            value = self.AsString(value)
             value = unquote(value)
 
         if self.check(self.T_HSH):

@@ -24,11 +24,19 @@ class Domain(Folder):
     URI_SPLIT = "://"
 
     @classmethod
-    def FromURI(cls, uri):
+    def FromURI(cls, registry_uri: str) -> "Domain":
         """Return a domain from a URI."""
-        scheme, path = uri.split(cls.URI_SPLIT)
-        logging.debug(f"Domain.FromURI: {scheme} {cls.URI_SPLIT} {path} -> {uri}")
-        return quilt[scheme][path]
+        scheme, domain = registry_uri.split(cls.URI_SPLIT)
+        logging.debug(
+            f"Domain.FromURI: {scheme} {cls.URI_SPLIT} {domain} -> {registry_uri}"
+        )
+        return quilt[scheme][domain]
+
+    @classmethod
+    def FromLocalPath(cls, path: Path) -> "Domain":
+        """Return a domain from a local path."""
+        domain = cls.AsString(path)
+        return quilt["file"][domain]
 
     @classmethod
     def FindStore(cls, next: Node) -> Path:
@@ -45,6 +53,7 @@ class Domain(Folder):
         """Return the manifest for the UDI."""
         domain = cls.FromURI(udi.registry)
         namespace = domain.get(udi.package)
+        assert namespace is not None, f"Namespace not found for: {udi}"
         tag = udi.attrs.get(udi.K_TAG, namespace.TAG_DEFAULT)
         manifest = namespace.get(tag)
         assert manifest is not None, f"Manifest not found for tag[{tag}]: {udi}"

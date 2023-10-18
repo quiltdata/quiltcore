@@ -6,12 +6,12 @@ from pytest import fixture, skip
 from quilt3 import Package  # type: ignore
 from upath import UPath
 
-from quiltcore import Builder, Changes, Entry2, Header, Manifest, Registry, Spec, Volume
+from quiltcore import Entry2, Header, Spec
 from quiltcore import Domain, Manifest2, UDI
 
 from .conftest import LOCAL_ONLY
 
-TIME_NOW = Registry.Now()
+TIME_NOW = Domain.Now()
 
 if LOCAL_ONLY:
     skip(allow_module_level=True)
@@ -28,19 +28,10 @@ def udi(spec: Spec) -> UDI:
 
 
 @fixture  # (scope="session")
-def pkg(spec: Spec) -> Package:
+def q3pkg(spec: Spec) -> Package:
     return Package.browse(
         spec.namespace(), registry=spec.registry(), top_hash=spec.hash()
     )
-
-
-@fixture
-def man(spec: Spec) -> Manifest:
-    reg = Registry.AsPath(spec.registry())
-    registry = Registry(reg)
-    namespace = registry.getResource(spec.namespace())
-    man = namespace.getResource(spec.tag())
-    return man  # type: ignore
 
 
 @fixture
@@ -59,13 +50,13 @@ def tmpdir():
         yield UPath(tmpdirname)
 
 
-def test_spec(spec: Spec, pkg: Package, man2: Manifest2):
+def test_spec(spec: Spec, q3pkg: Package, man2: Manifest2):
     assert spec
     assert isinstance(spec, Spec)
     assert "quilt" in Spec.CONFIG_FILE
     assert "s3://" in spec.registry()
-    assert pkg
-    assert isinstance(pkg, Package)
+    assert q3pkg
+    assert isinstance(q3pkg, Package)
     assert man2
     assert isinstance(man2, Manifest2)
 
@@ -82,7 +73,17 @@ def test_spec_new(spec_new: Spec, spec: Spec):
     assert updated == TIME_NOW
 
 
-def test_spec_hash(spec: Spec, pkg: Package, man2: Manifest2):
+def test_spec_version_id(spec: Spec):
+    """
+    Get two versioned place URIs
+    Verify that we extract the proper version ID
+    Retrieve their contents
+    Ensure they differ, and match the spec
+    """
+    pass
+
+
+def test_spec_hash(spec: Spec, q3pkg: Package, man2: Manifest2):
     """
     Verify quiltcore matches quilt3 hashing
 
@@ -92,21 +93,21 @@ def test_spec_hash(spec: Spec, pkg: Package, man2: Manifest2):
     """
     json_encode = JSONEncoder(sort_keys=True, separators=(",", ":")).encode
 
-    assert pkg
-    q3_hash = pkg.top_hash
+    assert q3pkg
+    q3_hash = q3pkg.top_hash
     assert q3_hash == spec.hash(), "q3_hash != spec.hash()"
-    top_hash = pkg._calculate_top_hash(pkg._meta, pkg.walk())
+    top_hash = q3pkg._calculate_top_hash(q3pkg._meta, q3pkg.walk())
     assert q3_hash == top_hash, "q3_hash != pkg._calculate_top_hash()"
     head = man2.table().head
     man_meta = head.hashable_dict()
-    pkg_user = pkg._meta[man2.K_USER_META]
+    pkg_user = q3pkg._meta[man2.K_USER_META]
     man_user = man_meta[man2.K_USER_META]
     assert pkg_user["Date"] == man_user["Date"]  # type: ignore
-    assert pkg._meta == head.hashable_dict()
-    encoded = json_encode(pkg._meta).encode()
+    assert q3pkg._meta == head.hashable_dict()
+    encoded = json_encode(q3pkg._meta).encode()
     assert encoded == head.hashable()
 
-    for part in pkg._get_top_hash_parts(pkg._meta, pkg.walk()):
+    for part in q3pkg._get_top_hash_parts(q3pkg._meta, q3pkg.walk()):
         if "logical_key" in part:
             key = part["logical_key"]
             entry = man2[key]
@@ -163,49 +164,48 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     Ensure quilt3 can read manifests created by quiltcore
 
     With QuiltCore:
-    * create files and metadata
-    * create package
-    * write to bucket
-    * track all of the above
+    * create local and remote Domain
+    * write files in local store
+    * commit to local Manifest (with metadata)
+    * push to remote
 
     Then with quilt3:
-    * read it all back
+    * read it back
+    * TBD: file-level metadata
     """
 
-    # 1. Create Changes
+    # 1. Create Domains
+    local = Domain.FromLocalPath(tmpdir)
+    pkg_name = spec_new.namespace()
+
+    # 2. Write Files
+    folder = local.package_path(pkg_name)
     for filename, filedata in spec_new.files().items():
-        path = tmpdir / filename
+        path = folder / filename
         path.write_text(filedata)  # TODO: Object-level Metadata
 
-    chg = Changes(tmpdir)
-    delta = chg.post(tmpdir)
-    assert delta
-
-    # 2. Create Manifest
+    # 3. Commit Manifest to Local Domain
     msg = f"test_spec_write {TIME_NOW}"
     pkg_meta = {
-        chg.KEY_USER: spec_new.metadata(),
-        chg.KEY_MSG: msg,
+        local.K_USER_META: spec_new.metadata(),
+        local.K_MESSAGE: msg,
+        local.K_PACKAGE: pkg_name,
     }
-    man = Builder.MakeManifest(chg, pkg_meta)
-    assert man
+    man_path = local.commit(folder, **pkg_meta)
+    assert man_path.exists()
 
-    opts = {
-        chg.KEY_FRC: True,
-        chg.KEY_NS: spec_new.namespace(),
-    }
-    bkt = UPath(spec_new.registry())
-    vol = Volume(bkt)
-    vol.put(man, **opts)
+    # 4. Push to Remote Domain
+    local.push(folder, remote=spec_new.udi())
 
+    # 5. Read it back
     qpkg = Package.browse(spec_new.namespace(), registry=spec_new.registry())
     assert qpkg
 
     meta = qpkg._meta
-    new_meta = man.codec.encode_dates(spec_new.metadata())
+    new_meta = local.cf.encode_dates(spec_new.metadata())
     assert meta
-    assert meta["user_meta"] == new_meta
-    assert meta[vol.KEY_MSG] == msg
+    assert meta[local.K_USER_META] == new_meta
+    assert meta[local.K_MESSAGE] == msg
 
     for filename, filedata in spec_new.files().items():
         assert filename in qpkg
