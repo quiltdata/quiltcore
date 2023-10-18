@@ -29,15 +29,15 @@ def remote_udi():
 
 
 @pytest.fixture
-def commited() -> Domain:
+def committed():
     for local in make_domain():
         local_path = local.package_path(TEST_PKG)
+        assert ".quilt" not in local_path.parents
         assert local_path.exists()
         remote_readme = local_path / "README.md"
         remote_readme.write_text(MESSAGE)
         local.commit(local_path, package=TEST_PKG, message=MESSAGE)
-        return local
-    raise ValueError("No domain")
+        yield local
 
 
 def test_dom_udi_scheme():
@@ -99,21 +99,39 @@ def test_dom_data_yaml(domain: Domain, remote_udi: UDI):
     assert status["hash"] == TEST_HASH
 
 
-def test_dom_commit(commited: Domain):
-    local_path = commited.package_path(TEST_PKG)
-    assert local_path.exists()
-    latest = commited[TEST_PKG][commited.TAG_DEFAULT]
+def test_dom_get(domain: Domain):
+    ns = domain[TEST_PKG]
+    assert ns is not None
+    assert not ns.path.exists()
+    assert not domain
+
+    ns.path.mkdir(parents=True, exist_ok=True)
+    assert domain
+    assert len(domain) == 1
+    assert TEST_PKG in domain.keys()
+
+
+def test_dom_commit(committed: Domain):
+    assert committed is not None
+    assert committed.path.exists()
+    assert isinstance(committed, Domain)
+    assert len(committed) == 1
+    assert TEST_PKG in committed
+    namespace = committed[TEST_PKG]
+    assert namespace
+    assert len(namespace) == 2
+    latest = namespace[committed.TAG_DEFAULT]
     assert latest
 
 
 @pytest.mark.skip(reason="TODO")
-def test_dom_push(commited: Domain):
-    local_path = commited.package_path(TEST_PKG)
+def test_dom_push(committed: Domain):
+    local_path = committed.package_path(TEST_PKG)
     for remote in make_domain():
         remote_udi = remote.get_udi(TEST_PKG)
         assert isinstance(remote, Domain)
         assert remote_udi
-        commited.push(local_path, remote=remote_udi)
+        committed.push(local_path, remote=remote_udi)
         # read it back
         remote_path = remote.package_path(TEST_PKG)
         assert remote_path.exists()

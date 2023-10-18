@@ -18,11 +18,15 @@ resources:
   Scheme:
     child: Domain
   Domain:
+    glob: "*/*"
     child: Namespace2
   Namespace2:
     child: Manifest2
   Manifest2:
     child: Entry2
+  FolderBuilder:
+    child: Manifest2
+    recurse: true
 
   Volume:
     child: Manifest
@@ -40,8 +44,6 @@ resources:
     child: Delta
   Builder:
     child: Entry
-  FolderBuilder:
-    child: Manifest2
 quilt4:
   name: string
   place: string

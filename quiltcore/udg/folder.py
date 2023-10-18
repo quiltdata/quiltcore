@@ -8,6 +8,7 @@ from .node import Node
 class Folder(Child):
     KEY_DIR = "quilt3/dirs/"
     KEY_GLOB = "glob"
+    KEY_RECURSE = "recurse"
     DEFAULT_GLOB = "*"
 
     def __init__(self, name: str, parent: Node, **kwargs):
@@ -16,6 +17,7 @@ class Folder(Child):
     def _setup(self):
         super()._setup()
         self.glob = self.param(self.KEY_GLOB, self.DEFAULT_GLOB)
+        self.recurse = self.param(self.KEY_RECURSE, "")
 
     def _setup_dir(self, path: Path, key: str) -> Path:
         """Form dir and create if it does not exist."""
@@ -25,5 +27,5 @@ class Folder(Child):
         return dir
 
     def __iter__(self) -> Iterator[str]:
-        gen = self.path.rglob(self.glob)
-        return (str(x) for x in gen)
+        gen = self.path.rglob(self.glob) if self.recurse else self.path.glob(self.glob)
+        return (str(x.relative_to(self.path)) for x in gen)

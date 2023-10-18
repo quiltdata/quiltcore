@@ -53,10 +53,10 @@ class Domain(Folder):
     def GetRemoteManifest(cls, udi: UDI) -> Manifest2:
         """Return the manifest for the UDI."""
         domain = cls.FromURI(udi.registry)
-        namespace = domain.get(udi.package)
+        namespace = domain[udi.package]
         assert namespace is not None, f"Namespace not found for: {udi}"
         tag = udi.attrs.get(udi.K_TAG, cls.TAG_DEFAULT)
-        manifest = namespace.get(tag)
+        manifest = namespace[tag]
         assert manifest is not None, f"Manifest not found for tag[{tag}]: {udi}"
         return manifest
 
@@ -116,7 +116,7 @@ class Domain(Folder):
         self._track_lineage("pull", udi, install_dir, **kwargs)
         try:
             remote = self.GetRemoteManifest(udi)
-            namespace = self.get(udi.package)
+            namespace = self[udi.package]
             assert namespace is not None
             no_copy = kwargs.get(self.K_NOCOPY, False)
             namespace.pull(remote, install_dir, no_copy=no_copy)
@@ -164,9 +164,9 @@ class Domain(Folder):
         uri = self.data_yaml.folder2uri(str(path))
         return UDI.FromUri(uri)
 
-    def to_list4(self, path: Path, glob=Folder.DEFAULT_GLOB) -> List4:
+    def to_list4(self, folder: Path, glob=Folder.DEFAULT_GLOB) -> List4:
         """Generate to_dict4 for each file in path matching glob."""
-        return [self.dict4_from_path(file) for file in path.rglob(glob)]
+        return [self.dict4_from_path(file) for file in folder.rglob(glob)]
 
     def get_pkg_name(self, path: Path, **kwargs) -> str:
         pkg = kwargs.get(self.K_PACKAGE, None)
@@ -187,11 +187,12 @@ class Domain(Folder):
     def commit(self, path: Path, **kwargs):
         """Writes manifest for folder into `package` namespace."""
         builder = FolderBuilder(path, self)
+        assert builder.path == path
         msg = kwargs.get(self.K_MESSAGE, self._message(kwargs))
         builder.commit(msg, {})
 
         pkg = self.get_pkg_name(path, **kwargs)
-        namespace = self.get(pkg)
+        namespace = self[pkg]
         assert namespace is not None, f"Namespace not found for: {pkg}"
         return namespace.put(builder.list4(), builder.q3hash(), **kwargs)
 

@@ -70,13 +70,15 @@ def test_arrow_table():
 def test_arrow_relax():
     path = Resource.AsPath(TEST_MAN)
     assert path.exists()
-    table = Table3(path)
+    table3 = Table3(path)
+    assert table3
     with TemporaryDirectory() as tmpdirname:
         f = Path(tmpdirname)
         pout = f / "test.parquet"
-        list4 = table.relax(f)
+        list4 = table3.relax(f)
         Table4.Write4(list4, pout)
         table4 = Table4(pout)
+        assert table4
         meta = table4.head.metadata
         assert meta
         assert meta["version"] == "v4"

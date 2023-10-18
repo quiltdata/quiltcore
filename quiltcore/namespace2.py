@@ -84,8 +84,8 @@ class Namespace2(Folder):
         hash_file.write_text(hash)
         logging.debug(f"Namespace2.put[{tag}]: {hash_file}")
 
-    def _save(self, list4: List4, q3hash: str):
-        manifest_path = self.manifests / q3hash
+    def _save(self, list4: List4, top_hash: str):
+        manifest_path = self.manifests / top_hash
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
         Tabular.Write4(list4, manifest_path)
 
