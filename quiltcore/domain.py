@@ -21,6 +21,7 @@ class Domain(Folder):
     K_NEWOK = "new_ok"
     K_PACKAGE = "package"
     K_REMOTE = "remote"
+    TAG_DEFAULT = "latest"
     URI_SPLIT = "://"
 
     @classmethod
@@ -54,7 +55,7 @@ class Domain(Folder):
         domain = cls.FromURI(udi.registry)
         namespace = domain.get(udi.package)
         assert namespace is not None, f"Namespace not found for: {udi}"
-        tag = udi.attrs.get(udi.K_TAG, namespace.TAG_DEFAULT)
+        tag = udi.attrs.get(udi.K_TAG, cls.TAG_DEFAULT)
         manifest = namespace.get(tag)
         assert manifest is not None, f"Manifest not found for tag[{tag}]: {udi}"
         return manifest
@@ -192,7 +193,7 @@ class Domain(Folder):
         pkg = self.get_pkg_name(path, **kwargs)
         namespace = self.get(pkg)
         assert namespace is not None, f"Namespace not found for: {pkg}"
-        return builder.save_to(namespace, **kwargs)
+        return namespace.put(builder.list4(), builder.q3hash(), **kwargs)
 
     def push(self, folder: Path, **kwargs):
         """
@@ -207,7 +208,7 @@ class Domain(Folder):
         remote_udi = self.get_remote_udi(folder, **kwargs)
         assert remote_udi is not None, f"UDI not found for: {folder}"
         remote = self.FromURI(remote_udi.registry)
-        remote.is_mutable = True  # TODO: verify not a read-only destination
+        remote.is_mutable = True  # TODO: verify not a read-only domain
         local_udi = self.get_udi(remote_udi.package)
         remote.pull(local_udi, **kwargs)
         return remote

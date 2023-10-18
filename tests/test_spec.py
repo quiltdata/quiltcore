@@ -193,8 +193,8 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
         local.K_MESSAGE: msg,
         local.K_PACKAGE: pkg_name,
     }
-    man_path = local.commit(folder, **pkg_meta)
-    assert man_path.exists()
+    tag = local.commit(folder, **pkg_meta)
+    assert tag
 
     # 4. Push to Remote Domain
     # FIXME: local.push(folder, remote=spec_new.udi())

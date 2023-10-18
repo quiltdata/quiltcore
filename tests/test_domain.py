@@ -102,6 +102,8 @@ def test_dom_data_yaml(domain: Domain, remote_udi: UDI):
 def test_dom_commit(commited: Domain):
     local_path = commited.package_path(TEST_PKG)
     assert local_path.exists()
+    latest = commited[TEST_PKG][commited.TAG_DEFAULT]
+    assert latest
 
 
 @pytest.mark.skip(reason="TODO")

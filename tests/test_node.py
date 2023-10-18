@@ -84,15 +84,15 @@ def test_node_names():
     assert isinstance(ns, Namespace2)
     assert isinstance(ns.parent, Domain)
 
-    q3hash = ns.get_q3hash(TEST_TAG)
+    q3hash = ns.read_hash_from_tag(TEST_TAG)
     assert q3hash == TEST_HASH
-    assert q3hash == ns.get_q3hash(TEST_HASH)
-    assert q3hash == ns.get_q3hash(TEST_HASH[:6])
+    assert q3hash == ns.read_hash_from_tag(TEST_HASH)
+    assert q3hash == ns.read_hash_from_tag(TEST_HASH[:6])
 
     with pytest.raises(ValueError):
-        ns.get_q3hash("not-a-hash")
+        ns.read_hash_from_tag("not-a-hash")
     with pytest.raises(ValueError):
-        ns.get_q3hash("92")  # ambiguous
+        ns.read_hash_from_tag("92")  # ambiguous
 
 
 def test_node_man():
