@@ -14,6 +14,20 @@ class Verifiable(Keyed):
     def EncodeDict(cls, source: dict) -> bytes:
         return cls.ENCODE(source).encode("utf-8")
 
+    @classmethod
+    def UpdateDict4(cls, base: Dict4, path: Path) -> Dict4:
+        """Update metadata for a relaxed file."""
+        assert isinstance(base.metadata, dict)
+        stat = path.stat()
+        base.size = stat.st_size
+        base.place = str(path)
+        base.metadata["mode"] = stat.st_mode
+        base.metadata["mtime"] = stat.st_mtime
+        base.metadata["ctime"] = stat.st_ctime
+        base.metadata["tombstone"] = False
+        base.metadata["prior"] = base.multihash
+        return base
+
     def __init__(self, codec: Codec, **kwargs):
         super().__init__(**kwargs)
         self.cf = codec
@@ -64,13 +78,16 @@ class Verifiable(Keyed):
         return self.digest_bytes(self.to_bytes())
 
     def dict4_from_path(self, path: Path) -> Dict4:
-        return Dict4(
+        base = Dict4(
             name=path.name,
-            place=str(path),
-            size=path.stat().st_size,
+            place="",
+            size=0,
             multihash=self.digest_bytes(path.read_bytes()),
-            metadata={"timestamp": self.Now(), "user_meta": self.DEFAULT_DICT},
+            metadata={
+                "user_meta": self.DEFAULT_DICT,
+            },
         )
+        return self.UpdateDict4(base, path)
 
     def hash(self) -> Multihash:
         """Return (or calculate) the multihash of the contents."""

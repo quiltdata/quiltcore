@@ -11,6 +11,7 @@ from typing import Iterator
 from .codec import Codec
 from .keyed import Keyed
 from .types import Dict4, List4, Types
+from .verifiable import Verifiable
 
 
 class Tabular(Keyed):
@@ -134,6 +135,11 @@ class Tabular(Keyed):
 
     # Relaxation
 
+    def relax(self, install_dir: Path) -> List4:
+        """Relax each row of this remote Table into local install_dir."""
+        assert install_dir.exists() and install_dir.is_dir()
+        return [self._relax(row, install_dir / name) for name, row in self.items()]
+
     def _relax(self, row: Dict4, install_path: Path) -> Dict4:
         """Relax remote_path of each row into local install_path."""
         if row.name == self.HEADER_NAME:
@@ -142,10 +148,4 @@ class Tabular(Keyed):
         assert remote_path.exists(), f"_relax: {remote_path} not found for {row.place}"
         with remote_path.open("rb") as fi:
             install_path.write_bytes(fi.read())
-        row.place = self.as_place(install_path)
-        return row
-
-    def relax(self, install_dir: Path) -> List4:
-        """Relax each row of this remote Table into local install_dir."""
-        assert install_dir.exists() and install_dir.is_dir()
-        return [self._relax(row, install_dir / name) for name, row in self.items()]
+        return Verifiable.UpdateDict4(row, install_path)
