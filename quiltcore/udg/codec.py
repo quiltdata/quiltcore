@@ -8,7 +8,7 @@ from urllib.parse import quote, unquote
 from multiformats import multihash
 from typing_extensions import Any
 
-from ..yaml.config import Config
+from ..config.config import Config
 from .types import Dict3, Dict4, Hash3, Multihash, Types
 
 

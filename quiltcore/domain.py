@@ -11,8 +11,8 @@ from .manifest2 import Manifest2
 from .udg.folder import Folder
 from .udg.node import Node
 from .udg.types import List4
-from .yaml.data import Data
-from .yaml.udi import UDI
+from .config.data import Data
+from .config.udi import UDI
 
 
 class Domain(Folder):
@@ -194,19 +194,20 @@ class Domain(Folder):
         assert namespace is not None, f"Namespace not found for: {pkg}"
         return builder.save_to(namespace, **kwargs)
 
-    def push(self, path: Path, **kwargs):
+    def push(self, folder: Path, **kwargs):
         """
         `push` is actually syntactic sugar for:
 
-        1. Find the Domain associated with the local folder
-        2. Find the remote UDI associated with that folder
+        1. Find the local UDI (manifest) associated with the local folder
+        2. Find the explicit or implicit remote UDI for this folder
         3. Create or find the remote Domain for that UDI
         4. Tell the remote Domain to pull data (manifest and files)
            from the local Domain
         """
-        remote_udi = self.get_remote_udi(path, **kwargs)
-        assert remote_udi is not None, f"UDI not found for: {path}"
+        remote_udi = self.get_remote_udi(folder, **kwargs)
+        assert remote_udi is not None, f"UDI not found for: {folder}"
         remote = self.FromURI(remote_udi.registry)
+        remote.is_mutable = True  # TODO: verify not a read-only destination
         local_udi = self.get_udi(remote_udi.package)
-        print(f"remote.pull({local_udi}, **kwargs)")
+        remote.pull(local_udi, **kwargs)
         return remote

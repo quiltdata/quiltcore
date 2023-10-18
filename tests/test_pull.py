@@ -90,11 +90,18 @@ def test_pull_push():
     for local in make_domain():
         local_path = local.package_path(TEST_PKG)
         assert local_path.exists()
-        readme = local_path / "README.md"
-        readme.write_text("Hello World")
+        remote_readme = local_path / "README.md"
+        updated_text = f"Hello World {Domain.Now()}"
+        remote_readme.write_text(updated_text)
         local.commit(local_path, package=TEST_PKG, msg=f"test_pull_push {Domain.Now()}")
         for remote in make_domain():
             remote_udi = remote.get_udi(TEST_PKG)
             assert isinstance(remote, Domain)
             assert remote_udi
             local.push(local_path, remote=remote_udi)
+            # read it back
+            remote_path = remote.package_path(TEST_PKG)
+            assert remote_path.exists()
+            remote_readme = remote_path / "README.md"
+            assert remote_readme.exists()
+            assert remote_readme.read_text() == updated_text
