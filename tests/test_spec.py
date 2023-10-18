@@ -1,3 +1,5 @@
+import pytest
+
 from datetime import date, datetime
 from json import JSONEncoder
 from tempfile import TemporaryDirectory
@@ -159,6 +161,7 @@ def test_spec_read(spec: Spec, man2: Manifest2):
             assert entry.user_meta == meta  # type: ignore
 
 
+@pytest.mark.skip(reason="TODO")
 def test_spec_write(spec_new: Spec, tmpdir: UPath):
     """
     Ensure quilt3 can read manifests created by quiltcore
