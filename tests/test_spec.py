@@ -185,9 +185,10 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     }
     tag = local.commit(folder, **pkg_meta)
     assert tag
+    assert local[pkg_name]
 
     # 4. Push to Remote Domain
-    local.push(folder, remote=spec_new.udi())
+    local.push(folder, remote=spec_new.udi_new())
 
     # 5. Read it back
     qpkg = Package.browse(spec_new.namespace(), registry=spec_new.registry())

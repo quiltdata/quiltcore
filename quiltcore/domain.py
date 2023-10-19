@@ -192,6 +192,8 @@ class Domain(Folder):
         builder = self.build(path, **kwargs)
 
         pkg = self.get_pkg_name(path, **kwargs)
+        udi = self.get_udi(pkg)
+        self._track_lineage("commit", udi, path, **kwargs)
         namespace = self[pkg]
         assert namespace is not None, f"Namespace not found for: {pkg}"
         return namespace.put(builder.list4(), builder.q3hash(), **kwargs)
@@ -207,9 +209,11 @@ class Domain(Folder):
            from the local Domain
         """
         remote_udi = self.get_remote_udi(folder, **kwargs)
+        self._track_lineage("push", remote_udi, folder, **kwargs)
         assert remote_udi is not None, f"UDI not found for: {folder}"
         remote = self.FromURI(remote_udi.registry)
         remote.is_mutable = True  # TODO: verify not a read-only domain
-        local_udi = self.get_udi(remote_udi.package)
+        local_udi = self.folder2udi(folder)
+        assert local_udi is not None, f"UDI not found for: {folder}"
         remote.pull(local_udi, **kwargs)
         return remote

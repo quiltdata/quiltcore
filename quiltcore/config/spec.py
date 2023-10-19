@@ -16,6 +16,13 @@ class Spec(Config):
         udi_string = self.pkg("udi")
         return UDI.FromUri(udi_string)
 
+    def udi_new(self) -> UDI:
+        udi_string = self.pkg("udi")
+        parts = udi_string.split(":")
+        del parts[-1]
+        udi_new = ":".join(parts)
+        return UDI.FromUri(udi_new)
+
     def pkg(self, key: str) -> str:
         _pkg = self.get_dict(self.K_CFG)
         return _pkg.get(key, "<missing>")
