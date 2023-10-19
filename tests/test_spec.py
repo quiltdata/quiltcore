@@ -160,7 +160,7 @@ def test_spec_read(spec: Spec, man2: Manifest2):
             assert entry.user_meta == meta  # type: ignore
 
 
-@pytest.mark.skip(reason="TODO: check config")
+# @pytest.mark.skip(reason="TODO: check config")
 def test_spec_write(spec_new: Spec, tmpdir: UPath):
     """
     Ensure quilt3 can read manifests created by quiltcore
@@ -227,12 +227,6 @@ def test_spec_workflow():
 
 @pytest.mark.skip(reason="TODO: implement object-level metadata")
 def test_spec_object_meta():
-    """Ensure quiltcore enforces bucket workflows"""
-    pass
-
-
-@pytest.mark.skip(reason="TODO: test package-level metadata")
-def test_spec_package_meta():
     """Ensure quiltcore enforces bucket workflows"""
     pass
 

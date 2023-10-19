@@ -8,6 +8,7 @@ from .conftest import LOCAL_UDI, LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, not_
 
 MESSAGE = f"Hello World {Domain.Now()}"
 TEST_FILE = "README.md"
+TEST_META = {"key": "value"}
 
 
 def FirstFile(path):
@@ -43,7 +44,12 @@ def committed():
         readme.write_text(MESSAGE)
         assert readme.exists()
         assert MESSAGE in readme.read_text()
-        local.commit(local_path, package=TEST_PKG, message=MESSAGE)
+        kwargs = {
+            Domain.K_META: TEST_META,
+            Domain.K_MESSAGE: MESSAGE,
+            Domain.K_PACKAGE: TEST_PKG,
+        }
+        local.commit(local_path, **kwargs)
         yield local
 
 
@@ -147,6 +153,7 @@ def test_dom_commit(committed: Domain):
     table = man.table()
     assert len(table) == 1
     assert table.head.info["message"] == MESSAGE
+    assert table.head.meta == TEST_META
 
 
 def test_dom_unpull(committed: Domain):

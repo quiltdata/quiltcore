@@ -184,7 +184,8 @@ class Domain(Folder):
         builder = FolderBuilder(path, self)
         assert builder.path == path
         msg = kwargs.get(self.K_MESSAGE, self._message(kwargs))
-        builder.commit(msg, {})
+        meta = kwargs.get(self.K_META, {})
+        builder.commit(msg, meta)
         return builder
 
     def commit(self, path: Path, **kwargs):

@@ -19,7 +19,7 @@ class Header(ResourceKey):
     """
 
     @classmethod
-    def ToDict4(cls, message: str = "Updated") -> Dict4:
+    def HeaderDict4(cls, message: str = "Updated", meta={}) -> Dict4:
         return Dict4(
             name=cls.HEADER_NAME,
             place=cls.HEADER_NAME,
@@ -29,7 +29,7 @@ class Header(ResourceKey):
                 cls.K_VERSION: cls.HEADER_V4,
                 cls.K_MESSAGE: message,
             },
-            meta={},
+            meta=meta,
         )
 
     @classmethod
@@ -63,7 +63,8 @@ class Header(ResourceKey):
     #
 
     def to_dict4(self) -> Dict4:
-        return self.ToDict4(self.to_dict()[self.K_MESSAGE])
+        base = self.to_dict()
+        return self.HeaderDict4(base[self.K_MESSAGE], base[self.K_USER_META])
 
     def to_dict(self) -> dict:
         raw_dict = {k: getattr(self, k) for k in self.headers.keys()}
