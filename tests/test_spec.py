@@ -75,16 +75,6 @@ def test_spec_new(spec_new: Spec, spec: Spec):
     assert updated == TIME_NOW
 
 
-def test_spec_version_id(spec: Spec):
-    """
-    Get two versioned place URIs
-    Verify that we extract the proper version ID
-    Retrieve their contents
-    Ensure they differ, and match the spec
-    """
-    pass
-
-
 def test_spec_hash(spec: Spec, q3pkg: Package, man2: Manifest2):
     """
     Verify quiltcore matches quilt3 hashing
@@ -161,7 +151,6 @@ def test_spec_read(spec: Spec, man2: Manifest2):
             assert entry.user_meta == meta  # type: ignore
 
 
-# @pytest.mark.skip(reason="TODO")
 def test_spec_write(spec_new: Spec, tmpdir: UPath):
     """
     Ensure quilt3 can read manifests created by quiltcore
@@ -198,7 +187,7 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     assert tag
 
     # 4. Push to Remote Domain
-    # FIXME: local.push(folder, remote=spec_new.udi())
+    local.push(folder, remote=spec_new.udi())
 
     # 5. Read it back
     qpkg = Package.browse(spec_new.namespace(), registry=spec_new.registry())
@@ -208,16 +197,39 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     new_meta = local.cf.encode_dates(spec_new.metadata())
     assert meta
     assert meta[local.K_USER_META] == new_meta
-    # FIXME: assert meta[local.K_MESSAGE] == msg
+    assert meta[local.K_MESSAGE] == msg
 
     for filename, filedata in spec_new.files().items():
         assert filename in qpkg
         entry = qpkg[filename]
-        assert entry  # FIXME: .deserialize() == filedata
+        assert entry.deserialize() == filedata
 
 
+@pytest.mark.skip(reason="TODO: implement workflows")
 def test_spec_workflow():
+    """Ensure quiltcore enforces bucket workflows"""
+    pass
+
+
+@pytest.mark.skip(reason="TODO: implement object-level metadata")
+def test_spec_object_meta():
+    """Ensure quiltcore enforces bucket workflows"""
+    pass
+
+
+@pytest.mark.skip(reason="TODO: test package-level metadata")
+def test_spec_package_meta():
+    """Ensure quiltcore enforces bucket workflows"""
+    pass
+
+
+@pytest.mark.skip(reason="TODO: test versioning")
+def test_spec_version_id(spec: Spec):
     """
-    Ensure quiltcore enforces bucket workflows
+    Get two versioned place URIs
+    Verify that we extract the proper version ID
+    Retrieve their contents
+    Ensure they differ, and match the spec
+    Possibly reuse same mechanism to specify minio endpoints
     """
     pass
