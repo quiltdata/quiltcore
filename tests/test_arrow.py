@@ -79,7 +79,7 @@ def test_arrow_relax():
         Table4.Write4(list4, pout)
         table4 = Table4(pout)
         assert table4
-        meta = table4.head.metadata
+        meta = table4.head.info
         assert meta
         assert meta["version"] == "v4"
         assert "ONLYME.md" in table4.keys()

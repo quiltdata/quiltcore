@@ -30,7 +30,8 @@ class Codec(Config, Types):
     physical_keys | place
     size          | size
     hash          | multihash
-    meta          | metadata
+    meta          | info
+    meta.user_meta| meta
     """
 
     def __init__(self, scheme="quilt3") -> None:
@@ -136,7 +137,7 @@ class Codec(Config, Types):
             self.K_HASH: self.encode_hash(obj.multihash),
             self.K_SIZE: obj.size,
         }
-        hashable[self.K_META] = obj.metadata  # or {}
+        hashable[self.K_META] = obj.info  # or {}
         return hashable
 
     def encode(self, obj: Dict4) -> Dict3:
@@ -196,11 +197,14 @@ class Codec(Config, Types):
 
     def decode_dict(self, row: Dict3) -> Dict4:
         """Return a dict of decoded values."""
-        decoded: dict[str, Any] = {}
+        decoded: dict[str, Any] = {self.K_META: {}}
         for key, value in row.to_dict().items():
             opts = self.coding.get(key, {})
             name = opts.get(self.K_NAM, key)
             decoded[name] = self.decode_value(value, opts)
+        if decoded["info"] and self.K_USER_META in decoded["info"]:
+            decoded["meta"] = decoded["info"][self.K_USER_META]
+            del decoded["info"][self.K_USER_META]
         return Dict4(**decoded)
 
     def decode_item(self, item, opts={}):

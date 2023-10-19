@@ -25,17 +25,17 @@ class Header(ResourceKey):
             place=cls.HEADER_NAME,
             size=cls.SIZE,
             multihash=cls.MULTIHASH,
-            metadata={
+            info={
                 cls.K_VERSION: cls.HEADER_V4,
                 cls.K_MESSAGE: message,
-                cls.K_USER_META: {},
             },
+            meta={},
         )
 
     @classmethod
     def First(cls, message: str = "N/A") -> dict:
         return {
-            cls.K_VERSION: cls.HEADER_V3,
+            cls.K_VERSION: cls.HEADER_V4,
             cls.K_MESSAGE: message,
         }
 
@@ -63,7 +63,7 @@ class Header(ResourceKey):
     #
 
     def to_dict4(self) -> Dict4:
-        return self.ToDict4(self.headers[self.K_MESSAGE])
+        return self.ToDict4(self.to_dict()[self.K_MESSAGE])
 
     def to_dict(self) -> dict:
         raw_dict = {k: getattr(self, k) for k in self.headers.keys()}

@@ -18,6 +18,7 @@ class Types:
     IS_LOCAL = compile(r"file:\/*")
     IS_WINDRIVE = compile(r"^([a-z])\\")
 
+    K_JSON_FIELDS = ["info", "meta"]
     K_METADATA = "metadata"
     K_META_JSON = "meta.json"
     K_MESSAGE = "message"
@@ -122,12 +123,16 @@ class Dict4(DataDict):
     place: str
     size: int
     multihash: str
-    metadata: Optional[dict]
+    info: dict  # was (system) metadata
+    meta: dict  # was user_meta
 
-    def to_parquet_dict(self):
+    def to_parquet_dict(self) -> dict:
         map = self.to_dict()
-        map[Types.K_META_JSON] = json_dumps(map[Types.K_METADATA])
-        del map[Types.K_METADATA]
+        for field in Types.K_JSON_FIELDS:
+            if field in map:
+                json_field = f"{field}.json"
+                map[json_field] = json_dumps(map[field])
+                del map[field]
         return map
 
 

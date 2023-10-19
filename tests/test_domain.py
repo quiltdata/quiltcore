@@ -143,7 +143,7 @@ def test_dom_commit(committed: Domain):
     assert table
     print(table)
     assert len(table) == 1
-    assert table.head.metadata["message"] == MESSAGE
+    assert table.head.info["message"] == MESSAGE
 
 
 @pytest.mark.skip(reason="TODO")

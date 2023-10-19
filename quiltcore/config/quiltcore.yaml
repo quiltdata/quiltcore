@@ -49,11 +49,10 @@ quilt4:
   place: string
   size: int64
   multihash: string
-  metadata:
+  info:
     message: string
-    user_meta: struct
     version: string
-  _metadata: string
+  meta: struct
 quilt3:
   dirs:
     config: .quilt
@@ -67,6 +66,9 @@ quilt3:
     version: v0
     message: commit message
     user_meta: {}
+  json_fields:
+    - meta
+    - info
   map:
     name: logical_key
   mime_type: application/ld+json
@@ -93,7 +95,7 @@ quilt3:
       name: multihash
       type: struct
     meta:
-      name: metadata
+      name: info
       type: struct
       format:
         user_meta: struct

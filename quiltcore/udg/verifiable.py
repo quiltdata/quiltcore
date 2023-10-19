@@ -17,15 +17,15 @@ class Verifiable(Keyed):
     @classmethod
     def UpdateDict4(cls, base: Dict4, path: Path) -> Dict4:
         """Update metadata for a relaxed file."""
-        assert isinstance(base.metadata, dict)
+        assert isinstance(base.info, dict)
         stat = path.stat()
         base.size = stat.st_size
         base.place = str(path)
-        base.metadata["mode"] = stat.st_mode
-        base.metadata["mtime"] = stat.st_mtime
-        base.metadata["ctime"] = stat.st_ctime
-        base.metadata["tombstone"] = False
-        base.metadata["prior"] = base.multihash
+        base.info["mode"] = stat.st_mode
+        base.info["mtime"] = stat.st_mtime
+        base.info["ctime"] = stat.st_ctime
+        base.info["tombstone"] = False
+        base.info["prior"] = base.multihash
         return base
 
     def __init__(self, codec: Codec, **kwargs):
@@ -83,9 +83,8 @@ class Verifiable(Keyed):
             place="",
             size=0,
             multihash=self.digest_bytes(path.read_bytes()),
-            metadata={
-                "user_meta": self.DEFAULT_DICT,
-            },
+            info={},
+            meta={},
         )
         return self.UpdateDict4(base, path)
 

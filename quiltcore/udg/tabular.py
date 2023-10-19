@@ -30,14 +30,22 @@ class Tabular(Keyed):
         return parquet_path
 
     @staticmethod
-    def UnparseTable(table: pa.Table) -> pa.Table:
-        """Unaparse K_METADATA column."""
-        json_col = table.column(Types.K_META_JSON)
+    def ParseColumn(table: pa.Table, field: str) -> pa.Table:
+        """Parse JSON column."""
+        json_field = f"{field}.json"
+        json_col = table.column(json_field)
         table = table.append_column(
-            Types.K_METADATA,
+            field,
             pa.array([json.loads(x.as_py()) for x in json_col]),
         )
-        table = table.remove_column(table.num_columns - 2)
+        col_id = table.schema.get_field_index(json_field)
+        return table.remove_column(col_id)
+
+    @staticmethod
+    def UnparseTable(table: pa.Table) -> pa.Table:
+        """Parse all JSON_FIELDS column."""
+        for field in Types.K_JSON_FIELDS:
+            table = Tabular.ParseColumn(table, field)
         return table
 
     @staticmethod
