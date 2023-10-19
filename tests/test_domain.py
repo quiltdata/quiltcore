@@ -164,7 +164,6 @@ def test_dom_unpull(committed: Domain):
         assert MESSAGE in first.read_text()
 
 
-@pytest.mark.skip(reason="TODO")
 def test_dom_push(committed: Domain):
     local_path = committed.package_path(TEST_PKG)
     assert local_path.exists()
