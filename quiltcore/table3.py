@@ -64,7 +64,7 @@ class Table3(Tabular):
     # Translate Table
     #
 
-    def relax(self, dest_dir: Path) -> List4:
-        list4 = super().relax(dest_dir)
+    def relax(self, install_dir: Path, source_dir: Path | None = None) -> List4:
+        list4 = super().relax(install_dir, source_dir)
         list4.insert(0, self.head.to_dict4())
         return list4

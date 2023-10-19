@@ -115,11 +115,11 @@ class Domain(Folder):
         assert install_dir.is_dir(), f"install_dir not a directory: {install_dir}"
         self._track_lineage("pull", udi, install_dir, **kwargs)
         try:
-            remote = self.GetRemoteManifest(udi)
+            manifest = self.GetRemoteManifest(udi)
             namespace = self[udi.package]
             assert namespace is not None
             no_copy = kwargs.get(self.K_NOCOPY, False)
-            namespace.pull(remote, install_dir, no_copy=no_copy)
+            namespace.pull(manifest, install_dir, no_copy=no_copy)
         except ValueError as e:
             msg = f"Domain.pull.failed[{e}]: {udi}"
             if not kwargs.get(self.K_NEWOK, False):

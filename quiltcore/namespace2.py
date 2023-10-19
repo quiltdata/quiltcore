@@ -93,12 +93,21 @@ class Namespace2(Folder):
     # PULL via relaxation
     #
 
+    def relax_params(self) -> dict:
+        domain = self.parent
+        assert isinstance(domain, Domain)
+        return {
+            "manifests": self.manifests,
+            "namespace": self,
+            "store": domain.store,
+            "package_path": domain.package_path(self.name)
+        }
+
     def pull(self, manifest: Manifest2, install_dir: Path, **flags) -> Tag:
         """PUT relaxed manifest into the namespace."""
         assert isinstance(manifest, Manifest2)
         if not flags.get("no_copy", False):
-            manifest = manifest.relax(install_dir, self.manifests, self)
+            manifest = manifest.relax(install_dir, self.relax_params())
             assert manifest is not None
-        entries = manifest.values()
-        list4: List4 = entries  # type: ignore
+        list4: List4 = manifest.values()  # type: ignore
         return self.put(list4, manifest.q3hash())

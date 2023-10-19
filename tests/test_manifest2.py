@@ -113,7 +113,7 @@ def test_man_entry_hash(man: Manifest2):
 
 def test_man_relax(man: Manifest2, domain: Domain):
     ns = domain[TEST_PKG]
-    local_man = man.relax(domain.store, ns.manifests, ns)
+    local_man = man.relax(domain.store, ns.relax_params())
     assert local_man is not None
     assert isinstance(local_man, Manifest2)
     assert local_man.path.exists()

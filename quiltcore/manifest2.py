@@ -28,18 +28,20 @@ class Manifest2(Child):
             return path
         raise ValueError(f"Parent has no manifests: {self.parent}")
 
-    def relax(self, install_dir: Path, manifests: Path, parent: Node) -> "Manifest2":
+    def relax(self, install_dir: Path, params: dict) -> "Manifest2":
         """
         1. Relax this remote Manifest into local install_dir
         2. Calculate local manifest path
         3. Write relaxed table to Mpath
         4. Return new local Manifest inside local Namespace
         """
+        manifests = params["manifests"]
+        namespace = params["namespace"]
         list4 = self.table().relax(install_dir)
         local_manifest = manifests / self.name
         Tabular.Write4(list4, local_manifest)
         # Requires `parent` to be the Namespace containing `manifests`
-        return Manifest2(self.name, parent)
+        return Manifest2(self.name, namespace)
 
     #
     # Initialize Table
