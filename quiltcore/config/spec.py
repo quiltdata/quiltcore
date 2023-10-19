@@ -17,11 +17,8 @@ class Spec(Config):
         return UDI.FromUri(udi_string)
 
     def udi_new(self) -> UDI:
-        udi_string = self.pkg("udi")
-        parts = udi_string.split(":")
-        del parts[-1]
-        udi_new = ":".join(parts)
-        return UDI.FromUri(udi_new)
+        udi_string = f"quilt+{self.registry()}#package={self.name}"
+        return UDI.FromUri(udi_string)
 
     def pkg(self, key: str) -> str:
         _pkg = self.get_dict(self.K_CFG)
