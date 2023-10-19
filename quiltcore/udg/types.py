@@ -83,7 +83,7 @@ class Types:
             return stat.get(cls.K_UVER, None)
         if hasattr(stat, "cls.K_UVER"):
             return getattr(stat, cls.K_UVER)
-        logging.warning(f"StatVersion: {path} -> {stat} has no {cls.K_UVER}")
+        logging.debug(f"StatVersion: {path} -> {stat} has no {cls.K_UVER}")
         return None
 
     @classmethod

@@ -55,11 +55,9 @@ class Entry2(Child, Dict4, Types):
         namespace = self.parent.parent
         assert namespace is not None, "Missing grandparent Namespace"
         store = Domain.FindStore(namespace)
-        print(f"store: {store}")
         if namespace.name not in str(store):
             store = store / namespace.name
         path = store / key
-        print(f"extend_parent_path: {key} -> {path} [{path.absolute()}]")
         return path
 
     #

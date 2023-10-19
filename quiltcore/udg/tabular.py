@@ -33,9 +33,8 @@ class Tabular(Keyed):
                 for row in rows:
                     if not isinstance(row, Dict3):
                         raise ValueError("")
-                    dict3 = row.to_dict()
-                    print(dict3)
-                    writer.write(dict3)
+                    json_dict = row.to_dict()
+                    writer.write(json_dict)
 
     @staticmethod
     def WriteParquet(list4: List4, path: Path) -> Path:
@@ -147,7 +146,7 @@ class Tabular(Keyed):
 
     def as_path(self, place: str) -> Path:
         """Convert a place string into a Path."""
-        print(f"as_path: {place}")
+        logging.debug(f"as_path: {place}")
         assert isinstance(place, str)
         assert len(place) > 1
         match place[0]:

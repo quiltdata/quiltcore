@@ -19,8 +19,6 @@ class Child(Node):
         for k in self.headers.keys():
             if hasattr(dict4, k):
                 raw_dict[k] = getattr(dict4, k)
-            else:
-                logging.warning(f"Header[{k}] not in {dict4}")
         return self.cf.encode_dates(raw_dict)
 
     def dict4_to_dict3(self, dict4: Dict4) -> Dict3:
