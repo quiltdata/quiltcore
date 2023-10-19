@@ -27,7 +27,17 @@ class Child(Node):
         if not hasattr(dict4, "path"):
             path = self.AsPath(dict4.place)
             setattr(dict4, "path", path)
-        return self.cf.encode_dict4(dict4)
+        result = self.encode_date_dicts(dict4)
+        assert isinstance(result, Dict4)
+        return self.cf.encode_dict4(result)
+
+    def encode_date_dicts(self, base: Dict4):
+        for key in self.K_JSON_FIELDS:
+            value = getattr(base, key)
+            if value:
+                new_value = self.cf.encode_dates(value)
+                setattr(base, key, new_value)
+            return base
 
     def save_manifest(self, list4: List4, path: Path, writeJSON=True) -> Path:
         assert list4, "save_manifest: list4 is empty; cannot save to {path}}"

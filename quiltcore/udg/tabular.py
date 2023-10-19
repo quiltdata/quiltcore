@@ -33,7 +33,9 @@ class Tabular(Keyed):
                 for row in rows:
                     if not isinstance(row, Dict3):
                         raise ValueError("")
-                    writer.write(row.to_dict())
+                    dict3 = row.to_dict()
+                    print(dict3)
+                    writer.write(dict3)
 
     @staticmethod
     def WriteParquet(list4: List4, path: Path) -> Path:
@@ -48,12 +50,15 @@ class Tabular(Keyed):
     def ParseColumn(table: pa.Table, field: str) -> pa.Table:
         """Parse JSON column."""
         json_field = f"{field}.json"
+        col_id = table.schema.get_field_index(json_field)
+        if col_id < 0:
+            return table
+
         json_col = table.column(json_field)
         table = table.append_column(
             field,
             pa.array([json.loads(x.as_py()) for x in json_col]),
         )
-        col_id = table.schema.get_field_index(json_field)
         return table.remove_column(col_id)
 
     @staticmethod
@@ -103,6 +108,7 @@ class Tabular(Keyed):
 
     def first(self) -> dict:
         header = self.table.take([0])
+        assert header, f"No header row found for {self.path}:\n${self.table}"
         return header.to_pylist()[0]
 
     def _get_table(self) -> pa.Table:

@@ -208,12 +208,12 @@ class Domain(Folder):
         4. Tell the remote Domain to pull data (manifest and files)
            from the local Domain
         """
+        local_udi = self.folder2udi(folder)
+        assert local_udi is not None, f"UDI not found for: {folder}"
         remote_udi = self.get_remote_udi(folder, **kwargs)
         self._track_lineage("push", remote_udi, folder, **kwargs)
         assert remote_udi is not None, f"UDI not found for: {folder}"
         remote = self.FromURI(remote_udi.registry)
         remote.is_mutable = True  # TODO: verify not a read-only domain
-        local_udi = self.folder2udi(folder)
-        assert local_udi is not None, f"UDI not found for: {folder}"
         remote.pull(local_udi, **kwargs)
         return remote
