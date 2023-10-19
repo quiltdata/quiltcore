@@ -37,7 +37,8 @@ class Manifest2(Child):
         """
         manifests = params["manifests"]
         namespace = params["namespace"]
-        list4 = self.table().relax(install_dir)
+        source_dir = params["store"]
+        list4 = self.table().relax(install_dir, source_dir)
         local_manifest = manifests / self.name
         Tabular.Write4(list4, local_manifest)
         # Requires `parent` to be the Namespace containing `manifests`

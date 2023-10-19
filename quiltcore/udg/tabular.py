@@ -70,11 +70,11 @@ class Tabular(Keyed):
         super().__init__(**kwargs)
         self.path = path
         self.codec = Codec()
-        self.base = self.path.parent.parent.parent
+        self.store = self.path.parent.parent.parent
         self.table = self._get_table()
         self.head = self._get_head()
         self.body = self._get_body()
-        logging.debug(f"Tabular.__init__: {self.base} <- {self.path}")
+        logging.debug(f"Tabular.__init__: {self.store} <- {self.path}")
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.path})"
@@ -126,24 +126,27 @@ class Tabular(Keyed):
 
     def as_path(self, place: str) -> Path:
         """Convert a place string into a Path."""
+        print(f"as_path: {place}")
         assert isinstance(place, str)
         assert len(place) > 1
         match place[0]:
             case self.HEADER_NAME:
-                return self.base / place[2:]
+                return self.store / place[2:]
             case "/":
                 return Path(place)
             case _:
-                return self.codec.AsPath(place)
+                if "://" in place:
+                    return self.codec.AsPath(place)
+        raise ValueError(f"as_path: {place}")
 
     def as_place(self, path: Path) -> str:
         """Convert a Path back into a place string."""
-        path = self.codec.RelativePath(path, self.base)
+        path = self.codec.RelativePath(path, self.store)
         return self.codec.AsString(path)
 
     # Relaxation
 
-    def relax(self, install_dir: Path) -> List4:
+    def relax(self, install_dir: Path, source_dir: Path | None = None) -> List4:
         """Relax each row of this remote Table into local install_dir."""
         assert install_dir.exists() and install_dir.is_dir()
         return [self._relax(row, install_dir / name) for name, row in self.items()]

@@ -10,7 +10,6 @@ from .factory import quilt
 from .manifest2 import Manifest2
 from .udg.folder import Folder
 from .udg.node import Node
-from .udg.types import List4
 from .config.data import Data
 from .config.udi import UDI
 
@@ -163,10 +162,6 @@ class Domain(Folder):
         """Return the URI for this path."""
         uri = self.data_yaml.folder2uri(str(path))
         return UDI.FromUri(uri)
-
-    def to_list4(self, folder: Path, glob=Folder.DEFAULT_GLOB) -> List4:
-        """Generate to_dict4 for each file in path matching glob."""
-        return [self.dict4_from_path(file) for file in folder.rglob(glob)]
 
     def get_pkg_name(self, path: Path, **kwargs) -> str:
         pkg = kwargs.get(self.K_PACKAGE, None)

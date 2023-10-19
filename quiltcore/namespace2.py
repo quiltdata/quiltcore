@@ -100,7 +100,7 @@ class Namespace2(Folder):
             "manifests": self.manifests,
             "namespace": self,
             "store": domain.store,
-            "package_path": domain.package_path(self.name)
+            "package_path": domain.package_path(self.name),
         }
 
     def pull(self, manifest: Manifest2, install_dir: Path, **flags) -> Tag:

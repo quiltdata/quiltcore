@@ -17,7 +17,7 @@ class FolderBuilder(Folder):
         self.body4: list | None = None
 
     def update(self):
-        self.body4 = [self.dict4_from_path(Path(f)) for f in self.keys()]
+        self.body4 = self.to_list4(self.path)
 
     def list4(self) -> List4:
         """Return a list4 of the manifest."""

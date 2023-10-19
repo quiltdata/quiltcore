@@ -3,6 +3,7 @@ from typing import Iterator
 
 from .child import Child
 from .node import Node
+from .types import List4
 
 
 class Folder(Child):
@@ -29,3 +30,7 @@ class Folder(Child):
     def __iter__(self) -> Iterator[str]:
         gen = self.path.rglob(self.glob) if self.recurse else self.path.glob(self.glob)
         return (str(x.relative_to(self.path)) for x in gen)
+
+    def to_list4(self, folder: Path, glob=DEFAULT_GLOB) -> List4:
+        """Generate to_dict4 for each file in path matching glob."""
+        return [self.dict4_from_path(file) for file in folder.rglob(glob)]
