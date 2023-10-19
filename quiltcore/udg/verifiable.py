@@ -1,6 +1,7 @@
 import logging
 from json import JSONEncoder
 from pathlib import Path
+from os import stat_result
 
 from .codec import Codec, Dict4, Multihash
 from .keyed import Keyed
@@ -18,14 +19,23 @@ class Verifiable(Keyed):
     def UpdateDict4(cls, base: Dict4, path: Path) -> Dict4:
         """Update metadata for a relaxed file."""
         assert isinstance(base.info, dict)
-        stat = path.stat()
-        base.size = stat.st_size
         base.place = str(path)
-        base.info["mode"] = stat.st_mode
-        base.info["mtime"] = stat.st_mtime
-        base.info["ctime"] = stat.st_ctime
         base.info["tombstone"] = False
         base.info["prior"] = base.multihash
+        stat = path.stat()
+        if isinstance(stat, stat_result):
+            base.size = stat.st_size
+            base.info["mode"] = stat.st_mode
+            base.info["mtime"] = stat.st_mtime
+            base.info["ctime"] = stat.st_ctime
+        elif isinstance(stat, dict):
+            # TODO: whitelist only the values we care about
+            assert "size" in stat
+            for key in stat.keys():  # type: ignore
+                if key not in base.info:
+                    base.info[key] = stat[key]
+        else:
+            logging.error(f"UpdateDict4: unknown stat type {stat} ->  {base}\n{path}")
         return base
 
     def __init__(self, codec: Codec, **kwargs):

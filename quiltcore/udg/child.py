@@ -30,6 +30,7 @@ class Child(Node):
         return self.cf.encode_dict4(dict4)
 
     def save_manifest(self, list4: List4, path: Path, writeJSON=True) -> Path:
+        assert list4, "save_manifest: list4 is empty; cannot save to {path}}"
         parquet_path = Tabular.WriteParquet(list4, path)
         if writeJSON:
             head4 = list4.pop()

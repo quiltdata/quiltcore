@@ -1,5 +1,6 @@
 import logging  # noqa: E402
 
+from datetime import datetime
 from dataclasses import dataclass, asdict
 from json import dumps as json_dumps
 from pathlib import Path
@@ -99,7 +100,11 @@ class Types:
 @dataclass
 class DataDict:
     def to_dict(self) -> dict:
-        return asdict(self)
+        raw_dict = asdict(self)
+        for k, v in raw_dict.items():
+            if isinstance(v, datetime):
+                raw_dict[k] = str(v)
+        return raw_dict
 
 
 @dataclass
@@ -115,6 +120,7 @@ class Dict3(DataDict):
     size: int
     hash: Hash3
     meta: Optional[dict] = None
+    workflow: Optional[str] = None
 
 
 @dataclass
@@ -125,13 +131,14 @@ class Dict4(DataDict):
     multihash: str
     info: dict  # was (system) metadata
     meta: dict  # was user_meta
+    workflow: Optional[str] = None
 
     def to_parquet_dict(self) -> dict:
         map = self.to_dict()
         for field in Types.K_JSON_FIELDS:
             if field in map:
                 json_field = f"{field}.json"
-                map[json_field] = json_dumps(map[field])
+                map[json_field] = json_dumps(map[field], default=str)
                 del map[field]
         return map
 

@@ -13,7 +13,7 @@ from quiltcore import Domain, Manifest2, UDI
 
 from .conftest import LOCAL_ONLY
 
-TIME_NOW = Domain.Now()
+TIME_NOW = Domain.TimeStamp()
 
 if LOCAL_ONLY:
     skip(allow_module_level=True)
