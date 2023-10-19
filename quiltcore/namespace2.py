@@ -87,7 +87,7 @@ class Namespace2(Folder):
     def _save(self, list4: List4, top_hash: str):
         manifest_path = self.manifests / top_hash
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
-        Tabular.Write4(list4, manifest_path)
+        Tabular.WriteParquet(list4, manifest_path)
 
     #
     # PULL via relaxation

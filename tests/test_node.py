@@ -1,9 +1,13 @@
 import pytest
 from upath import UPath
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
 
 from quiltcore import (
     Codec,
     Domain,
+    Table3,
     Entry2,
     Factory,
     Keyed,
@@ -20,6 +24,7 @@ from .conftest import (
     LOCAL_URI,
     LOCAL_VOL,
     TEST_HASH,
+    TEST_MAN,
     TEST_PKG,
     TEST_S3VER,
     TEST_TAG,
@@ -140,3 +145,15 @@ def test_node_path():
     assert p2.exists()
     p3 = Types.AsPath("file://./path")
     assert not p3.exists()
+
+
+def test_node_save_manifest():
+    path = Types.AsPath(TEST_MAN)
+    table3 = Table3(path)
+    man = Domain.FromURI(LOCAL_URI)[TEST_PKG][TEST_TAG]
+
+    with TemporaryDirectory() as tmpdirname:
+        root = Path(tmpdirname)
+        list4 = table3.relax(root)
+        pout = root / "test.parquet"
+        man.save_manifest(list4, pout, True)

@@ -44,6 +44,7 @@ from .table3 import Table3  # noqa: F401
 from .table4 import Table4  # noqa: F401
 from .udg.types import Dict3, Dict4, Hash3, Multihash, Types  # noqa: F401
 from .udg.codec import Codec  # noqa: F401
+from .udg.folder import Folder  # noqa: F401
 from .udg.keyed import Keyed  # noqa: F401
 from .udg.node import Node  # noqa: F401
 from .udg.verifiable import Verifiable  # noqa: F401

@@ -73,11 +73,12 @@ def test_arrow_relax():
     table3 = Table3(path)
     assert table3
     with TemporaryDirectory() as tmpdirname:
-        f = Path(tmpdirname)
-        pout = f / "test.parquet"
-        list4 = table3.relax(f)
-        Table4.Write4(list4, pout)
-        table4 = Table4(pout)
+        root = Path(tmpdirname)
+        pout = root / "test"
+        list4 = table3.relax(root)
+        Table4.WriteParquet(list4, pout)
+        ppout = pout.with_suffix(Table4.EXT4)
+        table4 = Table4(ppout)
         assert table4
         meta = table4.head.info
         assert meta

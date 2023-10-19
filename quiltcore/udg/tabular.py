@@ -10,8 +10,10 @@ from typing import Iterator
 
 from .codec import Codec
 from .keyed import Keyed
-from .types import Dict4, List4, Types
+from .types import Dict3, Dict4, List4, Types
 from .verifiable import Verifiable
+
+from jsonlines import Writer  # type: ignore
 
 
 class Tabular(Keyed):
@@ -21,7 +23,20 @@ class Tabular(Keyed):
     REL_PATH = "./"
 
     @staticmethod
-    def Write4(list4: List4, path: Path) -> Path:
+    def WriteJSON(head: dict, rows: list[Dict3], path: Path) -> None:
+        """Write manifest contents to _path_"""
+        logging.debug(f"Write3: {path}")
+        with path.open(mode="wb") as fo:
+            with Writer(fo) as writer:
+                logging.debug(f"head: {head}")
+                writer.write(head)
+                for row in rows:
+                    if not isinstance(row, Dict3):
+                        raise ValueError("")
+                    writer.write(row.to_dict())
+
+    @staticmethod
+    def WriteParquet(list4: List4, path: Path) -> Path:
         """Write a list4 to a parquet file."""
         parquet_path = path.with_suffix(Tabular.EXT4)
         dicts = [dict4.to_parquet_dict() for dict4 in list4]
@@ -49,7 +64,7 @@ class Tabular(Keyed):
         return table
 
     @staticmethod
-    def Read4(path: Path) -> pa.Table:
+    def ReadParquet(path: Path) -> pa.Table:
         """Read a parquet file into a pa.Table."""
         with path.open(mode="rb") as fi:
             table = ParquetFile(fi).read()

@@ -13,7 +13,7 @@ class Types:
     HEADER_NAME = "."
     HEADER_V3 = "v0"
     HEADER_V4 = "v4"
-    MULTIHASH = "Qm"
+    MULTIHASH = "1220"
 
     IS_LOCAL = compile(r"file:\/*")
     IS_WINDRIVE = compile(r"^([a-z])\\")

@@ -77,7 +77,7 @@ class Entry2(Child, Dict4, Types):
         return path
 
     def to_dict3(self) -> Dict3:
-        return self.cf.encode(self)
+        return self.cf.encode_dict4(self)
 
     #
     # Public Methods

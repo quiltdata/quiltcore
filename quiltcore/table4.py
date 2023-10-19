@@ -10,7 +10,7 @@ class Table4(Tabular):
     """Abstract Pyarrow table of quilt4 Parquet manifest."""
 
     def _get_table(self) -> pa.Table:
-        return self.Read4(self.path)
+        return self.ReadParquet(self.path)
 
     def _get_head(self) -> pa.Table:
         """Extract header values into attributes."""

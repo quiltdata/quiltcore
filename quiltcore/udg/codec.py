@@ -140,7 +140,7 @@ class Codec(Config, Types):
         hashable[self.K_META] = obj.info  # or {}
         return hashable
 
-    def encode(self, obj: Dict4) -> Dict3:
+    def encode_dict4(self, obj: Dict4) -> Dict3:
         """Encode Dict4 attributes into Dict3 for a manifest row."""
         row: dict[str, Any] = {}
         for key3, opts in self.coding.items():
@@ -195,7 +195,7 @@ class Codec(Config, Types):
     # Decoder Methods
     #
 
-    def decode_dict(self, row: Dict3) -> Dict4:
+    def decode_dict3(self, row: Dict3) -> Dict4:
         """Return a dict of decoded values."""
         decoded: dict[str, Any] = {self.K_META: {}}
         for key, value in row.to_dict().items():

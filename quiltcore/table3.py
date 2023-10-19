@@ -58,7 +58,7 @@ class Table3(Tabular):
     def get_dict4(self, key: str) -> Dict4:
         """Return the dict4 for a child resource."""
         pa_dict3 = self.get_dict3(key)
-        return self.codec.decode_dict(pa_dict3)
+        return self.codec.decode_dict3(pa_dict3)
 
     #
     # Translate Table
