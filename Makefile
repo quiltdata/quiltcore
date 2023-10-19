@@ -2,6 +2,7 @@ sinclude .env # create from example.env
 .PHONY: install lint test watch all clean check typecheck
 PROJECT=quiltcore
 TEST_README=--codeblocks
+LOCAL_ONLY=False
 
 ifeq ($(TEST_OS),windows-latest)
 	TEST_README=''

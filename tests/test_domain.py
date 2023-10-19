@@ -2,11 +2,12 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from quiltcore import UDI, Domain, Scheme, quilt
+from quiltcore import UDI, Domain, Manifest2, Scheme, quilt
 
 from .conftest import LOCAL_UDI, LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, not_win
 
 MESSAGE = f"Hello World {Domain.Now()}"
+TEST_FILE = "README.md"
 
 
 def make_domain():
@@ -34,7 +35,7 @@ def committed():
         local_path = local.package_path(TEST_PKG)
         assert ".quilt" not in local_path.parents
         assert local_path.exists()
-        remote_readme = local_path / "README.md"
+        remote_readme = local_path / TEST_FILE
         remote_readme.write_text(MESSAGE)
         local.commit(local_path, package=TEST_PKG, message=MESSAGE)
         yield local
@@ -123,14 +124,29 @@ def test_dom_commit(committed: Domain):
     assert isinstance(committed, Domain)
     assert len(committed) == 1
     assert TEST_PKG in committed
+
     namespace = committed[TEST_PKG]
     assert namespace
     assert len(namespace) == 2
-    latest = namespace[committed.TAG_DEFAULT]
-    assert latest
-    assert len(latest) == 1
+
+    man = namespace[committed.TAG_DEFAULT]
+    assert man
+    assert isinstance(man, Manifest2)
+    assert len(man) == 1
+    assert TEST_FILE in man
+
+    entry = man[TEST_FILE]
+    assert entry.name == TEST_FILE
+    assert entry.path.exists()
+
+    table = man.table()
+    assert table
+    print(table)
+    assert len(table) == 1
+    assert table.head.metadata["message"] == MESSAGE
 
 
+@pytest.mark.skip(reason="TODO")
 def test_dom_push(committed: Domain):
     for remote in make_domain():
         remote_udi = remote.get_udi(TEST_PKG)

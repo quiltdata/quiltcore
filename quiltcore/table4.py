@@ -34,10 +34,10 @@ class Table4(Tabular):
         """Return the row for a child resource."""
         condition = pa.compute.equal(self.body.column("name"), key)
         result = self.body.filter(condition).to_pylist()
-        assert len(result) == 1
-        return result[0]
+        return result[0] if len(result) else {}
 
     def get_dict4(self, key: str) -> Dict4:
         """Return the dict4 for a child resource."""
         row = self.get_row(key)
+        assert row, f"Missing row for {key}"
         return Dict4(**row)
