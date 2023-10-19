@@ -168,7 +168,7 @@ class Tabular(Keyed):
 
     def relax(self, install_dir: Path, source_dir: Path | None = None) -> List4:
         """Relax each row of this remote Table into local install_dir."""
-        assert install_dir.exists() and install_dir.is_dir()
+        install_dir.mkdir(parents=True, exist_ok=True)
         return [self._relax(row, install_dir / name) for name, row in self.items()]
 
     def _relax(self, row: Dict4, install_path: Path) -> Dict4:

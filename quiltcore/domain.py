@@ -111,7 +111,6 @@ class Domain(Folder):
         assert self.is_mutable, "Can not pull into read-only Domain"
         install_dir = install_folder or self.package_path(udi.package)
         install_dir.mkdir(parents=True, exist_ok=True)
-        assert install_dir.is_dir(), f"install_dir not a directory: {install_dir}"
         self._track_lineage("pull", udi, install_dir, **kwargs)
         try:
             manifest = self.GetRemoteManifest(udi)
