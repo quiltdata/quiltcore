@@ -10,7 +10,10 @@ from typing import Iterator
 
 from .codec import Codec
 from .keyed import Keyed
-from .types import Dict4, List4, Types
+from .types import Dict3, Dict4, List4, Types
+from .verifiable import Verifiable
+
+from jsonlines import Writer  # type: ignore
 
 
 class Tabular(Keyed):
@@ -20,7 +23,21 @@ class Tabular(Keyed):
     REL_PATH = "./"
 
     @staticmethod
-    def Write4(list4: List4, path: Path) -> Path:
+    def WriteJSON(head: dict, rows: list[Dict3], path: Path) -> None:
+        """Write manifest contents to _path_"""
+        logging.debug(f"Write3: {path}")
+        with path.open(mode="wb") as fo:
+            with Writer(fo) as writer:
+                logging.debug(f"head: {head}")
+                writer.write(head)
+                for row in rows:
+                    if not isinstance(row, Dict3):
+                        raise ValueError("")
+                    json_dict = row.to_dict()
+                    writer.write(json_dict)
+
+    @staticmethod
+    def WriteParquet(list4: List4, path: Path) -> Path:
         """Write a list4 to a parquet file."""
         parquet_path = path.with_suffix(Tabular.EXT4)
         dicts = [dict4.to_parquet_dict() for dict4 in list4]
@@ -29,18 +46,29 @@ class Tabular(Keyed):
         return parquet_path
 
     @staticmethod
-    def UnparseTable(table: pa.Table) -> pa.Table:
-        """Unaparse K_METADATA column."""
-        json_col = table.column(Types.K_META_JSON)
+    def ParseColumn(table: pa.Table, field: str) -> pa.Table:
+        """Parse JSON column."""
+        json_field = f"{field}.json"
+        col_id = table.schema.get_field_index(json_field)
+        if col_id < 0:
+            return table
+
+        json_col = table.column(json_field)
         table = table.append_column(
-            Types.K_METADATA,
+            field,
             pa.array([json.loads(x.as_py()) for x in json_col]),
         )
-        table = table.remove_column(table.num_columns - 2)
+        return table.remove_column(col_id)
+
+    @staticmethod
+    def UnparseTable(table: pa.Table) -> pa.Table:
+        """Parse all JSON_FIELDS column."""
+        for field in Types.K_JSON_FIELDS:
+            table = Tabular.ParseColumn(table, field)
         return table
 
     @staticmethod
-    def Read4(path: Path) -> pa.Table:
+    def ReadParquet(path: Path) -> pa.Table:
         """Read a parquet file into a pa.Table."""
         with path.open(mode="rb") as fi:
             table = ParquetFile(fi).read()
@@ -61,11 +89,17 @@ class Tabular(Keyed):
         super().__init__(**kwargs)
         self.path = path
         self.codec = Codec()
-        self.base = self.path.parent.parent.parent
+        self.store = self.path.parent.parent.parent
         self.table = self._get_table()
         self.head = self._get_head()
         self.body = self._get_body()
-        logging.debug(f"Tabular.__init__: {self.base} <- {self.path}")
+        logging.debug(f"Tabular.__init__: {self.store} <- {self.path}")
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.path})"
+
+    def __str__(self) -> str:
+        return self.table.__str__()
 
     #
     # Parse Table
@@ -73,6 +107,7 @@ class Tabular(Keyed):
 
     def first(self) -> dict:
         header = self.table.take([0])
+        assert header, f"No header row found for {self.path}:\n${self.table}"
         return header.to_pylist()[0]
 
     def _get_table(self) -> pa.Table:
@@ -111,22 +146,30 @@ class Tabular(Keyed):
 
     def as_path(self, place: str) -> Path:
         """Convert a place string into a Path."""
+        logging.debug(f"as_path: {place}")
         assert isinstance(place, str)
         assert len(place) > 1
         match place[0]:
             case self.HEADER_NAME:
-                return self.base / place[2:]
+                return self.store / place[2:]
             case "/":
                 return Path(place)
             case _:
-                return self.codec.AsPath(place)
+                if "://" in place:
+                    return self.codec.AsPath(place)
+        raise ValueError(f"as_path: {place}")
 
     def as_place(self, path: Path) -> str:
         """Convert a Path back into a place string."""
-        path = self.codec.RelativePath(path, self.base)
-        return self.codec.AsStr(path)
+        path = self.codec.RelativePath(path, self.store)
+        return self.codec.AsString(path)
 
     # Relaxation
+
+    def relax(self, install_dir: Path, source_dir: Path | None = None) -> List4:
+        """Relax each row of this remote Table into local install_dir."""
+        install_dir.mkdir(parents=True, exist_ok=True)
+        return [self._relax(row, install_dir / name) for name, row in self.items()]
 
     def _relax(self, row: Dict4, install_path: Path) -> Dict4:
         """Relax remote_path of each row into local install_path."""
@@ -136,10 +179,4 @@ class Tabular(Keyed):
         assert remote_path.exists(), f"_relax: {remote_path} not found for {row.place}"
         with remote_path.open("rb") as fi:
             install_path.write_bytes(fi.read())
-        row.place = self.as_place(install_path)
-        return row
-
-    def relax(self, install_dir: Path) -> List4:
-        """Relax each row of this remote Table into local install_dir."""
-        assert install_dir.exists() and install_dir.is_dir()
-        return [self._relax(row, install_dir / name) for name, row in self.items()]
+        return Verifiable.UpdateDict4(row, install_path)

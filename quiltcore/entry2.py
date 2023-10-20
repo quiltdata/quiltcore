@@ -46,12 +46,18 @@ class Entry2(Child, Dict4, Types):
 
     def extend_parent_path(self, key: str) -> Path:
         self.versionId = self.GetQuery(key, self.cf.K_VER)
-        if self.IS_REL not in key:
+        # Check if key is a URI or absolute path
+        if self.IS_URI in key or Path(key).is_absolute():
             return UPath(key)
         if self.cf.IS_LOCAL.match(key) is not None:
             key = self.cf.IS_LOCAL.sub("", key)
-        path = Domain.FindStore(self) / key
-        logging.debug(f"{key} -> {path} [{path.absolute()}]")
+        assert self.parent is not None, "Missing parent Manifest"
+        namespace = self.parent.parent
+        assert namespace is not None, "Missing grandparent Namespace"
+        store = Domain.FindStore(namespace)
+        if namespace.name not in str(store):
+            store = store / namespace.name
+        path = store / key
         return path
 
     #
@@ -69,7 +75,7 @@ class Entry2(Child, Dict4, Types):
         return path
 
     def to_dict3(self) -> Dict3:
-        return self.cf.encode(self)
+        return self.cf.encode_dict4(self)
 
     #
     # Public Methods
@@ -85,5 +91,5 @@ class Entry2(Child, Dict4, Types):
         assert isinstance(self.parent, Manifest2)
         clone = Entry2(self.name, self.parent)
         logging.debug(f"clone[{type(path)}]: {path.stat()}")
-        clone.args[self.cf.K_PLC] = self.cf.AsStr(path)
+        clone.args[self.cf.K_PLC] = self.cf.AsString(path)
         return clone

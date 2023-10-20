@@ -1,4 +1,5 @@
 from .config import Config
+from .udi import UDI
 
 
 class Spec(Config):
@@ -10,6 +11,14 @@ class Spec(Config):
         super().__init__()
         self.name = name
         self.update = update
+
+    def udi(self) -> UDI:
+        udi_string = self.pkg("udi")
+        return UDI.FromUri(udi_string)
+
+    def udi_new(self) -> UDI:
+        udi_string = f"quilt+{self.registry()}#package={self.name}"
+        return UDI.FromUri(udi_string)
 
     def pkg(self, key: str) -> str:
         _pkg = self.get_dict(self.K_CFG)

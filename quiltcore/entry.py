@@ -36,7 +36,7 @@ class Entry(ResourceKey, Dict4):
     #
 
     def to_dict3(self) -> Dict3:
-        row = self.codec.encode(self)
+        row = self.codec.encode_dict4(self)
         # row[self.KEY_PATH] = self.path
         return row
 
@@ -69,5 +69,5 @@ class Entry(ResourceKey, Dict4):
         kwargs = self.to_dict3().to_dict()
         clone = Entry(path.resolve(), **kwargs)
         logging.debug(f"clone[{type(path)}]: {path.stat()}")
-        clone.args[self.cf.K_PLC] = self.codec.AsStr(path)
+        clone.args[self.cf.K_PLC] = self.codec.AsString(path)
         return clone

@@ -1,5 +1,6 @@
 import logging  # noqa: E402
 
+from datetime import datetime
 from dataclasses import dataclass, asdict
 from json import dumps as json_dumps
 from pathlib import Path
@@ -13,11 +14,12 @@ class Types:
     HEADER_NAME = "."
     HEADER_V3 = "v0"
     HEADER_V4 = "v4"
-    MULTIHASH = "Qm"
+    MULTIHASH = "1220"
 
     IS_LOCAL = compile(r"file:\/*")
     IS_WINDRIVE = compile(r"^([a-z])\\")
 
+    K_JSON_FIELDS = ["info", "meta"]
     K_METADATA = "metadata"
     K_META_JSON = "meta.json"
     K_MESSAGE = "message"
@@ -39,12 +41,12 @@ class Types:
     URI_SPLIT = "://"
 
     @classmethod
-    def AsStr(cls, object) -> str:
+    def AsString(cls, object) -> str:
         """Return a string from a simple object."""
         if isinstance(object, UPath) and object.exists():
             versionId = cls.StatVersion(object)
             if versionId:
-                logging.debug(f"AsStr.versionId: {versionId}")
+                logging.debug(f"AsString.versionId: {versionId}")
                 return f"{object}?{cls.K_VER}={versionId}"
         if isinstance(object, Path):
             object = str(object.as_posix())
@@ -81,7 +83,7 @@ class Types:
             return stat.get(cls.K_UVER, None)
         if hasattr(stat, "cls.K_UVER"):
             return getattr(stat, cls.K_UVER)
-        logging.warning(f"StatVersion: {path} -> {stat} has no {cls.K_UVER}")
+        logging.debug(f"StatVersion: {path} -> {stat} has no {cls.K_UVER}")
         return None
 
     @classmethod
@@ -98,7 +100,11 @@ class Types:
 @dataclass
 class DataDict:
     def to_dict(self) -> dict:
-        return asdict(self)
+        raw_dict = asdict(self)
+        for k, v in raw_dict.items():
+            if isinstance(v, datetime):
+                raw_dict[k] = str(v)
+        return raw_dict
 
 
 @dataclass
@@ -114,6 +120,7 @@ class Dict3(DataDict):
     size: int
     hash: Hash3
     meta: Optional[dict] = None
+    workflow: Optional[str] = None
 
 
 @dataclass
@@ -122,12 +129,17 @@ class Dict4(DataDict):
     place: str
     size: int
     multihash: str
-    metadata: Optional[dict]
+    info: dict  # was (system) metadata
+    meta: dict  # was user_meta
+    workflow: Optional[str] = None
 
-    def to_parquet_dict(self):
+    def to_parquet_dict(self) -> dict:
         map = self.to_dict()
-        map[Types.K_META_JSON] = json_dumps(map[Types.K_METADATA])
-        del map[Types.K_METADATA]
+        for field in Types.K_JSON_FIELDS:
+            if field in map:
+                json_field = f"{field}.json"
+                map[json_field] = json_dumps(map[field], default=str)
+                del map[field]
         return map
 
 

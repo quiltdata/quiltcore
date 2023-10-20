@@ -1,9 +1,14 @@
 import pytest
 from upath import UPath
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
 
 from quiltcore import (
     Codec,
     Domain,
+    Table3,
+    Entry2,
     Factory,
     Keyed,
     Manifest2,
@@ -14,7 +19,16 @@ from quiltcore import (
     quilt,
 )
 
-from .conftest import LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, TEST_S3VER, TEST_TAG
+from .conftest import (
+    LOCAL_ONLY,
+    LOCAL_URI,
+    LOCAL_VOL,
+    TEST_HASH,
+    TEST_MAN,
+    TEST_PKG,
+    TEST_S3VER,
+    TEST_TAG,
+)
 
 QKEYS = ["file", LOCAL_VOL, TEST_PKG, "latest"]
 QTYPE = [Scheme, Domain, Namespace2, Manifest2]
@@ -75,15 +89,15 @@ def test_node_names():
     assert isinstance(ns, Namespace2)
     assert isinstance(ns.parent, Domain)
 
-    q3hash = ns.get_q3hash(TEST_TAG)
+    q3hash = ns.read_hash_from_tag(TEST_TAG)
     assert q3hash == TEST_HASH
-    assert q3hash == ns.get_q3hash(TEST_HASH)
-    assert q3hash == ns.get_q3hash(TEST_HASH[:6])
+    assert q3hash == ns.read_hash_from_tag(TEST_HASH)
+    assert q3hash == ns.read_hash_from_tag(TEST_HASH[:6])
 
     with pytest.raises(ValueError):
-        ns.get_q3hash("not-a-hash")
+        ns.read_hash_from_tag("not-a-hash")
     with pytest.raises(ValueError):
-        ns.get_q3hash("92")  # ambiguous
+        ns.read_hash_from_tag("92")  # ambiguous
 
 
 def test_node_man():
@@ -100,7 +114,20 @@ def test_node_man():
     assert man.path.exists()
 
 
-def test_node_tutorial():
+def test_node_entry():
+    man = Domain.FromURI(LOCAL_URI)[TEST_PKG][TEST_TAG]
+    store = Domain.FindStore(man)
+    assert store
+    for key in man:
+        entry = man[key]
+        assert entry is not None
+        assert entry.name == key
+        assert isinstance(entry, Entry2)
+        assert entry.path.exists()
+        assert entry.path.is_relative_to(store)
+
+
+def test_node_children():
     node = quilt
     for key in QMAP:
         node_type = QMAP[key]
@@ -109,6 +136,7 @@ def test_node_tutorial():
     assert node.path.exists()
 
 
+@pytest.mark.skipif(LOCAL_ONLY, reason="skip network tests")
 def test_node_path():
     p1 = Types.AsPath(TEST_S3VER)
     assert p1.exists()
@@ -117,3 +145,15 @@ def test_node_path():
     assert p2.exists()
     p3 = Types.AsPath("file://./path")
     assert not p3.exists()
+
+
+def test_node_save_manifest():
+    path = Types.AsPath(TEST_MAN)
+    table3 = Table3(path)
+    man = Domain.FromURI(LOCAL_URI)[TEST_PKG][TEST_TAG]
+
+    with TemporaryDirectory() as tmpdirname:
+        root = Path(tmpdirname)
+        list4 = table3.relax(root)
+        pout = root / "test.parquet"
+        man.save_manifest(list4, pout, True)

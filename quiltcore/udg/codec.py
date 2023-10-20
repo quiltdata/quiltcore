@@ -8,7 +8,7 @@ from urllib.parse import quote, unquote
 from multiformats import multihash
 from typing_extensions import Any
 
-from ..yaml.config import Config
+from ..config.config import Config
 from .types import Dict3, Dict4, Hash3, Multihash, Types
 
 
@@ -30,7 +30,8 @@ class Codec(Config, Types):
     physical_keys | place
     size          | size
     hash          | multihash
-    meta          | metadata
+    meta          | info
+    meta.user_meta| meta
     """
 
     def __init__(self, scheme="quilt3") -> None:
@@ -136,10 +137,10 @@ class Codec(Config, Types):
             self.K_HASH: self.encode_hash(obj.multihash),
             self.K_SIZE: obj.size,
         }
-        hashable[self.K_META] = obj.metadata  # or {}
+        hashable[self.K_META] = obj.info  # or {}
         return hashable
 
-    def encode(self, obj: Dict4) -> Dict3:
+    def encode_dict4(self, obj: Dict4) -> Dict3:
         """Encode Dict4 attributes into Dict3 for a manifest row."""
         row: dict[str, Any] = {}
         for key3, opts in self.coding.items():
@@ -182,7 +183,7 @@ class Codec(Config, Types):
         if isinstance(value, datetime):
             value = self.encode_date(value)
         if self.check(self.T_QTD):
-            value = self.AsStr(value)
+            value = self.AsString(value)
             value = quote(value, safe=self.UNQUOTED)
 
         if self.check(self.T_LST):
@@ -194,13 +195,16 @@ class Codec(Config, Types):
     # Decoder Methods
     #
 
-    def decode_dict(self, row: Dict3) -> Dict4:
+    def decode_dict3(self, row: Dict3) -> Dict4:
         """Return a dict of decoded values."""
-        decoded: dict[str, Any] = {}
+        decoded: dict[str, Any] = {self.K_META: {}}
         for key, value in row.to_dict().items():
             opts = self.coding.get(key, {})
             name = opts.get(self.K_NAM, key)
             decoded[name] = self.decode_value(value, opts)
+        if decoded["info"] and self.K_USER_META in decoded["info"]:
+            decoded["meta"] = decoded["info"][self.K_USER_META]
+            del decoded["info"][self.K_USER_META]
         return Dict4(**decoded)
 
     def decode_item(self, item, opts={}):
@@ -227,7 +231,7 @@ class Codec(Config, Types):
                 raise TypeError(f"Expected list, got {type(value)}: {value}")
 
         if self.check(self.T_QTD):
-            value = self.AsStr(value)
+            value = self.AsString(value)
             value = unquote(value)
 
         if self.check(self.T_HSH):

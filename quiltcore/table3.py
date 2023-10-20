@@ -58,13 +58,13 @@ class Table3(Tabular):
     def get_dict4(self, key: str) -> Dict4:
         """Return the dict4 for a child resource."""
         pa_dict3 = self.get_dict3(key)
-        return self.codec.decode_dict(pa_dict3)
+        return self.codec.decode_dict3(pa_dict3)
 
     #
     # Translate Table
     #
 
-    def relax(self, dest_dir: Path) -> List4:
-        list4 = super().relax(dest_dir)
+    def relax(self, install_dir: Path, source_dir: Path | None = None) -> List4:
+        list4 = super().relax(install_dir, source_dir)
         list4.insert(0, self.head.to_dict4())
         return list4

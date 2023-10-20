@@ -39,7 +39,7 @@ Streamlined manifest schema:
 ### 2. quiltcore.yaml
 
 Rather than hard-coding any constants, all configuration
-parameters are stored in a [yaml file](../quiltcore/yaml/quiltcore.yaml).
+parameters are stored in a [yaml file](../quiltcore/config/quiltcore.yaml).
 
 By making explicit what was previously implicit, this should:
 

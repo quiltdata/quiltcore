@@ -1,4 +1,7 @@
 import pytest
+import yaml
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from quiltcore import UDI
 
@@ -40,3 +43,13 @@ def test_udi_localhost():
     assert local
     assert local.uri == LOCAL_UDI
     assert "localhost" not in local.registry
+
+
+def test_udi_dump_yaml(udi: UDI):
+    with TemporaryDirectory() as tmpdirname:
+        tmpdir = Path(tmpdirname)
+        tmpfile = tmpdir / "udi.yaml"
+        yaml.safe_dump(udi, tmpfile.open("w"))
+        print("test_udi_dump_yaml", tmpfile.read_text())
+        udi_str = yaml.safe_load(tmpfile.open("r"))
+        assert str(udi) == udi_str

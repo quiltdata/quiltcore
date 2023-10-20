@@ -1,7 +1,6 @@
 from .header import Header
 from .udg.node import Node
 from .udg.folder import Folder
-from .udg.tabular import Tabular
 from .udg.types import List4, Multihash
 
 
@@ -13,17 +12,22 @@ class FolderBuilder(Folder):
 
     def __init__(self, path: Path, parent: Node, **kwargs):
         super().__init__(path.name, parent, **kwargs)
-        self.head = Header(path, first=Header.First())
-        self.update()
+        self.path = path
+        self.head: Header | None = None
+        self.body4: list | None = None
 
     def update(self):
-        self.body4 = [self.dict4_from_path(f) for f in self.values()]
+        self.body4 = self.to_list4(self.path)
 
-    def _list4(self) -> List4:
+    def list4(self) -> List4:
         """Return a list4 of the manifest."""
+        assert self.body4 is not None
+        assert self.head is not None
         return [self.head.to_dict4()] + self.body4
 
     def to_bytes(self) -> bytes:
+        assert isinstance(self.body4, list)
+        assert isinstance(self.head, Header)
         hashable = self.head.q3hash()
         for dict4 in self.body4:
             hashable += self.q3hash_from_hash(dict4.multihash)
@@ -31,16 +35,8 @@ class FolderBuilder(Folder):
 
     def commit(self, message: str = "Updated", user_meta: dict = {}) -> Multihash:
         """Commit the changes to the manifest."""
-        setattr(self.head, self.K_MESSAGE, message)
+        self.head = Header(self.path, first=Header.First(message))
         if user_meta:
             setattr(self.head, self.K_USER_META, user_meta)
         self.update()
         return self.hash()
-
-    def save_to(self, namespace: Node, **kwargs) -> Path:
-        """Create manifest at path in namespace."""
-        root = namespace.path
-        root.mkdir(parents=True, exist_ok=True)
-        base = root / self.q3hash()
-        path = Tabular.Write4(self._list4(), base)
-        return path

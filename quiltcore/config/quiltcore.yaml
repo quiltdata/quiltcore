@@ -18,11 +18,15 @@ resources:
   Scheme:
     child: Domain
   Domain:
+    glob: "*/*"
     child: Namespace2
   Namespace2:
     child: Manifest2
   Manifest2:
     child: Entry2
+  FolderBuilder:
+    child: Manifest2
+    recurse: true
 
   Volume:
     child: Manifest
@@ -40,18 +44,15 @@ resources:
     child: Delta
   Builder:
     child: Entry
-  FolderBuilder:
-    child: Manifest2
 quilt4:
   name: string
   place: string
   size: int64
   multihash: string
-  metadata:
+  info:
     message: string
-    user_meta: struct
     version: string
-  _metadata: string
+  meta: struct
 quilt3:
   dirs:
     config: .quilt
@@ -65,6 +66,9 @@ quilt3:
     version: v0
     message: commit message
     user_meta: {}
+  json_fields:
+    - meta
+    - info
   map:
     name: logical_key
   mime_type: application/ld+json
@@ -91,7 +95,7 @@ quilt3:
       name: multihash
       type: struct
     meta:
-      name: metadata
+      name: info
       type: struct
       format:
         user_meta: struct

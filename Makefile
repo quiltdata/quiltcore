@@ -2,6 +2,7 @@ sinclude .env # create from example.env
 .PHONY: install lint test watch all clean check typecheck
 PROJECT=quiltcore
 TEST_README=--codeblocks
+LOCAL_ONLY=False
 
 ifeq ($(TEST_OS),windows-latest)
 	TEST_README=''
@@ -35,8 +36,8 @@ test-local:
 	export LOCAL_ONLY=True; poetry run pytest
 
 lint:
-	poetry run flake8 $(PROJECT) tests
 	poetry run black $(PROJECT) tests
+	poetry run flake8 $(PROJECT) tests
 
 typecheck:
 	poetry run mypy $(PROJECT) tests

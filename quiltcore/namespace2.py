@@ -5,6 +5,8 @@ from pathlib import Path
 from .domain import Domain
 from .manifest2 import Manifest2
 from .udg.folder import Folder
+from .udg.tabular import Tabular
+from .udg.types import List4
 
 Tag = str
 
@@ -18,7 +20,6 @@ class Namespace2(Folder):
     SEP = "/"
     HASH_LEN = 64
     Q3HASH_KEY = "hash"
-    TAG_DEFAULT = "latest"
     K_SAVE = "save"
 
     def __init__(self, name, parent, **kwargs):
@@ -30,7 +31,7 @@ class Namespace2(Folder):
     # GET based on hash
     #
 
-    def get_q3hash(self, key: Tag = TAG_DEFAULT) -> str:
+    def read_hash_from_tag(self, key: Tag = Domain.TAG_DEFAULT) -> str:
         hash_file = self.path / key
         if hash_file.exists():
             return hash_file.read_text()
@@ -51,7 +52,7 @@ class Namespace2(Folder):
         raise ValueError(f"Tag/Hash not found: {key}")
 
     def _get(self, key: Tag):
-        hash = self.get_q3hash(key)
+        hash = self.read_hash_from_tag(key)
         return super()._get(hash)
 
     #
@@ -62,19 +63,18 @@ class Namespace2(Folder):
         """TODO: Validate workflow before setting 'latest' tag."""
         return True
 
-    def put(self, manifest: Manifest2, **options) -> Tag:
+    def put(self, list4: List4, top_hash: str, **options) -> Tag:
         """Store a manifest under this namespace."""
-        hash = manifest.q3hash()
-        logging.debug(f"Namespace2.put: {hash}")
-        tag = self.tag(hash, **options)
-        self._save(manifest, hash)
+        logging.debug(f"Namespace2.put[{top_hash}]")
+        tag = self.tag(top_hash, **options)
+        self._save(list4, top_hash)
         return tag
 
     def tag(self, hash: str, **options) -> Tag:
         tag = self.Now()
         self._put(tag, hash)
         if self._valid(options):
-            self._put(self.TAG_DEFAULT, hash)
+            self._put(Domain.TAG_DEFAULT, hash)
         return tag
 
     def _put(self, tag: Tag, hash: str):
@@ -84,19 +84,30 @@ class Namespace2(Folder):
         hash_file.write_text(hash)
         logging.debug(f"Namespace2.put[{tag}]: {hash_file}")
 
-    def _save(self, manifest: Manifest2, hash: str):
-        man_file = self.manifests / hash
-        man_file.parent.mkdir(parents=True, exist_ok=True)
-        man_file.write_bytes(manifest.to_bytes())
+    def _save(self, list4: List4, top_hash: str):
+        manifest_path = self.manifests / top_hash
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        Tabular.WriteParquet(list4, manifest_path)
 
     #
     # PULL via relaxation
     #
 
-    def pull(self, remote: Manifest2, install_dir: Path, **flags) -> Tag:
+    def relax_params(self) -> dict:
+        domain = self.parent
+        assert isinstance(domain, Domain)
+        return {
+            "manifests": self.manifests,
+            "namespace": self,
+            "store": domain.store,
+            "package_path": domain.package_path(self.name),
+        }
+
+    def pull(self, manifest: Manifest2, install_dir: Path, **flags) -> Tag:
         """PUT relaxed manifest into the namespace."""
-        assert isinstance(remote, Manifest2)
+        assert isinstance(manifest, Manifest2)
         if not flags.get("no_copy", False):
-            remote = remote.relax(install_dir, self.manifests, self)
-            assert remote is not None
-        return self.put(remote)
+            manifest = manifest.relax(install_dir, self.relax_params())
+            assert manifest is not None
+        list4: List4 = manifest.values()  # type: ignore
+        return self.put(list4, manifest.q3hash())

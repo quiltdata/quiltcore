@@ -10,7 +10,7 @@ class Table4(Tabular):
     """Abstract Pyarrow table of quilt4 Parquet manifest."""
 
     def _get_table(self) -> pa.Table:
-        return self.Read4(self.path)
+        return self.ReadParquet(self.path)
 
     def _get_head(self) -> pa.Table:
         """Extract header values into attributes."""
@@ -30,7 +30,14 @@ class Table4(Tabular):
     def names(self) -> list[str]:
         return self.body.column("name").to_pylist()
 
+    def get_row(self, key: str) -> dict:
+        """Return the row for a child resource."""
+        condition = pa.compute.equal(self.body.column("name"), key)
+        result = self.body.filter(condition).to_pylist()
+        return result[0] if len(result) else {}
+
     def get_dict4(self, key: str) -> Dict4:
         """Return the dict4 for a child resource."""
-        row = self.body.filter([pa.field("name", pa.string()) == key])
-        return Dict4(**row.to_pydict())
+        row = self.get_row(key)
+        assert row, f"Missing row for {key}"
+        return Dict4(**row)
