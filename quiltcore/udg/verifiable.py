@@ -67,7 +67,7 @@ class Verifiable(Keyed):
     def to_bytes(self) -> bytes:
         """Return hashable bytes if present."""
         if path := self.hashable_path():
-            return path.read_bytes()
+            return path.read_bytes()  # TODO: pth.open(version_id="B0zNSMELW__87yfYtZcfcdBw3qxHkFhm") as f
         if values := self.hashable_values():
             return values.encode("utf-8")
         if source := self.hashable_dict():

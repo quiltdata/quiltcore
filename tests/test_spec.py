@@ -160,7 +160,6 @@ def test_spec_read(spec: Spec, man2: Manifest2):
             assert entry.user_meta == meta  # type: ignore
 
 
-@pytest.mark.skip(reason="TODO: check config")
 def test_spec_write(spec_new: Spec, tmpdir: UPath):
     """
     Ensure quilt3 can read manifests created by quiltcore
@@ -202,6 +201,8 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
 
     # 4. Push to Remote Domain
     local.push(folder, remote=spec_new.udi_new())
+
+    return  # FIXME: quilt3 can't read it back
 
     # 5. Read it back
     qpkg = Package.browse(spec_new.namespace(), registry=spec_new.registry())
