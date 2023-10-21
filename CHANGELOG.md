@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 0.3.5 (2023-10-21)
+
+- Add workflow to Dict3
+
 ## 0.3.4 (2023-08-09)
 
 - Fix types (missing from package?)

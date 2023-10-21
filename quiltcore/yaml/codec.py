@@ -27,6 +27,7 @@ class Dict3:
     size: int
     hash: Hash3
     meta: Optional[dict] = None
+    workflow: Optional[str] = None
 
 
 @dataclass
@@ -36,6 +37,7 @@ class Dict4:
     size: int
     multihash: str
     metadata: Optional[dict]
+    workflow: Optional[str] = None
 
 
 class Codec(Config):
