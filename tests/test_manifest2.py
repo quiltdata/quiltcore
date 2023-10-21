@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 import pytest
 from upath import UPath
 
-from quiltcore import Codec, Domain, Entry2, Header, Manifest2, quilt
+from quiltcore import Codec, Domain, Entry2, Header, Manifest2, Table4, quilt
 
 from .conftest import (
     LOCAL_ONLY,
@@ -15,6 +15,15 @@ from .conftest import (
     TEST_PKG,
     TEST_S3VER,
 )
+
+
+def dump_manifest(domain: Domain, pkg_name: str):
+    manifest = domain[pkg_name]["latest"]
+    print(f"manifest: {manifest}")
+    print(f"manifest: {manifest.path}")
+    table4 = Table4(manifest.path)
+    print(f"table4:\n{table4}")
+    assert False
 
 
 @pytest.fixture

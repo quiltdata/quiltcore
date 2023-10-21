@@ -28,7 +28,6 @@ class Tabular(Keyed):
         logging.debug(f"Write3: {path}")
         with path.open(mode="wb") as fo:
             with Writer(fo) as writer:
-                logging.debug(f"head: {head}")
                 writer.write(head)
                 for row in rows:
                     if not isinstance(row, Dict3):
