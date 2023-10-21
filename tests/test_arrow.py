@@ -76,8 +76,13 @@ def test_arrow_relax():
         root = Path(tmpdirname)
         pout = root / "test"
         list4 = table3.relax(root)
-        Table4.WriteParquet(list4, pout)
-        ppout = pout.with_suffix(Table4.EXT4)
+        ppout = Table4.ParquetPath(pout)
+        print(f"pout: {pout} ppout: {ppout}")
+        assert pout.parent == ppout.parent
+        assert ppout.name.startswith(Table4.MULTIHASH)
+        assert ppout.name.endswith(Table4.EXT4)
+        p4out = Table4.WriteParquet(list4, pout)
+        assert p4out == ppout
         table4 = Table4(ppout)
         assert table4
         meta = table4.head.info

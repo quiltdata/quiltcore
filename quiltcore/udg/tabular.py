@@ -35,10 +35,22 @@ class Tabular(Keyed):
                     json_dict = row.to_dict()
                     writer.write(json_dict)
 
-    @staticmethod
-    def WriteParquet(list4: List4, path: Path) -> Path:
+    @classmethod
+    def ParquetPath(cls, path: Path) -> Path:
+        """Add prefix 1220 to filename"""
+        filename = cls.MULTIHASH + path.name
+        return path.with_name(filename).with_suffix(cls.EXT4)
+
+    @classmethod
+    def ParquetHash(cls, hash: str) -> str:
+        """Add prefix 1220 to filename"""
+        path = cls.ParquetPath(Path(hash))
+        return path.name
+
+    @classmethod
+    def WriteParquet(cls, list4: List4, path: Path) -> Path:
         """Write a list4 to a parquet file."""
-        parquet_path = path.with_suffix(Tabular.EXT4)
+        parquet_path = cls.ParquetPath(path)
         dicts = [dict4.to_parquet_dict() for dict4 in list4]
         table = pa.Table.from_pylist(dicts)
         pq.write_table(table, parquet_path)
@@ -73,10 +85,10 @@ class Tabular(Keyed):
             table = ParquetFile(fi).read()
             return Tabular.UnparseTable(table)
 
-    @staticmethod
-    def FindTablePath(path: Path) -> Path:
+    @classmethod
+    def FindTablePath(cls, path: Path) -> Path:
         """Find parquet or normal hash."""
-        parquet_path = path.with_suffix(Tabular.EXT4)
+        parquet_path = cls.ParquetPath(path)
         return parquet_path if parquet_path.exists() else path
 
     #
