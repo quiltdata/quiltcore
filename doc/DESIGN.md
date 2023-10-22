@@ -13,20 +13,21 @@ attempts to define a next-generation architecture and primitives
 
 ## Schema
 
-Streamlined manifest schema:
+Streamlined manifest schema ("Dict4")
 
 - name
 - place / path
 - size
 - multihash : quilt3_hash : struct_hash
+- info / sys_meta
 - meta / user_meta
 
 ### Principles
 
 - Must correctly read and write legacy schema
 - Present only new schema
-- decode dict into dict
-- encode attrs into dict
+- decode dict into Dict4
+- encode attrs into UDI (Universal Data Identifier)
 
 ## Architecture
 
@@ -51,17 +52,20 @@ By making explicit what was previously implicit, this should:
 
 3. Rationalize mechanisms for defining alternate manifest formats
 
-### 2. esource
+### 2. Universal Data Graph
 
-The [esource](../quiltcore/resource.py) base class
-provides a common set of abstractions for:
+Effectiely everything is a [Node](../quiltcore/node.py)
+in the Universal Data Graph (UDG).
 
-1. Accessing configuration parameters
+Nodes inherits:
 
-2. Creating child resources
+- Core types (e.g., Dict4)
+- Keyed (implements the Python `MutableMapping` interface)
+- Verifiable (for computing/verifying hashes)
 
-3. Supporting various HTTP-like verbs (e.g., GET, PUT, POST, DELETE, VERIFY)
+Node contains a `Codec` for converting to/from the old quilt3 schema.
 
+Codec inhertis from the `Config` class that uses `quiltcore.yaml` file.
 This implementation dynamically generates behavior directly
 from the configuration file into single-purpose sublasses.
 Other implementations may choose to generate code statically.
@@ -72,20 +76,20 @@ The final leaf node is the [Entry](../quiltcore/entry.py) class.
 This tracks information for each manifest entry, including:
 
 - name: str (logical_key)
-- path: Path (physical_key)
+- place: str (physical_key)
 - size: int
-- hash: str[hex]
 - multihash: str[hex]
+- info: object[metadata]
 - meta: object[metadata]
 
 This also handles individually verifying and uploading data.
 
 ## Open Issues
 
-- Class naming conventions
+- Workflow Support
 
-- Formal specification for conformance
+- Handling S3 Version IDs
 
 - Aggregate uploads/downloads (Async)
 
-- Schema versioning (proactive? where/how?)
+- Testing Python Pathlib on Minio, Azure, etc.
