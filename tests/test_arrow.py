@@ -68,13 +68,13 @@ def test_arrow_table3():
     table3 = Table3(path)
     assert table3
     assert len(table3) == 2
-    assert 'ONLYME.md' in table3
+    assert "ONLYME.md" in table3
 
     assert Table3.HEADER_NAME in table3
     head = table3[Table3.HEADER_NAME]
     assert isinstance(head, Dict4)
     assert head.info[Table3.K_VERSION] == "v0"
-    assert 'ONLYME' in head.info[Table3.K_MESSAGE]
+    assert "ONLYME" in head.info[Table3.K_MESSAGE]
     assert head.meta["Author"] == "Ernest"
 
 
@@ -84,12 +84,12 @@ def test_arrow_table4():
     table4 = Table4(path)
     assert table4
     assert len(table4) == 2
-    assert 'ONLYME.md' in table4
+    assert "ONLYME.md" in table4
     assert Table4.HEADER_NAME in table4
     head = table4[Table4.HEADER_NAME]
     assert isinstance(head, Dict4)
     assert head.info[Table4.K_VERSION] == "v4"
-    assert 'ONLYME' in head.info[Table4.K_MESSAGE]
+    assert "ONLYME" in head.info[Table4.K_MESSAGE]
 
 
 def test_arrow_relax():

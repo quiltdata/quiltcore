@@ -124,7 +124,6 @@ class Verifiable(Keyed):
 
 
 class VerifyDict(Verifiable):
-
     def __init__(self, codec: Codec, hashable: dict, **kwargs):
         super().__init__(codec, **kwargs)
         self.dict = hashable

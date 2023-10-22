@@ -49,7 +49,7 @@ from .udg.folder import Folder  # noqa: F401
 from .udg.keyed import Keyed  # noqa: F401
 from .udg.node import Node  # noqa: F401
 from .udg.tabular import Tabular  # noqa: F401
-from .udg.verifiable import Verifiable  # noqa: F401
+from .udg.verifiable import Verifiable, VerifyDict  # noqa: F401
 from .volume import Volume  # noqa: F401
 from .config.config import Config  # noqa: F401
 from .config.data import Data  # noqa: F401

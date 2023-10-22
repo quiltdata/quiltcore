@@ -9,7 +9,7 @@ from quilt3 import Package  # type: ignore
 from upath import UPath
 
 from quiltcore import Entry2, Header, Spec
-from quiltcore import Domain, Manifest2, UDI
+from quiltcore import Domain, Manifest2, UDI, VerifyDict
 
 from .conftest import LOCAL_ONLY
 
@@ -99,14 +99,16 @@ def test_spec_hash(spec: Spec, q3pkg: Package, man2: Manifest2):
     assert q3_hash == spec.hash(), "q3_hash != spec.hash()"
     top_hash = q3pkg._calculate_top_hash(q3pkg._meta, q3pkg.walk())
     assert q3_hash == top_hash, "q3_hash != pkg._calculate_top_hash()"
-    head = man2.table().head
+    head = man2.table().header
+    assert isinstance(head, Header)
     man_meta = head.hashable_dict()
     pkg_user = q3pkg._meta[man2.K_USER_META]
     man_user = man_meta[man2.K_USER_META]
     assert pkg_user["Date"] == man_user["Date"]  # type: ignore
     assert q3pkg._meta == head.hashable_dict()
+    verify = VerifyDict(man2.cf, q3pkg._meta)
     encoded = json_encode(q3pkg._meta).encode()
-    assert encoded == head.hashable()
+    assert encoded == verify.hashable()
 
     for part in q3pkg._get_top_hash_parts(q3pkg._meta, q3pkg.walk()):
         if "logical_key" in part:
@@ -132,7 +134,7 @@ def test_spec_read(spec: Spec, man2: Manifest2):
     - package-level metadata
     - file-level metadata
     """
-    head = man2.table().head
+    head = man2.table().header
     assert isinstance(head, Header)
     assert hasattr(head, "user_meta")
     assert isinstance(head.user_meta, dict)  # type: ignore

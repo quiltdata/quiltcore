@@ -34,6 +34,7 @@ class Codec(Config, Types):
     meta          | info
     meta.user_meta| meta
     """
+
     ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
 
     @classmethod

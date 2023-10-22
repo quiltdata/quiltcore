@@ -20,7 +20,9 @@ class Header(Codec):
     """
 
     @classmethod
-    def HeaderDict4(cls, message: str = "Updated", user_meta={}, version=Codec.HEADER_V4) -> Dict4:
+    def HeaderDict4(
+        cls, message: str = "Updated", user_meta={}, version=Codec.HEADER_V4
+    ) -> Dict4:
         return Dict4(
             name=cls.HEADER_NAME,
             place=cls.HEADER_NAME,
