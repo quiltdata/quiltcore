@@ -3,8 +3,8 @@ _yaml:
   _version: 0.3.1
   app: quilt
   app_version: 0.4.0
-  doc: quilt3
-  doc_version: 0.2.0
+  doc: quiltcore
+  doc_version: 0.5.1
 multihash:
   prefix:
     SHA256: "1220"
@@ -22,30 +22,13 @@ resources:
   Domain:
     glob: "*/*"
     child: Namespace
-  Namespace2:
+  Namespace:
     child: Manifest
   Manifest:
     child: Entry
   FolderBuilder:
     child: Manifest
     recurse: true
-
-  Volume:
-    child: Manifest
-  Registry:
-    child: Namespace
-    glob: "*/*"
-  Namespace:
-    child: Manifest
-    glob: "*"
-  Manifest:
-    child: Entry
-  Delta:
-    child: Entry
-  Changes:
-    child: Delta
-  Builder:
-    child: Entry
 quilt4:
   name: string
   place: string

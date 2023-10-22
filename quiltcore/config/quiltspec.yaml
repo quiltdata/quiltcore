@@ -27,7 +27,7 @@ workflow:
   successors:
     s3://udp-spec:
       title: QuiltSpec for Universal Data Products
-  is_workflow_required: False
+  is_workflow_required: false
   default_workflow: universal
   workflows:
     universal:

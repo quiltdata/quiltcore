@@ -54,10 +54,16 @@ By making explicit what was previously implicit, this should:
 
 ### 2. Universal Data Graph
 
-Effectiely everything is a [Node](../quiltcore/node.py)
-in the Universal Data Graph (UDG).
+Effectively everything is a [Node](../quiltcore/udg/node.py)
+in the Universal Data Graph (UDG):
 
-Nodes inherits:
+- Domains (storage + mappings)
+- Namespaces (package identifiers)
+- Manifests (package mappings)
+- Entries (package contents)
+- Builder (package construction)
+
+Nodes inherit:
 
 - Core types (e.g., Dict4)
 - Keyed (implements the Python `MutableMapping` interface)
