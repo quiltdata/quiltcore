@@ -5,9 +5,9 @@ import os
 from pathlib import Path
 from upath import UPath
 
-from .builder2 import FolderBuilder
+from .builder import FolderBuilder
 from .factory import quilt
-from .manifest2 import Manifest2
+from .manifest import Manifest2
 from .udg.folder import Folder
 from .udg.node import Node
 from .config.data import Data

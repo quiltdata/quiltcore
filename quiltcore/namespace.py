@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 
 from .domain import Domain
-from .manifest2 import Manifest2
+from .manifest import Manifest2
 from .udg.folder import Folder
 from .udg.tabular import Tabular
 from .udg.types import List4

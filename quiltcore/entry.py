@@ -5,7 +5,7 @@ from urllib.parse import parse_qs, urlparse
 from upath import UPath
 
 from .domain import Domain
-from .manifest2 import Manifest2
+from .manifest import Manifest2
 from .udg.child import Child
 from .udg.codec import Dict3, Dict4
 from .udg.types import Types
