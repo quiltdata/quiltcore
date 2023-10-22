@@ -200,24 +200,25 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     assert man
 
     # 4. Push to Remote Domain
-    local.push(folder, remote=spec_new.udi_new())
+    result = local.push(folder, remote=spec_new.udi_new())
+    print(f"pkg_name: {pkg_name} result: {result}")
 
-    return  # FIXME: quilt3 can't read it back
+    # return  # FIXME: quilt3 can't read it back
 
     # 5. Read it back
-    qpkg = Package.browse(spec_new.namespace(), registry=spec_new.registry())
+    qpkg = Package.browse(pkg_name, registry=spec_new.registry())
     assert qpkg
+
+    for filename, filedata in spec_new.files().items():
+        assert filename in qpkg
+        entry = qpkg[filename]
+        assert entry.deserialize() == filedata
 
     meta = qpkg._meta
     new_meta = local.cf.encode_dates(spec_new.metadata())
     assert meta
     assert meta[local.K_USER_META] == new_meta
     assert meta[local.K_MESSAGE] == msg
-
-    for filename, filedata in spec_new.files().items():
-        assert filename in qpkg
-        entry = qpkg[filename]
-        assert entry.deserialize() == filedata
 
 
 @pytest.mark.skip(reason="TODO: implement workflows")
