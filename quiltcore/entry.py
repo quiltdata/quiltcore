@@ -5,13 +5,13 @@ from urllib.parse import parse_qs, urlparse
 from upath import UPath
 
 from .domain import Domain
-from .manifest import Manifest2
+from .manifest import Manifest
 from .udg.child import Child
 from .udg.codec import Dict3, Dict4
 from .udg.types import Types
 
 
-class Entry2(Child, Dict4, Types):
+class Entry(Child, Dict4, Types):
     """
     Represents a single row in a Manifest.
     Attributes:
@@ -36,7 +36,7 @@ class Entry2(Child, Dict4, Types):
         vlist = qs.get(key)
         return vlist[0] if vlist else ""
 
-    def __init__(self, name: str, parent: Manifest2, **kwargs):
+    def __init__(self, name: str, parent: Manifest, **kwargs):
         Child.__init__(self, name, parent, **kwargs)
         row = parent.table()[name]
         Dict4.__init__(self, **row.to_dict())
@@ -84,12 +84,12 @@ class Entry2(Child, Dict4, Types):
     # TODO: Need to rethink `install` since we do not pass Paths
     # Should this really be into a new Domain?
 
-    def install(self, dest: str, **kwargs) -> "Entry2":
+    def install(self, dest: str, **kwargs) -> "Entry":
         """Copy contents of resource's path into `dest` directory."""
         path = self.to_path(dest)
         path.write_bytes(self.to_bytes())  # for binary files
-        assert isinstance(self.parent, Manifest2)
-        clone = Entry2(self.name, self.parent)
+        assert isinstance(self.parent, Manifest)
+        clone = Entry(self.name, self.parent)
         logging.debug(f"clone[{type(path)}]: {path.stat()}")
         clone.args[self.cf.K_PLC] = self.cf.AsString(path)
         return clone

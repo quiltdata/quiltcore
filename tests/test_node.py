@@ -11,12 +11,12 @@ from quiltcore import (
     Dict4,
     Domain,
     Table3,
-    Entry2,
+    Entry,
     Factory,
     Header,
     Keyed,
-    Manifest2,
-    Namespace2,
+    Manifest,
+    Namespace,
     Node,
     Scheme,
     Types,
@@ -35,7 +35,7 @@ from .conftest import (
 )
 
 QKEYS = ["file", LOCAL_VOL, TEST_PKG, "latest"]
-QTYPE = [Scheme, Domain, Namespace2, Manifest2]
+QTYPE = [Scheme, Domain, Namespace, Manifest]
 QMAP = dict(zip(QKEYS, QTYPE))
 TEST_MSG = "test message"
 TEST_META = {"key": "value"}
@@ -94,7 +94,7 @@ def test_node_names():
     udom = Domain.FromURI(LOCAL_URI)
     ns = udom[TEST_PKG]
     assert TEST_PKG == ns.name
-    assert isinstance(ns, Namespace2)
+    assert isinstance(ns, Namespace)
     assert isinstance(ns.parent, Domain)
 
     q3hash = ns.read_hash_from_tag(TEST_TAG)
@@ -111,7 +111,7 @@ def test_node_names():
 def test_node_man():
     ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]
     man = ns[TEST_TAG]
-    assert isinstance(man, Manifest2)
+    assert isinstance(man, Manifest)
     assert man.q3hash() == TEST_HASH
     assert man.parent == ns
 
@@ -130,7 +130,7 @@ def test_node_entry():
         entry = man[key]
         assert entry is not None
         assert entry.name == key
-        assert isinstance(entry, Entry2)
+        assert isinstance(entry, Entry)
         assert entry.path.exists()
         assert entry.path.is_relative_to(store)
 

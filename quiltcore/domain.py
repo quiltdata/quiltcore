@@ -7,7 +7,7 @@ from upath import UPath
 
 from .builder import FolderBuilder
 from .factory import quilt
-from .manifest import Manifest2
+from .manifest import Manifest
 from .udg.folder import Folder
 from .udg.node import Node
 from .config.data import Data
@@ -49,7 +49,7 @@ class Domain(Folder):
         return cls.FindStore(parent)
 
     @classmethod
-    def GetRemoteManifest(cls, udi: UDI) -> Manifest2:
+    def GetRemoteManifest(cls, udi: UDI) -> Manifest:
         """Return the manifest for the UDI."""
         domain = cls.FromURI(udi.registry)
         namespace = domain[udi.package]

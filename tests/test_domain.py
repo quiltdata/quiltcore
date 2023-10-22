@@ -2,7 +2,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from quiltcore import UDI, Domain, Manifest2, Scheme, quilt
+from quiltcore import UDI, Domain, Manifest, Scheme, quilt
 
 from .conftest import LOCAL_UDI, LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, not_win
 
@@ -139,7 +139,7 @@ def test_dom_commit(committed: Domain):
     assert len(namespace) == 2
 
     man = namespace[committed.TAG_DEFAULT]
-    assert isinstance(man, Manifest2)
+    assert isinstance(man, Manifest)
     assert len(man) == 2
     assert TEST_FILE in man
 

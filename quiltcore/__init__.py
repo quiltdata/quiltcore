@@ -26,11 +26,11 @@ manages the 'quiltcore.yaml' configuration file.
 
 from .builder import FolderBuilder  # noqa: F401
 from .domain import Domain  # noqa: F401
-from .entry import Entry2  # noqa: F401
+from .entry import Entry  # noqa: F401
 from .factory import Factory, quilt  # noqa: F401
 from .udg.header import Header  # noqa: F401
-from .manifest import Manifest2  # noqa: F401
-from .namespace import Namespace2  # noqa: F401
+from .manifest import Manifest  # noqa: F401
+from .namespace import Namespace  # noqa: F401
 from .scheme import Scheme  # noqa: F401
 from .table3 import Table3  # noqa: F401
 from .table4 import Table4  # noqa: F401

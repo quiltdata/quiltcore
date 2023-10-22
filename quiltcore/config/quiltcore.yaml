@@ -21,13 +21,13 @@ resources:
     child: Domain
   Domain:
     glob: "*/*"
-    child: Namespace2
+    child: Namespace
   Namespace2:
-    child: Manifest2
-  Manifest2:
-    child: Entry2
+    child: Manifest
+  Manifest:
+    child: Entry
   FolderBuilder:
-    child: Manifest2
+    child: Manifest
     recurse: true
 
   Volume:

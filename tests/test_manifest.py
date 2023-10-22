@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 import pytest
 from upath import UPath
 
-from quiltcore import Codec, Domain, Entry2, Header, Manifest2, Table4, quilt
+from quiltcore import Codec, Domain, Entry, Header, Manifest, Table4, quilt
 
 from .conftest import (
     LOCAL_ONLY,
@@ -28,7 +28,7 @@ def dump_manifest(domain: Domain, pkg_name: str):
 
 
 @pytest.fixture
-def man() -> Manifest2:
+def man() -> Manifest:
     ns = Domain.FromURI(LOCAL_URI)[TEST_PKG]
     return ns[TEST_HASH]
 
@@ -41,15 +41,15 @@ def domain():
         yield dom
 
 
-def test_man(man: Manifest2):
+def test_man(man: Manifest):
     assert man
-    assert "manifest2" in man.args.keys()
+    assert "manifest" in man.args.keys()
     assert man._table is not None
     assert man.table() is not None
     assert man.path.exists()
 
 
-def test_man_head(man: Manifest2):
+def test_man_head(man: Manifest):
     head = man.header()
     assert isinstance(head, Header)
 
@@ -60,7 +60,7 @@ def test_man_head(man: Manifest2):
 
 
 @pytest.mark.skipif(LOCAL_ONLY, reason="skip network tests")
-def test_man_version(man: Manifest2):
+def test_man_version(man: Manifest):
     path = UPath(TEST_S3VER)
     version = Codec.StatVersion(path)
     assert version
@@ -71,31 +71,31 @@ def test_man_version(man: Manifest2):
     remote = quilt["s3"]["quilt-example"]["akarve/amazon-reviews"]["1570503102"][
         "camera-reviews"
     ]
-    assert isinstance(remote, Entry2)
+    assert isinstance(remote, Entry)
 
 
-def test_man_entry(man: Manifest2):
+def test_man_entry(man: Manifest):
     entry = man[TEST_KEY]
     # assert entry
-    assert isinstance(entry, Entry2)
+    assert isinstance(entry, Entry)
     assert entry.args
 
     version = entry.GetQuery(TEST_S3VER, entry.K_VER)
     assert version == TEST_VER
 
 
-def test_man_list(man: Manifest2):
+def test_man_list(man: Manifest):
     results = man.values()
     assert len(results) == 2
     entry = list(results)[1]
-    assert isinstance(entry, Entry2)
+    assert isinstance(entry, Entry)
     assert TEST_KEY in str(entry.path)
 
 
-def test_man_install(man: Manifest2, domain: Domain):
+def test_man_install(man: Manifest, domain: Domain):
     entry = man[TEST_KEY]
-    assert "manifest2" in entry.args
-    assert isinstance(entry, Entry2)
+    assert "manifest" in entry.args
+    assert isinstance(entry, Entry)
     assert TEST_KEY in str(entry.path)
 
     dest = domain.store
@@ -105,13 +105,13 @@ def test_man_install(man: Manifest2, domain: Domain):
     # assert entry.path != clone.path
 
 
-def test_man_hash(man: Manifest2):
+def test_man_hash(man: Manifest):
     hash = man.q3hash()
     assert hash == man.name
 
 
 @pytest.mark.skip("Confused OBJ vs ENTRY hash")
-def test_man_entry_hash(man: Manifest2):
+def test_man_entry_hash(man: Manifest):
     entry = man[TEST_KEY]
     hashable = entry.hashable_dict()
     assert hashable
@@ -123,11 +123,11 @@ def test_man_entry_hash(man: Manifest2):
     assert entry.multihash == entry.hash()
 
 
-def test_man_relax(man: Manifest2, domain: Domain):
+def test_man_relax(man: Manifest, domain: Domain):
     ns = domain[TEST_PKG]
     local_man = man.relax(domain.store, ns.relax_params())
     assert local_man is not None
-    assert isinstance(local_man, Manifest2)
+    assert isinstance(local_man, Manifest)
     assert local_man.path.exists()
     assert domain.store in local_man.path.parents
     assert local_man.hash() == man.hash()  # TODO: force recalculation

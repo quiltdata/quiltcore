@@ -8,7 +8,7 @@ from .udg.child import Child, Node
 from .udg.types import Multihash
 
 
-class Manifest2(Child):
+class Manifest(Child):
     """
     In-memory representation of a serialized package manifest.
     list/get returns Entry with Path to the Place data actually lives
@@ -28,7 +28,7 @@ class Manifest2(Child):
             return path
         raise ValueError(f"Parent has no manifests: {self.parent}")
 
-    def relax(self, install_dir: Path, params: dict) -> "Manifest2":
+    def relax(self, install_dir: Path, params: dict) -> "Manifest":
         """
         1. Relax this remote Manifest into local install_dir
         2. Calculate local manifest path
@@ -42,7 +42,7 @@ class Manifest2(Child):
         local_manifest = manifests / self.name
         self.save_manifest(list4, local_manifest)
         # Requires `parent` to be the Namespace containing `manifests`
-        return Manifest2(self.name, namespace)
+        return Manifest(self.name, namespace)
 
     #
     # Initialize Table

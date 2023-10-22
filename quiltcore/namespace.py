@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 
 from .domain import Domain
-from .manifest import Manifest2
+from .manifest import Manifest
 from .udg.folder import Folder
 from .udg.tabular import Tabular
 from .udg.types import List4
@@ -11,7 +11,7 @@ from .udg.types import List4
 Tag = str
 
 
-class Namespace2(Folder):
+class Namespace(Folder):
     """
     Namespace of Manifests by Hash
     list/get returns a specific Manifest
@@ -105,9 +105,9 @@ class Namespace2(Folder):
             "package_path": domain.package_path(self.name),
         }
 
-    def pull(self, manifest: Manifest2, install_dir: Path, **flags) -> Tag:
+    def pull(self, manifest: Manifest, install_dir: Path, **flags) -> Tag:
         """PUT relaxed manifest into the namespace."""
-        assert isinstance(manifest, Manifest2)
+        assert isinstance(manifest, Manifest)
         if not flags.get("no_copy", False):
             manifest = manifest.relax(install_dir, self.relax_params())
             assert manifest is not None
