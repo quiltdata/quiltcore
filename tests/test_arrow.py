@@ -67,6 +67,7 @@ def test_arrow_table3():
     assert path.exists()
     table3 = Table3(path)
     assert table3
+    assert "pyarrow.Table" in str(table3)
     assert len(table3) == 2
     assert "ONLYME.md" in table3
 
@@ -83,6 +84,7 @@ def test_arrow_table4():
     assert path.exists()
     table4 = Table4(path)
     assert table4
+    assert "Table4" in repr(table4)
     assert len(table4) == 2
     assert "ONLYME.md" in table4
     assert Table4.HEADER_NAME in table4

@@ -50,6 +50,8 @@ def node():
 def test_node(node):
     assert node is not None
     assert hasattr(node, "path")
+    assert "Node" in repr(node)
+    assert node.check_parent() is None
 
 
 def test_node_keyed():

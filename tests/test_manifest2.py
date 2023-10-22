@@ -14,6 +14,7 @@ from .conftest import (
     TEST_OBJ_HASH,
     TEST_PKG,
     TEST_S3VER,
+    TEST_VER,
 )
 
 
@@ -78,6 +79,9 @@ def test_man_entry(man: Manifest2):
     # assert entry
     assert isinstance(entry, Entry2)
     assert entry.args
+
+    version = entry.GetQuery(TEST_S3VER, entry.K_VER)
+    assert version == TEST_VER
 
 
 def test_man_list(man: Manifest2):
