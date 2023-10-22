@@ -1,89 +1,83 @@
 import logging
 from pathlib import Path
+from typing import Iterator
 
-from jsonlines import Writer  # type: ignore
-
-from .entry import Entry
-from .header import Header
-from .resource_key import ResourceKey
-from .table3 import Table3
-from .udg.codec import Dict3
+from .table3 import Table3, Tabular
+from .table4 import Table4
+from .udg.child import Child, Node
+from .udg.types import Multihash
 
 
-class Manifest(ResourceKey):
+class Manifest(Child):
     """
     In-memory representation of a serialized package manifest.
     list/get returns Entry with Path to the Place data actually lives
     """
 
-    @staticmethod
-    def WriteToPath(head: Header, entries: list[Entry], path: Path) -> None:
-        """Write manifest contents to _path_"""
-        logging.debug(f"WriteToPath: {path}")
-        rows = [entry.to_dict3() for entry in entries]  # type: ignore
-        with path.open(mode="wb") as fo:
-            with Writer(fo) as writer:
-                head_dict = head.to_dict()
-                logging.debug(f"head_dict: {head_dict}")
-                writer.write(head_dict)
-                for row in rows:
-                    if not isinstance(row, Dict3):
-                        raise ValueError("")
-                    writer.write(row.to_dict())
+    def __init__(self, name: str, parent: Node, **kwargs):
+        super().__init__(name, parent, **kwargs)
+        self._table: Tabular | None = None
 
-    def __init__(self, path: Path, **kwargs):
-        super().__init__(path, **kwargs)
-        self._table: Table3 | None = None
+    def extend_parent_path(self, key: str) -> Path:
+        if hasattr(self.parent, "manifests"):
+            base = getattr(self.parent, "manifests")
+            assert isinstance(base, Path)
+            assert base.exists()
+            path = Tabular.FindTablePath(base / key)
+            assert path.exists(), f"Manifest not found: {path}"
+            return path
+        raise ValueError(f"Parent has no manifests: {self.parent}")
 
-    def table(self) -> Table3:
+    def relax(self, install_dir: Path, params: dict) -> "Manifest":
+        """
+        1. Relax this remote Manifest into local install_dir
+        2. Calculate local manifest path
+        3. Write relaxed table to Mpath
+        4. Return new local Manifest inside local Namespace
+        """
+        manifests = params["manifests"]
+        namespace = params["namespace"]
+        source_dir = params["store"]
+        list4 = self.table().relax(install_dir, source_dir)
+        local_manifest = manifests / self.name
+        self.save_manifest(list4, local_manifest)
+        # Requires `parent` to be the Namespace containing `manifests`
+        return Manifest(self.name, namespace)
+
+    #
+    # Initialize Table
+    #
+
+    def table(self) -> Tabular:
+        """Load from Parquet or JSON."""
         if not hasattr(self, "_table") or self._table is None:
             try:
-                self._table = Table3(self.path, **self.args)
+                factory = Table4 if self.path.suffix == Tabular.EXT4 else Table3
+                self._table = factory(self.path, **self.args)
             except FileNotFoundError:
                 logging.warning(f"Manifest not found: {self.path}")
-        if not isinstance(self._table, Table3):
+        if not isinstance(self._table, Tabular):
             raise TypeError(f"Expected Table, got {type(self._table)}")
         return self._table
 
-    def head(self):
-        return self.table().head
+    def header(self):
+        return self.table().header
 
     #
     # Hash functions
     #
 
-    def hash_quilt3(self) -> str:
+    def q3hash(self) -> str:
         """Legacy quilt3 hash of the contents."""
         return self.name
+
+    def _multihash_contents(self) -> Multihash:
+        return self.cf.decode_q3hash(self.q3hash())
 
     #
     # Private Methods for child resources
     #
 
-    def _child_names(self, **kwargs) -> list[str]:
-        """List all child resource names."""
-        return self.table().names()
-
-    def _child_place(self, place: str) -> str:
-        if self.IS_REL not in place:
-            return place
-        if self.IS_LOCAL.match(place) is not None:
-            place = self.IS_LOCAL.sub("", place)
-        if self.ARG_REG not in self.args:
-            raise KeyError(f"No registry root available in {self.args.keys()}")
-        reg = self.args[self.ARG_REG]
-        path = reg.root / place
-        logging.debug(f"{place} -> {path} [{path.absolute()}]")
-        return str(path)
-
-    def _child_dict(self, key: str) -> dict:
-        """Return the dict for a child resource."""
-        row = self.table().get_dict4(key)
-        place = row.place
-        drow = row.to_dict()
-        assert isinstance(drow, dict)
-        drow[self.codec.K_PLC] = self._child_place(place)
-        v = self.GetVersion(place)
-        if len(v) > 0:
-            drow[self.KEY_VER] = v
-        return drow
+    def __iter__(self) -> Iterator[str]:
+        """List all row names."""
+        return (name for name in self.table().names())

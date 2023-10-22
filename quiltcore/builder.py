@@ -1,58 +1,45 @@
+from .udg.header import Header
+from .udg.node import Node
+from .udg.folder import Folder
+from .udg.verifiable import VerifyDict
+from .udg.types import List4, Multihash
+
+
 from pathlib import Path
 
-from .changes import Changes
-from .header import Header
-from .manifest import Manifest
-from .resource import Resource
-from .resource_key import ResourceKey
 
+class FolderBuilder(Folder):
+    """Convert modified Folder into a Manifest"""
 
-class Builder(ResourceKey):
-    """
-    Create Entry resources for each row
-    Calculate the hash
-    Write a new manifest file
-    Return the path
-    """
+    def __init__(self, path: Path, parent: Node, **kwargs):
+        super().__init__(path.name, parent, **kwargs)
+        self.path = path
+        self.header: Header | None = None
+        self.body4: list | None = None
 
-    @classmethod
-    def MakeManifest(cls, changes: Changes, pkg_meta: dict) -> Manifest:
-        build = cls(changes, **pkg_meta)
-        man = build.post(changes.path)
-        if not isinstance(man, Manifest):
-            raise ValueError(f"Expected Manifest {man} not {type(man)}")
-        return man
+    def update(self):
+        self.body4 = self.to_list4(self.path)
 
-    def __init__(self, changes: Changes, **kwargs):
-        super().__init__(changes.path)
-        self.changes = changes
-        self.head = Header(self.path, first=kwargs)
+    def list4(self) -> List4:
+        """Return a list4 of the manifest."""
+        assert self.body4 is not None
+        assert self.header is not None
+        return [self.header.to_dict4()] + self.body4
 
-    def _hash_multihash(self) -> str:
-        return self._hash_manifest()
+    def to_bytes(self) -> bytes:
+        assert isinstance(self.body4, list)
+        assert isinstance(self.header, Header)
+        header_dict = VerifyDict(self.cf, self.header.hashable_dict())
+        hashable = header_dict.q3hash()
+        for dict4 in self.body4:
+            hashable += self.q3hash_from_hash(dict4.multihash)
+        return hashable.encode("utf-8")
 
-    #
-    # ResourceKey helper methods
-    #
-
-    def list(self, **kwargs) -> list[Resource]:
-        """List all child entries."""
-        nested_entries = [delta.list() for delta in self.changes.list()]
-        return [entry for entries in nested_entries for entry in entries]
-
-    def getResource(self, key: str, **kwargs) -> Resource:
-        """Get the first child Entry for a key."""
-        delta = self.changes.getResource(key)
-        children = delta.list()
-        return children[0]
-
-    def post(self, path: Path, **kwargs) -> Resource:
-        """Create a manfest in the `manifests` folder"""
-        path = path or self.path
-        hash = self.hash_quilt3()
-        path = self.path / hash
-        rows = self.list()
-        if len(rows) == 0:
-            raise ValueError(f"Cannot post empty manifest: {self.changes}")
-        Manifest.WriteToPath(self.head, rows, path)  # type: ignore
-        return Manifest(path, **kwargs)
+    def commit(self, message: str = "Updated", user_meta: dict = {}) -> Multihash:
+        """Commit the changes to the manifest."""
+        assert isinstance(self.parent, Node)
+        self.header = Header.FromMessage(message)
+        if user_meta:
+            setattr(self.header, self.K_USER_META, user_meta)
+        self.update()
+        return self.hash()

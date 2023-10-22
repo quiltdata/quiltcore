@@ -8,12 +8,15 @@ ifeq ($(TEST_OS),windows-latest)
 	TEST_README=''
 endif
 
-all: install update test
+all: lock install update test
 
 clean:
 	rm -f *.log
 	rm -rf .coverage* coverage* 
 	rm -rf quiltplus/.pytest_cache .mypy_cache .quilt
+
+lock:
+	poetry lock
 
 install:
 	poetry install

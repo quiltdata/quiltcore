@@ -9,6 +9,7 @@ from pyarrow.parquet import ParquetFile
 from typing import Iterator
 
 from .codec import Codec
+from .header import Header
 from .keyed import Keyed
 from .types import Dict3, Dict4, List4, Types
 from .verifiable import Verifiable
@@ -17,29 +18,65 @@ from jsonlines import Writer  # type: ignore
 
 
 class Tabular(Keyed):
-    """Abstract base class to wrap pa.Table with a dict-like interface."""
+    """
+    Abstract base class to wrap pa.Table as a series of Dict4 dataclasses.
+
+    * Represents both JSON and Parquet as Dict4
+    * Simulates Header as another Dict4 row with name `HEADER_NAME="."`
+    * Where `version` and `message` are in `info`, and `user_meta` is in `meta`
+    """
 
     EXT4 = ".parquet"
     REL_PATH = "./"
 
-    @staticmethod
-    def WriteJSON(head: dict, rows: list[Dict3], path: Path) -> None:
+    @classmethod
+    def FindTablePath(cls, path: Path) -> Path:
+        """Find parquet or normal hash."""
+        parquet_path = cls.ParquetPath(path)
+        return parquet_path if parquet_path.exists() else path
+
+    @classmethod
+    def ParquetPath(cls, path: Path) -> Path:
+        """Convert quilt3 manifest path to parquet path"""
+        filename = cls.MULTIHASH + path.name
+        return path.with_name(filename).with_suffix(cls.EXT4)
+
+    @classmethod
+    def ParquetHash(cls, hash: str) -> str:
+        """Convert hash string to parquet filename"""
+        path = cls.ParquetPath(Path(hash))
+        return path.name
+
+    @classmethod
+    def ReadParquet(cls, path: Path) -> pa.Table:
+        """Read a parquet file into a pa.Table."""
+        with path.open(mode="rb") as fi:
+            table = ParquetFile(fi).read()
+            return cls.UnparseTable(table)
+
+    @classmethod
+    def WriteJSON(cls, head3: dict, rows: list[Dict3], path: Path) -> None:
         """Write manifest contents to _path_"""
         logging.debug(f"Write3: {path}")
         with path.open(mode="wb") as fo:
             with Writer(fo) as writer:
-                logging.debug(f"head: {head}")
-                writer.write(head)
+                head3[cls.K_VERSION] = cls.HEADER_V3
+                writer.write(head3)
                 for row in rows:
+                    logging.debug(f"WriteJSON: {row}")
                     if not isinstance(row, Dict3):
-                        raise ValueError("")
+                        raise ValueError(f"WriteJSON.not_Dict3: {row}")
                     json_dict = row.to_dict()
-                    writer.write(json_dict)
+                    if json_dict:
+                        writer.write(json_dict)
+                    else:
+                        logging.error(f"WriteJSON.missing_dict: {row}")
 
-    @staticmethod
-    def WriteParquet(list4: List4, path: Path) -> Path:
+    @classmethod
+    def WriteParquet(cls, list4: List4, path: Path) -> Path:
         """Write a list4 to a parquet file."""
-        parquet_path = path.with_suffix(Tabular.EXT4)
+        parquet_path = cls.ParquetPath(path)
+        list4[0].info[cls.K_VERSION] = cls.HEADER_V4
         dicts = [dict4.to_parquet_dict() for dict4 in list4]
         table = pa.Table.from_pylist(dicts)
         pq.write_table(table, parquet_path)
@@ -67,19 +104,6 @@ class Tabular(Keyed):
             table = Tabular.ParseColumn(table, field)
         return table
 
-    @staticmethod
-    def ReadParquet(path: Path) -> pa.Table:
-        """Read a parquet file into a pa.Table."""
-        with path.open(mode="rb") as fi:
-            table = ParquetFile(fi).read()
-            return Tabular.UnparseTable(table)
-
-    @staticmethod
-    def FindTablePath(path: Path) -> Path:
-        """Find parquet or normal hash."""
-        parquet_path = path.with_suffix(Tabular.EXT4)
-        return parquet_path if parquet_path.exists() else path
-
     #
     # Initialization
     #
@@ -91,6 +115,7 @@ class Tabular(Keyed):
         self.codec = Codec()
         self.store = self.path.parent.parent.parent
         self.table = self._get_table()
+        self.header: Header | None = None
         self.head = self._get_head()
         self.body = self._get_body()
         logging.debug(f"Tabular.__init__: {self.store} <- {self.path}")
@@ -99,21 +124,21 @@ class Tabular(Keyed):
         return f"{self.__class__.__name__}({self.path})"
 
     def __str__(self) -> str:
-        return self.table.__str__()
+        return str(self.table)
 
     #
     # Parse Table
     #
 
     def first(self) -> dict:
-        header = self.table.take([0])
-        assert header, f"No header row found for {self.path}:\n${self.table}"
-        return header.to_pylist()[0]
+        heading = self.table.take([0])
+        assert heading, f"No heading found for {self.path}:\n${self.table}"
+        return heading.to_pylist()[0]
 
     def _get_table(self) -> pa.Table:
         raise NotImplementedError
 
-    def _get_head(self) -> pa.Table:
+    def _get_head(self) -> Dict4:
         """Extract header values into attributes."""
         raise NotImplementedError
 

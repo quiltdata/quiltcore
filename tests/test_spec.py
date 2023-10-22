@@ -8,8 +8,8 @@ from pytest import fixture, skip
 from quilt3 import Package  # type: ignore
 from upath import UPath
 
-from quiltcore import Entry2, Header, Spec
-from quiltcore import Domain, Manifest2, UDI
+from quiltcore import Entry, Header, Spec
+from quiltcore import Domain, Manifest, UDI, VerifyDict
 
 from .conftest import LOCAL_ONLY
 
@@ -38,7 +38,7 @@ def q3pkg(spec: Spec) -> Package:
 
 
 @fixture
-def man2(udi: UDI) -> Manifest2:
+def man(udi: UDI) -> Manifest:
     return Domain.GetRemoteManifest(udi)
 
 
@@ -53,15 +53,15 @@ def tmpdir():
         yield UPath(tmpdirname)
 
 
-def test_spec(spec: Spec, q3pkg: Package, man2: Manifest2):
+def test_spec(spec: Spec, q3pkg: Package, man: Manifest):
     assert spec
     assert isinstance(spec, Spec)
     assert "quilt" in Spec.CONFIG_FILE
     assert "s3://" in spec.registry()
     assert q3pkg
     assert isinstance(q3pkg, Package)
-    assert man2
-    assert isinstance(man2, Manifest2)
+    assert man
+    assert isinstance(man, Manifest)
 
 
 def test_spec_new(spec_new: Spec, spec: Spec):
@@ -84,7 +84,7 @@ def test_spec_new(spec_new: Spec, spec: Spec):
     assert PKG_PARQUET in uri
 
 
-def test_spec_hash(spec: Spec, q3pkg: Package, man2: Manifest2):
+def test_spec_hash(spec: Spec, q3pkg: Package, man: Manifest):
     """
     Verify quiltcore matches quilt3 hashing
 
@@ -99,32 +99,34 @@ def test_spec_hash(spec: Spec, q3pkg: Package, man2: Manifest2):
     assert q3_hash == spec.hash(), "q3_hash != spec.hash()"
     top_hash = q3pkg._calculate_top_hash(q3pkg._meta, q3pkg.walk())
     assert q3_hash == top_hash, "q3_hash != pkg._calculate_top_hash()"
-    head = man2.table().head
+    head = man.table().header
+    assert isinstance(head, Header)
     man_meta = head.hashable_dict()
-    pkg_user = q3pkg._meta[man2.K_USER_META]
-    man_user = man_meta[man2.K_USER_META]
+    pkg_user = q3pkg._meta[man.K_USER_META]
+    man_user = man_meta[man.K_USER_META]
     assert pkg_user["Date"] == man_user["Date"]  # type: ignore
     assert q3pkg._meta == head.hashable_dict()
+    verify = VerifyDict(man.cf, q3pkg._meta)
     encoded = json_encode(q3pkg._meta).encode()
-    assert encoded == head.hashable()
+    assert encoded == verify.hashable()
 
     for part in q3pkg._get_top_hash_parts(q3pkg._meta, q3pkg.walk()):
         if "logical_key" in part:
             key = part["logical_key"]
-            entry = man2[key]
+            entry = man[key]
             hashable = entry.hashable_dict()  # type: ignore
             assert part == hashable
             part_encoded = json_encode(part).encode()
             assert part_encoded == entry.hashable()  # type: ignore
             encoded += part_encoded
 
-    multihash = man2.digest_bytes(encoded)
-    man_struct = man2.cf.encode_hash(multihash)
+    multihash = man.digest_bytes(encoded)
+    man_struct = man.cf.encode_hash(multihash)
     assert q3_hash == man_struct["value"], "q3_hash != digest(encoded).removeprefix"
-    assert q3_hash == man2.q3hash(), "q3_hash != man.hash_quilt3()"
+    assert q3_hash == man.q3hash(), "q3_hash != man.hash_quilt3()"
 
 
-def test_spec_read(spec: Spec, man2: Manifest2):
+def test_spec_read(spec: Spec, man: Manifest):
     """
     Ensure quiltcore can read manifests created by quilt3
 
@@ -132,7 +134,7 @@ def test_spec_read(spec: Spec, man2: Manifest2):
     - package-level metadata
     - file-level metadata
     """
-    head = man2.table().head
+    head = man.table().header
     assert isinstance(head, Header)
     assert hasattr(head, "user_meta")
     assert isinstance(head.user_meta, dict)  # type: ignore
@@ -147,9 +149,9 @@ def test_spec_read(spec: Spec, man2: Manifest2):
         assert actual == value  # type: ignore
 
     for key, value in spec.files().items():
-        entry = man2[key]
+        entry = man[key]
         assert entry.name in spec.files().keys()
-        assert isinstance(entry, Entry2)
+        assert isinstance(entry, Entry)
         assert hasattr(entry, entry.K_VER)
         actual = entry.path.read_text().strip()
         print(f"{key} value:{value} actual:{actual}")
@@ -200,24 +202,25 @@ def test_spec_write(spec_new: Spec, tmpdir: UPath):
     assert man
 
     # 4. Push to Remote Domain
-    local.push(folder, remote=spec_new.udi_new())
+    result = local.push(folder, remote=spec_new.udi_new())
+    print(f"pkg_name: {pkg_name} result: {result}")
 
-    return  # FIXME: quilt3 can't read it back
+    # return  # FIXME: quilt3 can't read it back
 
     # 5. Read it back
-    qpkg = Package.browse(spec_new.namespace(), registry=spec_new.registry())
+    qpkg = Package.browse(pkg_name, registry=spec_new.registry())
     assert qpkg
+
+    for filename, filedata in spec_new.files().items():
+        assert filename in qpkg
+        entry = qpkg[filename]
+        assert entry.deserialize() == filedata
 
     meta = qpkg._meta
     new_meta = local.cf.encode_dates(spec_new.metadata())
     assert meta
     assert meta[local.K_USER_META] == new_meta
     assert meta[local.K_MESSAGE] == msg
-
-    for filename, filedata in spec_new.files().items():
-        assert filename in qpkg
-        entry = qpkg[filename]
-        assert entry.deserialize() == filedata
 
 
 @pytest.mark.skip(reason="TODO: implement workflows")

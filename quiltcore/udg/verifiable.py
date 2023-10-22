@@ -1,5 +1,4 @@
 import logging
-from json import JSONEncoder
 from pathlib import Path
 from os import stat_result
 
@@ -9,11 +8,6 @@ from .keyed import Keyed
 
 class Verifiable(Keyed):
     DEFAULT_DICT: dict = {}
-    ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
-
-    @classmethod
-    def EncodeDict(cls, source: dict) -> bytes:
-        return cls.ENCODE(source).encode("utf-8")
 
     @classmethod
     def UpdateDict4(cls, base: Dict4, path: Path) -> Dict4:
@@ -73,7 +67,7 @@ class Verifiable(Keyed):
         if values := self.hashable_values():
             return values.encode("utf-8")
         if source := self.hashable_dict():
-            return self.EncodeDict(source)  # type: ignore
+            return Codec.EncodeDict(source)  # type: ignore
 
         raise ValueError("No bytes to hash for {self}")
 
@@ -120,10 +114,19 @@ class Verifiable(Keyed):
 
     def hashable(self) -> bytes:
         source = self.hashable_dict()
-        return self.EncodeDict(source)
+        return Codec.EncodeDict(source)
 
     def verify(self, contents: bytes) -> bool:
         """Verify that multihash digest of bytes match the current multihash"""
         digest = self.digest_bytes(contents)
         logging.debug(f"verify.digest: {digest}")
         return digest == self.hash()
+
+
+class VerifyDict(Verifiable):
+    def __init__(self, codec: Codec, hashable: dict, **kwargs):
+        super().__init__(codec, **kwargs)
+        self.dict = hashable
+
+    def hashable_dict(self) -> dict:
+        return self.dict

@@ -1,7 +1,12 @@
+import logging
+
 from os import environ
 from pathlib import Path
 
-from quiltcore import Changes, Types, UDI
+from quiltcore import Types, UDI
+
+root = logging.getLogger()
+root.setLevel(logging.INFO)  # DEBUG
 
 LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 
@@ -22,6 +27,7 @@ TEST_OBJ = f"{TEST_VOL}/{TEST_PKG}/{TEST_KEY}?versionId={TEST_VER}"
 TEST_OBJ_HASH = "df3e419dfd21f653651a5131e17bf41d82a9fd72baf2a93f634773353bd9d6c8"
 
 TEST_MAN = f"{TEST_VOL}/.quilt/packages/{TEST_HASH}"
+TEST_PARQUET = f"{TEST_VOL}/.quilt/packages/12201234.parquet"
 TEST_S3VER = f"{TEST_BKT}/{TEST_PKG}/{TEST_KEY}?versionId={TEST_VER}"
 
 TEST_ROW = {
@@ -39,19 +45,6 @@ LOCAL_UDI = f"quilt+{LOCAL_URI}#{UDI.K_PKG}={TEST_PKG}"
 
 def not_win():
     return not Types.OnWindows()
-
-
-class MockChanges(Changes):
-    FILENAME = "filename.txt"
-    FILETEXT = "hello world"
-
-    def __init__(self, dir: Path, **kwargs):
-        if not dir.exists():
-            dir.mkdir(parents=True)
-        super().__init__(dir, **kwargs)
-        self.infile = (dir / self.FILENAME).resolve()
-        self.infile.write_text(self.FILETEXT)
-        self.post(self.infile)
 
 
 T_BKT = "quilt-example"

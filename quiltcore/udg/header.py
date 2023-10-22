@@ -1,35 +1,38 @@
 from datetime import datetime
-from pathlib import Path
 
 import pyarrow as pa  # type: ignore
 
-from .resource_key import ResourceKey
-from .udg.types import Dict4
+from .codec import Codec
+from .types import Dict4
 
 
-class Header(ResourceKey):
+class Header(Codec):
     """
-    Represents top-level metadata for a Manifest
+    Represents top-level metadata for a Manifest, and convert to Dict4
     Attributes:
 
-    * info: str
-    * msg: str
+    * version: str
+    * message: str
     * user_meta: object
+
+    TODO: May be largely redundant, can simplify to just create Dict4
 
     """
 
     @classmethod
-    def HeaderDict4(cls, message: str = "Updated", meta={}) -> Dict4:
+    def HeaderDict4(
+        cls, message: str = "Updated", user_meta={}, version=Codec.HEADER_V4
+    ) -> Dict4:
         return Dict4(
             name=cls.HEADER_NAME,
             place=cls.HEADER_NAME,
             size=cls.SIZE,
             multihash=cls.MULTIHASH,
             info={
-                cls.K_VERSION: cls.HEADER_V4,
+                cls.K_VERSION: version,
                 cls.K_MESSAGE: message,
             },
-            meta=meta,
+            meta=user_meta,
         )
 
     @classmethod
@@ -39,16 +42,22 @@ class Header(ResourceKey):
             cls.K_MESSAGE: message,
         }
 
-    def __init__(self, path: Path, **kwargs):
-        super().__init__(path, **kwargs)
+    @classmethod
+    def FromMessage(cls, message: str = "N/A") -> "Header":
+        first = cls.First(message)
+        return cls(first)
+
+    def __init__(self, first: dict, **kwargs):
+        super().__init__(**kwargs)
         self.cols: list[str] = []
-        self._setup_headers(kwargs["first"])
+        self._setup_headers(first)
 
     #
     # Setup
     #
 
     def _setup_headers(self, first: dict):
+        self.headers = self.get_dict("quilt3/headers")
         for header, default in self.headers.items():
             value = first.get(header, default)
             setattr(self, header, value)
@@ -64,21 +73,18 @@ class Header(ResourceKey):
 
     def to_dict4(self) -> Dict4:
         base = self.to_dict()
-        return self.HeaderDict4(base[self.K_MESSAGE], base[self.K_USER_META])
+        return self.HeaderDict4(**base)
 
     def to_dict(self) -> dict:
         raw_dict = {k: getattr(self, k) for k in self.headers.keys()}
-        return self.codec.encode_dates(raw_dict)
+        return self.encode_dates(raw_dict)
 
     def hashable_dict(self) -> dict:
         meta = self.to_dict()
-        if hasattr(self, self.KEY_USER):
-            user_meta = getattr(self, self.KEY_USER)
+        if hasattr(self, self.K_USER_META):
+            user_meta = getattr(self, self.K_USER_META)
             for k, v in user_meta.items():
                 if isinstance(v, datetime):
-                    user_meta[k] = self.codec.encode_date(v)
-            meta[self.KEY_USER] = user_meta
+                    user_meta[k] = self.encode_date(v)
+            meta[self.K_USER_META] = user_meta
         return meta
-
-    def to_bytes(self) -> bytes:
-        return self.EncodeDict(self.hashable_dict())

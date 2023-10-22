@@ -1,12 +1,17 @@
 import logging
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
-from .resource import Resource
-from .resource_key import ResourceKey
+from upath import UPath
+
+from .domain import Domain
+from .manifest import Manifest
+from .udg.child import Child
 from .udg.codec import Dict3, Dict4
+from .udg.types import Types
 
 
-class Entry(ResourceKey, Dict4):
+class Entry(Child, Dict4, Types):
     """
     Represents a single row in a Manifest.
     Attributes:
@@ -14,42 +19,53 @@ class Entry(ResourceKey, Dict4):
     * path: Path (physical_key)
     * name: str (logical_key)
     * size: int
-    * multihash: str[multihash]
+    * multihash: Multihash (str)
     * meta: dict
-
     """
 
-    def __init__(self, path: Path, **kwargs):
-        super().__init__(path, **kwargs)
-        if path.is_dir():
-            raise ValueError(f"Entry cannot be a directory: {path}")
-        self.name = kwargs.get(self.cf.K_NAM, self.path.name)
-        self.multihash: str = kwargs.get(self.KEY_MH, False) or self._hash_contents()
-        self.size = kwargs.get(self.KEY_SZ, False) or self.path.stat().st_size
-        self.meta = kwargs.get(self.KEY_META, None)
+    IS_REL = "./"
+    IS_URI = ":/"
 
-    def _hash_multihash(self) -> str:
-        return self.multihash
+    @classmethod
+    def GetQuery(cls, uri: str, key: str) -> str:
+        """Extract key from URI query string."""
+        query = urlparse(uri).query
+        if not query:
+            return ""
+        qs = parse_qs(query)
+        vlist = qs.get(key)
+        return vlist[0] if vlist else ""
+
+    def __init__(self, name: str, parent: Manifest, **kwargs):
+        Child.__init__(self, name, parent, **kwargs)
+        row = parent.table()[name]
+        Dict4.__init__(self, **row.to_dict())
+
+    def _setup(self):
+        pass
+
+    def extend_parent_path(self, key: str) -> Path:
+        self.versionId = self.GetQuery(key, self.cf.K_VER)
+        # Check if key is a URI or absolute path
+        if self.IS_URI in key or Path(key).is_absolute():
+            return UPath(key)
+        if self.cf.IS_LOCAL.match(key) is not None:
+            key = self.cf.IS_LOCAL.sub("", key)
+        assert self.parent is not None, "Missing parent Manifest"
+        namespace = self.parent.parent
+        assert namespace is not None, "Missing grandparent Namespace"
+        store = Domain.FindStore(namespace)
+        if namespace.name not in str(store):
+            store = store / namespace.name
+        path = store / key
+        return path
 
     #
     # Parse and unparse
     #
 
-    def to_dict3(self) -> Dict3:
-        row = self.codec.encode_dict4(self)
-        # row[self.KEY_PATH] = self.path
-        return row
-
     def hashable_dict(self) -> dict:
-        if not self.multihash or not self.size:
-            raise ValueError(f"Missing hash or size: {self}")
-        hashable = {
-            self.codec.config("map")["name"]: self.name,
-            self.KEY_HSH: self.codec.encode_hash(self.multihash),
-            self.KEY_SZ: self.size,
-        }
-        hashable[self.KEY_META] = self.meta or {}
-        return hashable
+        return self.cf.encode_hashable(self)
 
     def to_path(self, key: str) -> Path:
         dir = self.AsPath(key)
@@ -58,16 +74,22 @@ class Entry(ResourceKey, Dict4):
         logging.debug(f"path: {path}")
         return path
 
+    def to_dict3(self) -> Dict3:
+        return self.cf.encode_dict4(self)
+
     #
     # Public Methods
     #
 
-    def install(self, key: str, **kwargs) -> Resource:
-        """Copy contents of resource's path into _key_ directory."""
-        path = self.to_path(key)
+    # TODO: Need to rethink `install` since we do not pass Paths
+    # Should this really be into a new Domain?
+
+    def install(self, dest: str, **kwargs) -> "Entry":
+        """Copy contents of resource's path into `dest` directory."""
+        path = self.to_path(dest)
         path.write_bytes(self.to_bytes())  # for binary files
-        kwargs = self.to_dict3().to_dict()
-        clone = Entry(path.resolve(), **kwargs)
+        assert isinstance(self.parent, Manifest)
+        clone = Entry(self.name, self.parent)
         logging.debug(f"clone[{type(path)}]: {path.stat()}")
-        clone.args[self.cf.K_PLC] = self.codec.AsString(path)
+        clone.args[self.cf.K_PLC] = self.cf.AsString(path)
         return clone

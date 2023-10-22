@@ -2,7 +2,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from quiltcore import UDI, Domain, Manifest2, Scheme, quilt
+from quiltcore import UDI, Domain, Manifest, Scheme, quilt
 
 from .conftest import LOCAL_UDI, LOCAL_URI, LOCAL_VOL, TEST_HASH, TEST_PKG, not_win
 
@@ -19,7 +19,6 @@ def make_domain():
     with TemporaryDirectory() as tmpdirname:
         f = quilt["file"]
         dom = f[tmpdirname]
-        dom.is_mutable = True
         yield dom
 
 
@@ -140,8 +139,8 @@ def test_dom_commit(committed: Domain):
     assert len(namespace) == 2
 
     man = namespace[committed.TAG_DEFAULT]
-    assert isinstance(man, Manifest2)
-    assert len(man) == 1
+    assert isinstance(man, Manifest)
+    assert len(man) == 2
     assert TEST_FILE in man
 
     entry = man[TEST_FILE]
@@ -151,7 +150,7 @@ def test_dom_commit(committed: Domain):
     assert MESSAGE in entry.path.read_text()
 
     table = man.table()
-    assert len(table) == 1
+    assert len(table) == 2
     assert table.head.info["message"] == MESSAGE
     assert table.head.meta == TEST_META
 
