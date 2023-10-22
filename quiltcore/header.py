@@ -18,27 +18,6 @@ class Header(ResourceKey):
 
     """
 
-    @classmethod
-    def HeaderDict4(cls, message: str = "Updated", meta={}) -> Dict4:
-        return Dict4(
-            name=cls.HEADER_NAME,
-            place=cls.HEADER_NAME,
-            size=cls.SIZE,
-            multihash=cls.MULTIHASH,
-            info={
-                cls.K_VERSION: cls.HEADER_V4,
-                cls.K_MESSAGE: message,
-            },
-            meta=meta,
-        )
-
-    @classmethod
-    def First(cls, message: str = "N/A") -> dict:
-        return {
-            cls.K_VERSION: cls.HEADER_V4,
-            cls.K_MESSAGE: message,
-        }
-
     def __init__(self, path: Path, **kwargs):
         super().__init__(path, **kwargs)
         self.cols: list[str] = []

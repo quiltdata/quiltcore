@@ -12,6 +12,27 @@ class Verifiable(Keyed):
     ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
 
     @classmethod
+    def HeaderDict4(cls, message: str = "Updated", meta={}) -> Dict4:
+        return Dict4(
+            name=cls.HEADER_NAME,
+            place=cls.HEADER_NAME,
+            size=cls.SIZE,
+            multihash=cls.MULTIHASH,
+            info={
+                cls.K_VERSION: cls.HEADER_V4,
+                cls.K_MESSAGE: message,
+            },
+            meta=meta,
+        )
+
+    @classmethod
+    def First(cls, message: str = "N/A") -> dict:
+        return {
+            cls.K_VERSION: cls.HEADER_V4,
+            cls.K_MESSAGE: message,
+        }
+
+    @classmethod
     def EncodeDict(cls, source: dict) -> bytes:
         return cls.ENCODE(source).encode("utf-8")
 

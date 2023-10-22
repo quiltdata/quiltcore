@@ -28,13 +28,13 @@ class Table4(Tabular):
     #
 
     def names(self) -> list[str]:
-        return self.body.column("name").to_pylist()
+        return self.table.column("name").to_pylist()
 
     def get_row(self, key: str) -> dict:
         """Return the row for a child resource."""
-        condition = pa.compute.equal(self.body.column("name"), key)
-        result = self.body.filter(condition).to_pylist()
-        return result[0] if len(result) else {}
+        condition = pa.compute.equal(self.table.column("name"), key)
+        result = self.table.filter(condition).to_pylist()
+        return result[0] if len(result) == 1 else {}
 
     def get_dict4(self, key: str) -> Dict4:
         """Return the dict4 for a child resource."""

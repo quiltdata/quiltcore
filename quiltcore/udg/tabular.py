@@ -113,7 +113,7 @@ class Tabular(Keyed):
         return f"{self.__class__.__name__}({self.path})"
 
     def __str__(self) -> str:
-        return self.table.__str__()
+        return str(self.table)
 
     #
     # Parse Table
