@@ -9,11 +9,11 @@ from .udg.types import Dict4
 
 class Header(ResourceKey):
     """
-    Represents top-level metadata for a Manifest
+    Represents top-level metadata for a Manifest, and convert to Dict4
     Attributes:
 
-    * info: str
-    * msg: str
+    * version: str
+    * message: str
     * user_meta: object
 
     """
@@ -43,7 +43,7 @@ class Header(ResourceKey):
 
     def to_dict4(self) -> Dict4:
         base = self.to_dict()
-        return self.HeaderDict4(base[self.K_MESSAGE], base[self.K_USER_META])
+        return self.HeaderDict4(**base)
 
     def to_dict(self) -> dict:
         raw_dict = {k: getattr(self, k) for k in self.headers.keys()}

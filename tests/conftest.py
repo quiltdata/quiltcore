@@ -1,7 +1,12 @@
+import logging
+
 from os import environ
 from pathlib import Path
 
 from quiltcore import Changes, Types, UDI
+
+root = logging.getLogger()
+root.setLevel(logging.INFO)  # DEBUG
 
 LOCAL_ONLY = environ.get("LOCAL_ONLY") or False
 

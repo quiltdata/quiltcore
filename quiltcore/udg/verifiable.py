@@ -12,17 +12,17 @@ class Verifiable(Keyed):
     ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
 
     @classmethod
-    def HeaderDict4(cls, message: str = "Updated", meta={}) -> Dict4:
+    def HeaderDict4(cls, message: str = "Updated", user_meta={}, version=Keyed.HEADER_V4) -> Dict4:
         return Dict4(
             name=cls.HEADER_NAME,
             place=cls.HEADER_NAME,
             size=cls.SIZE,
             multihash=cls.MULTIHASH,
             info={
-                cls.K_VERSION: cls.HEADER_V4,
+                cls.K_VERSION: version,
                 cls.K_MESSAGE: message,
             },
-            meta=meta,
+            meta=user_meta,
         )
 
     @classmethod
