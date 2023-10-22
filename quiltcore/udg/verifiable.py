@@ -1,5 +1,4 @@
 import logging
-from json import JSONEncoder
 from pathlib import Path
 from os import stat_result
 
@@ -9,32 +8,6 @@ from .keyed import Keyed
 
 class Verifiable(Keyed):
     DEFAULT_DICT: dict = {}
-    ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
-
-    @classmethod
-    def HeaderDict4(cls, message: str = "Updated", user_meta={}, version=Keyed.HEADER_V4) -> Dict4:
-        return Dict4(
-            name=cls.HEADER_NAME,
-            place=cls.HEADER_NAME,
-            size=cls.SIZE,
-            multihash=cls.MULTIHASH,
-            info={
-                cls.K_VERSION: version,
-                cls.K_MESSAGE: message,
-            },
-            meta=user_meta,
-        )
-
-    @classmethod
-    def First(cls, message: str = "N/A") -> dict:
-        return {
-            cls.K_VERSION: cls.HEADER_V4,
-            cls.K_MESSAGE: message,
-        }
-
-    @classmethod
-    def EncodeDict(cls, source: dict) -> bytes:
-        return cls.ENCODE(source).encode("utf-8")
 
     @classmethod
     def UpdateDict4(cls, base: Dict4, path: Path) -> Dict4:
@@ -94,7 +67,7 @@ class Verifiable(Keyed):
         if values := self.hashable_values():
             return values.encode("utf-8")
         if source := self.hashable_dict():
-            return self.EncodeDict(source)  # type: ignore
+            return Codec.EncodeDict(source)  # type: ignore
 
         raise ValueError("No bytes to hash for {self}")
 
@@ -141,10 +114,20 @@ class Verifiable(Keyed):
 
     def hashable(self) -> bytes:
         source = self.hashable_dict()
-        return self.EncodeDict(source)
+        return Codec.EncodeDict(source)
 
     def verify(self, contents: bytes) -> bool:
         """Verify that multihash digest of bytes match the current multihash"""
         digest = self.digest_bytes(contents)
         logging.debug(f"verify.digest: {digest}")
         return digest == self.hash()
+
+
+class VerifyDict(Verifiable):
+
+    def __init__(self, codec: Codec, hashable: dict, **kwargs):
+        super().__init__(codec, **kwargs)
+        self.dict = hashable
+
+    def hashable_dict(self) -> dict:
+        return self.dict

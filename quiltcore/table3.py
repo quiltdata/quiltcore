@@ -3,7 +3,7 @@ import logging
 import pyarrow as pa  # type: ignore
 import pyarrow.json as pj  # type: ignore
 
-from .header import Header
+from .udg.header import Header
 from .udg.types import Dict3, Dict4
 from .udg.tabular import Tabular
 
@@ -21,7 +21,7 @@ class Table3(Tabular):
 
     def _get_head(self) -> Dict4:
         """Extract header values into Dict4 attributes."""
-        self.header = Header(self.path, first=self.first())
+        self.header = Header(self.first())
         return self.header.to_dict4()
 
     def _get_body(self) -> pa.Table:
@@ -29,6 +29,7 @@ class Table3(Tabular):
         Extract header values into attributes.
         Return the Table without header row and columns
         """
+        assert self.header, f"Header not found for {self.path}:\n${self.table}"
         body = self.header.drop(self.table)
         return self.codec.decode_names(body)
 

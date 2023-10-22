@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from .changes import Changes
-from .header import Header
+from .udg.header import Header
 from .manifest import Manifest
 from .resource import Resource
 from .resource_key import ResourceKey
@@ -26,7 +26,7 @@ class Builder(ResourceKey):
     def __init__(self, changes: Changes, **kwargs):
         super().__init__(changes.path)
         self.changes = changes
-        self.head = Header(self.path, first=kwargs)
+        self.head = Header(kwargs)
 
     def _hash_multihash(self) -> str:
         return self._hash_manifest()

@@ -83,8 +83,8 @@ def test_man_entry(man: Manifest2):
 
 def test_man_list(man: Manifest2):
     results = man.values()
-    assert len(results) == 1
-    entry = list(results)[0]
+    assert len(results) == 2
+    entry = list(results)[1]
     assert isinstance(entry, Entry2)
     assert TEST_KEY in str(entry.path)
 

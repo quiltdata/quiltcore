@@ -37,6 +37,8 @@ from .conftest import (
 QKEYS = ["file", LOCAL_VOL, TEST_PKG, "latest"]
 QTYPE = [Scheme, Domain, Namespace2, Manifest2]
 QMAP = dict(zip(QKEYS, QTYPE))
+TEST_MSG = "test message"
+TEST_META = {"key": "value"}
 
 
 @pytest.fixture
@@ -152,8 +154,6 @@ def test_node_path():
 
 
 def test_node_dict4_to_meta3(node):
-    TEST_MSG = "test message"
-    TEST_META = {"key": "value"}
     child = Child("name", node)
     dict4 = Header.HeaderDict4(TEST_MSG, TEST_META)
     meta3 = child.dict4_to_meta3(dict4)
@@ -164,7 +164,7 @@ def test_node_dict4_to_meta3(node):
     assert meta3["message"] == TEST_MSG
     assert meta3[Child.K_USER_META] == TEST_META
 
-    head = Header(node.path, first=meta3)
+    head = Header(meta3)
     msg = getattr(head, "message")
     assert msg == TEST_MSG
 
@@ -198,23 +198,20 @@ def test_node_save_manifest():
     - physical_keys is encoded array
     - hash is a struct
     """
-    path = Types.AsPath(TEST_MAN)
-    source = Table3(path)
+    source_path = Types.AsPath(TEST_MAN)
+    source = Table3(source_path)
     man = Domain.FromURI(LOCAL_URI)[TEST_PKG][TEST_TAG]
+    assert len(source) == 2
 
     with TemporaryDirectory() as tmpdirname:
         root = Path(tmpdirname)
         list4 = source.relax(root)
-        pout = root / "test.parquet"
-        ppout = man.save_manifest(list4, pout, True)
-        assert ppout.exists()
+        path3 = root / "1234"
+        path4 = man.save_manifest(list4, path3)
+        assert path4.exists()
+        assert path3.exists()
 
-        # print(f"Source: {source}")
-        print(f"parquet_path: {ppout}")
-        print(f"json_path: {pout}")
-        print(f"json.bytes: {pout.read_bytes()}")
-
-        dest = Table3(pout)
+        dest = Table3(path3)
         assert dest.head is not None
         assert dest.body is not None
         assert len(dest) == len(source)

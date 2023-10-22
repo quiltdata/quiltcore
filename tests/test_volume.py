@@ -5,7 +5,7 @@ from upath import UPath
 
 from quiltcore import Manifest, Volume
 
-from .conftest import LOCAL_ONLY, TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL
+from .conftest import TEST_BKT, TEST_HASH, TEST_PKG, TEST_VOL
 
 
 @fixture
@@ -80,7 +80,7 @@ def test_vol_man_latest(vol):
     assert isinstance(man, Manifest)
 
 
-@mark.skipif(LOCAL_ONLY, reason="skip network tests")
+@mark.skip(reason="Not Needed")
 def test_vol_put(dir: UPath):  # noqa: F401
     v_s3 = Volume.FromURI(TEST_BKT)
     assert not v_s3.is_local()

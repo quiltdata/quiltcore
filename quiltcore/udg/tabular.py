@@ -9,6 +9,7 @@ from pyarrow.parquet import ParquetFile
 from typing import Iterator
 
 from .codec import Codec
+from .header import Header
 from .keyed import Keyed
 from .types import Dict3, Dict4, List4, Types
 from .verifiable import Verifiable
@@ -114,6 +115,7 @@ class Tabular(Keyed):
         self.codec = Codec()
         self.store = self.path.parent.parent.parent
         self.table = self._get_table()
+        self.header: Header | None = None
         self.head = self._get_head()
         self.body = self._get_body()
         logging.debug(f"Tabular.__init__: {self.store} <- {self.path}")
@@ -129,9 +131,9 @@ class Tabular(Keyed):
     #
 
     def first(self) -> dict:
-        header = self.table.take([0])
-        assert header, f"No header row found for {self.path}:\n${self.table}"
-        return header.to_pylist()[0]
+        heading = self.table.take([0])
+        assert heading, f"No heading found for {self.path}:\n${self.table}"
+        return heading.to_pylist()[0]
 
     def _get_table(self) -> pa.Table:
         raise NotImplementedError

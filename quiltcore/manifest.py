@@ -4,7 +4,7 @@ from pathlib import Path
 from jsonlines import Writer  # type: ignore
 
 from .entry import Entry
-from .header import Header
+from .udg.header import Header
 from .resource_key import ResourceKey
 from .table3 import Table3
 from .udg.codec import Dict3

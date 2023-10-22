@@ -2,6 +2,7 @@ import logging
 import pyarrow as pa  # type: ignore
 import pyarrow.compute as pc  # type: ignore
 
+from json import JSONEncoder
 from datetime import datetime
 from urllib.parse import quote, unquote
 
@@ -33,6 +34,11 @@ class Codec(Config, Types):
     meta          | info
     meta.user_meta| meta
     """
+    ENCODE = JSONEncoder(sort_keys=True, separators=(",", ":"), default=str).encode
+
+    @classmethod
+    def EncodeDict(cls, source: dict) -> bytes:
+        return cls.ENCODE(source).encode("utf-8")
 
     def __init__(self, scheme="quilt3") -> None:
         super().__init__()

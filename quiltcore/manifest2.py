@@ -61,7 +61,7 @@ class Manifest2(Child):
         return self._table
 
     def header(self):
-        return self.table().head
+        return self.table().header
 
     #
     # Hash functions

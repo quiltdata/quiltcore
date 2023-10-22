@@ -2,6 +2,7 @@ import logging
 
 from pathlib import Path
 
+from .header import Header
 from .node import Node
 from .types import Dict3, Dict4, List4
 from .tabular import Tabular
@@ -41,7 +42,7 @@ class Child(Node):
         parquet_path = Tabular.WriteParquet(list4, path)
         if writeJSON:
             if msg:
-                head4 = self.HeaderDict4(msg)
+                head4 = Header.HeaderDict4(msg)
             else:
                 header = [dict4 for dict4 in list4 if dict4.name == Tabular.HEADER_NAME]
                 print(f"save_manifest.header: {header}")
@@ -57,4 +58,4 @@ class Child(Node):
             body3: list[Dict3] = [self.dict4_to_dict3(dict4) for dict4 in list4]
             print(f"save_manifest.body3: {body3}")
             Tabular.WriteJSON(meta3, body3, path)
-        return parquet_path if parquet_path.exists() else path
+        return parquet_path

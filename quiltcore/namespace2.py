@@ -111,5 +111,4 @@ class Namespace2(Folder):
         if not flags.get("no_copy", False):
             manifest = manifest.relax(install_dir, self.relax_params())
             assert manifest is not None
-        list4: List4 = manifest.values()  # type: ignore
-        return self.put(list4, manifest.q3hash())
+        return self.tag(manifest.q3hash())
