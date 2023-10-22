@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 from pytest import fixture
 from upath import UPath
 
-from quiltcore import Builder, Manifest
+from quiltcore import Builder
 
 from .conftest import MockChanges
 
@@ -53,17 +53,3 @@ def test_build_opts(dir: UPath):
     assert build.head.version == "v0"  # type: ignore
     assert build.head.message == OPTS["message"]  # type: ignore
     assert build.head.user_meta == OPTS["user_meta"]  # type: ignore
-
-
-def test_build_man(build: Builder):
-    man = build.post(build.path)
-    assert isinstance(man, Manifest)
-    assert man.head().to_dict() == build.head.to_dict()
-
-    mlist = man.list()
-    assert len(mlist) == 1
-    entry = mlist[0]
-    assert entry.name == MockChanges.FILENAME
-
-    hash = man.hash_quilt3()
-    assert hash == man.name

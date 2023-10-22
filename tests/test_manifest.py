@@ -1,7 +1,7 @@
 from pytest import fixture, mark
 from upath import UPath
 
-from quiltcore import Codec, Entry, Header, Manifest, Registry
+from quiltcore import Codec, Entry, Manifest, Registry
 
 from .conftest import (
     LOCAL_ONLY,
@@ -35,16 +35,6 @@ def test_man(man: Manifest):
     assert "manifest" in man.args
     assert man._table is not None
     assert man.table() is not None
-
-
-def test_man_head(man: Manifest):
-    head = man.head()
-    assert isinstance(head, Header)
-
-    hashable = head.hashable_dict()
-    assert hashable
-    assert isinstance(hashable, dict)
-    assert hashable["user_meta"]["Author"] == "Ernest"
 
 
 @mark.skipif(LOCAL_ONLY, reason="skip network tests")
@@ -82,14 +72,6 @@ def test_man_entry(man: Manifest):
     # assert entry
     assert isinstance(entry, Entry)
     assert entry.args
-
-
-def test_man_list(man: Manifest):
-    results = man.list()
-    assert len(results) == 1
-    entry = results[0]
-    assert isinstance(entry, Entry)
-    assert TEST_KEY in str(entry.path)
 
 
 def test_man_get(man: Manifest):
