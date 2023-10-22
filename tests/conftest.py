@@ -3,7 +3,7 @@ import logging
 from os import environ
 from pathlib import Path
 
-from quiltcore import Changes, Types, UDI
+from quiltcore import Types, UDI
 
 root = logging.getLogger()
 root.setLevel(logging.INFO)  # DEBUG
@@ -45,19 +45,6 @@ LOCAL_UDI = f"quilt+{LOCAL_URI}#{UDI.K_PKG}={TEST_PKG}"
 
 def not_win():
     return not Types.OnWindows()
-
-
-class MockChanges(Changes):
-    FILENAME = "filename.txt"
-    FILETEXT = "hello world"
-
-    def __init__(self, dir: Path, **kwargs):
-        if not dir.exists():
-            dir.mkdir(parents=True)
-        super().__init__(dir, **kwargs)
-        self.infile = (dir / self.FILENAME).resolve()
-        self.infile.write_text(self.FILETEXT)
-        self.post(self.infile)
 
 
 T_BKT = "quilt-example"

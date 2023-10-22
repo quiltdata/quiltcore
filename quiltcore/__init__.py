@@ -24,21 +24,13 @@ manages the 'quiltcore.yaml' configuration file.
 
 """
 
-from .builder import Builder  # noqa: F401
 from .builder2 import FolderBuilder  # noqa: F401
-from .changes import Changes  # noqa: F401
-from .delta import Delta  # noqa: F401
 from .domain import Domain  # noqa: F401
-from .entry import Entry  # noqa: F401
 from .entry2 import Entry2  # noqa: F401
 from .factory import Factory, quilt  # noqa: F401
 from .udg.header import Header  # noqa: F401
-from .manifest import Manifest  # noqa: F401
 from .manifest2 import Manifest2  # noqa: F401
-from .namespace import Namespace  # noqa: F401
 from .namespace2 import Namespace2  # noqa: F401
-from .registry import Registry  # noqa: F401
-from .resource import Resource  # noqa: F401
 from .scheme import Scheme  # noqa: F401
 from .table3 import Table3  # noqa: F401
 from .table4 import Table4  # noqa: F401
@@ -50,7 +42,6 @@ from .udg.keyed import Keyed  # noqa: F401
 from .udg.node import Node  # noqa: F401
 from .udg.tabular import Tabular  # noqa: F401
 from .udg.verifiable import Verifiable, VerifyDict  # noqa: F401
-from .volume import Volume  # noqa: F401
 from .config.config import Config  # noqa: F401
 from .config.data import Data  # noqa: F401
 from .config.spec import Spec  # noqa: F401
