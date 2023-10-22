@@ -37,7 +37,6 @@ def domain():
     with TemporaryDirectory() as tmpdirname:
         f = quilt["file"]
         dom = f[tmpdirname]
-        dom.is_mutable = True
         yield dom
 
 

@@ -72,7 +72,7 @@ class Domain(Folder):
         self.base = self._setup_dir(self.store, "config")
         self.path = self._setup_dir(self.base, "names")
         self.remotes = self._setup_dir(self.base, "remotes")
-        self.is_mutable = kwargs.get(self.K_MUTABLE, False)
+        self.is_mutable = kwargs.get(self.K_MUTABLE, True)
         self.data_yaml = Data(self.store)
 
     #
@@ -214,6 +214,5 @@ class Domain(Folder):
         self._track_lineage("push", remote_udi, folder, **kwargs)
         assert remote_udi is not None, f"UDI not found for: {folder}"
         remote = self.FromURI(remote_udi.registry)
-        remote.is_mutable = True  # TODO: verify not a read-only domain
         remote.pull(local_udi, **kwargs)
         return remote
