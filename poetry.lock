@@ -2,24 +2,24 @@
 
 [[package]]
 name = "aiobotocore"
-version = "2.5.4"
+version = "2.7.0"
 description = "Async client for aws services using botocore and aiohttp"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "aiobotocore-2.5.4-py3-none-any.whl", hash = "sha256:4b32218728ca3d0be83835b604603a0cd6c329066e884bb78149334267f92440"},
-    {file = "aiobotocore-2.5.4.tar.gz", hash = "sha256:60341f19eda77e41e1ab11eef171b5a98b5dbdb90804f5334b6f90e560e31fae"},
+    {file = "aiobotocore-2.7.0-py3-none-any.whl", hash = "sha256:aec605df77ce4635a0479b50fd849aa6b640900f7b295021ecca192e1140e551"},
+    {file = "aiobotocore-2.7.0.tar.gz", hash = "sha256:506591374cc0aee1bdf0ebe290560424a24af176dfe2ea7057fe1df97c4f0467"},
 ]
 
 [package.dependencies]
-aiohttp = ">=3.3.1,<4.0.0"
+aiohttp = ">=3.7.4.post0,<4.0.0"
 aioitertools = ">=0.5.1,<1.0.0"
-botocore = ">=1.31.17,<1.31.18"
+botocore = ">=1.31.16,<1.31.65"
 wrapt = ">=1.10.10,<2.0.0"
 
 [package.extras]
-awscli = ["awscli (>=1.29.17,<1.29.18)"]
-boto3 = ["boto3 (>=1.28.17,<1.28.18)"]
+awscli = ["awscli (>=1.29.16,<1.29.65)"]
+boto3 = ["boto3 (>=1.28.16,<1.28.65)"]
 
 [[package]]
 name = "aiohttp"
@@ -698,13 +698,13 @@ files = [
 
 [[package]]
 name = "fsspec"
-version = "2023.9.2"
+version = "2023.10.0"
 description = "File-system specification"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "fsspec-2023.9.2-py3-none-any.whl", hash = "sha256:603dbc52c75b84da501b9b2ec8c11e1f61c25984c4a0dda1f129ef391fbfc9b4"},
-    {file = "fsspec-2023.9.2.tar.gz", hash = "sha256:80bfb8c70cc27b2178cc62a935ecf242fc6e8c3fb801f9c571fc01b1e715ba7d"},
+    {file = "fsspec-2023.10.0-py3-none-any.whl", hash = "sha256:346a8f024efeb749d2a5fca7ba8854474b1ff9af7c3faaf636a4548781136529"},
+    {file = "fsspec-2023.10.0.tar.gz", hash = "sha256:330c66757591df346ad3091a53bd907e15348c2ba17d63fd54f5c39c4457d2a5"},
 ]
 
 [package.extras]
@@ -1658,23 +1658,23 @@ files = [
 
 [[package]]
 name = "s3fs"
-version = "2023.9.2"
+version = "2023.10.0"
 description = "Convenient Filesystem interface over S3"
 optional = false
 python-versions = ">= 3.8"
 files = [
-    {file = "s3fs-2023.9.2-py3-none-any.whl", hash = "sha256:d0e0ad0267820f4e9ff16556e004e6759010e92378aebe2ac5d71419a6ff5387"},
-    {file = "s3fs-2023.9.2.tar.gz", hash = "sha256:64cccead32a816422dd9ae1d693c5d6354d99f64ae26c56388f1d8e1c7858321"},
+    {file = "s3fs-2023.10.0-py3-none-any.whl", hash = "sha256:3df68ff4f5f70c3338219a66df92e91fd15c6b78d0f559e57f617dfdd49feb41"},
+    {file = "s3fs-2023.10.0.tar.gz", hash = "sha256:c40f238ccc9fefff3f6d09d4b5762abd6c913ba42e1a328976b54d038901b835"},
 ]
 
 [package.dependencies]
-aiobotocore = ">=2.5.4,<2.6.0"
+aiobotocore = ">=2.7.0,<2.8.0"
 aiohttp = "<4.0.0a0 || >4.0.0a0,<4.0.0a1 || >4.0.0a1"
-fsspec = "2023.9.2"
+fsspec = "2023.10.0"
 
 [package.extras]
-awscli = ["aiobotocore[awscli] (>=2.5.4,<2.6.0)"]
-boto3 = ["aiobotocore[boto3] (>=2.5.4,<2.6.0)"]
+awscli = ["aiobotocore[awscli] (>=2.7.0,<2.8.0)"]
+boto3 = ["aiobotocore[boto3] (>=2.7.0,<2.8.0)"]
 
 [[package]]
 name = "s3transfer"
