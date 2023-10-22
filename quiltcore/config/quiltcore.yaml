@@ -13,6 +13,8 @@ multihash:
 resources:
   Node:
     child: Child
+  Child:
+    child: Folder
   Factory:
     child: Scheme
   Scheme:

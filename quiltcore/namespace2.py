@@ -53,6 +53,8 @@ class Namespace2(Folder):
 
     def _get(self, key: Tag):
         hash = self.read_hash_from_tag(key)
+        parquet_hash = Tabular.ParquetHash(hash)
+        logging.debug(f"Namespace2._get[{key}]: {hash} -> {parquet_hash}")
         return super()._get(hash)
 
     #

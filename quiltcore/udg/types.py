@@ -43,11 +43,14 @@ class Types:
     @classmethod
     def AsString(cls, object) -> str:
         """Return a string from a simple object."""
-        if isinstance(object, UPath) and object.exists():
-            versionId = cls.StatVersion(object)
-            if versionId:
-                logging.debug(f"AsString.versionId: {versionId}")
-                return f"{object}?{cls.K_VER}={versionId}"
+        try:
+            if isinstance(object, UPath) and object.exists():
+                versionId = cls.StatVersion(object)
+                if versionId:
+                    logging.debug(f"AsString.versionId: {versionId}")
+                    return f"{object}?{cls.K_VER}={versionId}"
+        except Exception as e:
+            logging.error(f"AsString.cannot stat: {object}\n{e}")
         if isinstance(object, Path):
             object = str(object.as_posix())
         if not isinstance(object, str):
@@ -63,7 +66,7 @@ class Types:
         drives = cls.IS_WINDRIVE.match(key)
         if drives:
             key = key.replace(drives[0], drives[1] + ":")
-        return UPath(key, version_aware=True).absolute()
+        return UPath(key).absolute()  # , version_aware=True
 
     @staticmethod
     def RelativePath(path: Path, base: Path) -> Path:

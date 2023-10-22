@@ -5,11 +5,15 @@ from tempfile import TemporaryDirectory
 
 
 from quiltcore import (
+    Child,
     Codec,
+    Dict3,
+    Dict4,
     Domain,
     Table3,
     Entry2,
     Factory,
+    Header,
     Keyed,
     Manifest2,
     Namespace2,
@@ -147,13 +151,70 @@ def test_node_path():
     assert not p3.exists()
 
 
+def test_node_dict4_to_meta3(node):
+    TEST_MSG = "test message"
+    TEST_META = {"key": "value"}
+    child = Child("name", node)
+    dict4 = Header.HeaderDict4(TEST_MSG, TEST_META)
+    meta3 = child.dict4_to_meta3(dict4)
+    print(meta3)
+    assert isinstance(meta3, dict)
+    assert Child.K_USER_META in meta3
+    assert meta3["version"] == "v4"
+    assert meta3["message"] == TEST_MSG
+    assert meta3[Child.K_USER_META] == TEST_META
+
+    head = Header(node.path, first=meta3)
+    msg = getattr(head, "message")
+    assert msg == TEST_MSG
+
+
+def test_node_dict4_to_dict3(node):
+    child = Child("name", node)
+    dict4 = Dict4(
+        name="name",
+        place="s3://place/is here",
+        multihash="12201234",
+        size=123,
+        info={},
+        meta={"key": "value"},
+    )
+    dict3 = child.dict4_to_dict3(dict4)
+    assert isinstance(dict3, Dict3)
+    assert dict3.logical_key == "name"
+    assert isinstance(dict3.physical_keys, list)
+    assert len(dict3.physical_keys) == 1
+    assert dict3.physical_keys[0] == "s3://place/is%20here"
+    hash = dict3.hash
+    assert isinstance(hash, dict)
+    assert hash["value"] == "1234"
+
+
 def test_node_save_manifest():
+    """
+    Verify proper WriteJSON encoding
+    - first entry is header
+    - includes all files
+    - physical_keys is encoded array
+    - hash is a struct
+    """
     path = Types.AsPath(TEST_MAN)
-    table3 = Table3(path)
+    source = Table3(path)
     man = Domain.FromURI(LOCAL_URI)[TEST_PKG][TEST_TAG]
 
     with TemporaryDirectory() as tmpdirname:
         root = Path(tmpdirname)
-        list4 = table3.relax(root)
+        list4 = source.relax(root)
         pout = root / "test.parquet"
-        man.save_manifest(list4, pout, True)
+        ppout = man.save_manifest(list4, pout, True)
+        assert ppout.exists()
+
+        # print(f"Source: {source}")
+        print(f"parquet_path: {ppout}")
+        print(f"json_path: {pout}")
+        print(f"json.bytes: {pout.read_bytes()}")
+
+        dest = Table3(pout)
+        assert dest.head is not None
+        assert dest.body is not None
+        assert len(dest) == len(source)

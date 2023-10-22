@@ -14,12 +14,10 @@ class Child(Node):
         assert parent == self.parent
         self.headers = self.cf.get_dict("quilt3/headers")
 
-    def dict4_to_header(self, dict4) -> dict:
-        raw_dict = {}
-        for k in self.headers.keys():
-            if hasattr(dict4, k):
-                raw_dict[k] = getattr(dict4, k)
-        return self.cf.encode_dates(raw_dict)
+    def dict4_to_meta3(self, dict4: Dict4) -> dict:
+        meta = dict4.info
+        meta[self.K_USER_META] = dict4.meta
+        return self.cf.encode_dates(meta)
 
     def dict4_to_dict3(self, dict4: Dict4) -> Dict3:
         if not hasattr(dict4, "path"):
@@ -27,7 +25,8 @@ class Child(Node):
             setattr(dict4, "path", path)
         result = self.encode_date_dicts(dict4)
         assert isinstance(result, Dict4)
-        return self.cf.encode_dict4(result)
+        dict3 = self.cf.encode_dict4(result)
+        return dict3
 
     def encode_date_dicts(self, base: Dict4):
         for key in self.K_JSON_FIELDS:
@@ -39,10 +38,14 @@ class Child(Node):
 
     def save_manifest(self, list4: List4, path: Path, writeJSON=True) -> Path:
         assert list4, "save_manifest: list4 is empty; cannot save to {path}}"
+        print(f"save_manifest.list4: {list4}")
         parquet_path = Tabular.WriteParquet(list4, path)
         if writeJSON:
-            head4 = list4.pop()
+            head4 = list4.pop(0)
+            print(f"save_manifest.head4: {head4}")
+            head3 = self.dict4_to_meta3(head4)
+            print(f"save_manifest.head3: {head3}")
             list3: list[Dict3] = [self.dict4_to_dict3(dict4) for dict4 in list4]
-            head = self.dict4_to_header(head4)
-            Tabular.WriteJSON(head, list3, path)
+            print(f"save_manifest.list3: {list3}")
+            Tabular.WriteJSON(head3, list3, path)
         return parquet_path if parquet_path.exists() else path

@@ -23,17 +23,20 @@ class Tabular(Keyed):
     REL_PATH = "./"
 
     @staticmethod
-    def WriteJSON(head: dict, rows: list[Dict3], path: Path) -> None:
+    def WriteJSON(head3: dict, rows: list[Dict3], path: Path) -> None:
         """Write manifest contents to _path_"""
         logging.debug(f"Write3: {path}")
         with path.open(mode="wb") as fo:
             with Writer(fo) as writer:
-                writer.write(head)
+                writer.write(head3)
                 for row in rows:
                     if not isinstance(row, Dict3):
                         raise ValueError("")
                     json_dict = row.to_dict()
-                    writer.write(json_dict)
+                    if json_dict:
+                        writer.write(json_dict)
+                    else:
+                        logging.error(f"WriteJSON.missing_dict: {row}")
 
     @classmethod
     def ParquetPath(cls, path: Path) -> Path:
