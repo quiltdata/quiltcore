@@ -1,5 +1,6 @@
 from tempfile import TemporaryDirectory
-
+from pathlib import Path
+import os
 import pytest
 
 from quiltcore import UDI, Domain, Manifest, Scheme, quilt
@@ -153,6 +154,28 @@ def test_dom_commit(committed: Domain):
     assert len(table) == 2
     assert table.head.info["message"] == MESSAGE
     assert table.head.meta == TEST_META
+
+
+def test_dom_meta(domain):
+    n_mega = os.environ.get("N_MEGA")
+    dest = os.environ.get("DEST")
+    N_MEGA = 100 if not n_mega else int(n_mega)
+    MEGA_PKG = "manual/mega"
+    mega = {str(i): i for i in range(N_MEGA)}
+    kwargs = {
+        Domain.K_META: {"mega": mega},
+        Domain.K_MESSAGE: "test_dom_meta",
+        Domain.K_PACKAGE: MEGA_PKG,
+    }
+    local_path = domain.package_path(MEGA_PKG)
+    domain.commit(local_path, **kwargs)
+    assert MEGA_PKG in domain
+    pkg = domain[MEGA_PKG][domain.TAG_DEFAULT]
+    assert pkg.path.exists()
+    if dest:
+        dest_path = Path(dest) / f"n{N_MEGA}.parquet"
+        contents = pkg.path.read_bytes()
+        dest_path.write_bytes(contents)
 
 
 def test_dom_unpull(committed: Domain):
