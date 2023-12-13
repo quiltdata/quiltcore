@@ -173,9 +173,9 @@ def test_dom_meta(domain):
     pkg = domain[MEGA_PKG][domain.TAG_DEFAULT]
     assert pkg.path.exists()
     if dest:
-        dest_path = Path(dest) / pkg.path.name
-        contents = pkg.path.read_text()
-        dest_path.write_text(contents)
+        dest_path = Path(dest) / f"n{N_MEGA}.parquet"
+        contents = pkg.path.read_bytes()
+        dest_path.write_bytes(contents)
 
 
 def test_dom_unpull(committed: Domain):
