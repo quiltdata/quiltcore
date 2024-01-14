@@ -1,5 +1,13 @@
 # CHANGELOG.md
 
+## 0.7.0 (2024-01-12)
+
+- Binary hash format
+
+## 0.6.2 (2023-10-22)
+
+- Cleanup for demo
+
 ## 0.5.1 (2023-10-21)
 
 - Remove legacy code
