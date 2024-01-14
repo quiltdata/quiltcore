@@ -9,7 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 jsonlines = "1.2.0"
-multiformats = "^0.2.1"
+multiformats = "^0.3.0"
 pandas = "^2.0.2"
 pyarrow = "^14.0.0"
 pandas-stubs = "^2.0.2.230605"
