@@ -131,13 +131,18 @@ class Dict4(DataDict):
     name: str
     place: str
     size: int
-    hash: bytes  # raw binary
+    hash: bytes | None  # raw binary
     multihash: str  # hex-encoded
     info: dict  # was (system) metadata
     meta: dict  # was user_meta
     workflow: Optional[str] = None
 
-    def decode_hex(self) -> "Dict4":
+    @staticmethod
+    def V2(dict4: dict) -> "Dict4":
+        dict4["hash"] = bytes.fromhex(dict4["multihash"])
+        return Dict4(**dict4)
+
+    def recode_hash(self) -> "Dict4":
         self.hash = bytes.fromhex(self.multihash)
         return self
 

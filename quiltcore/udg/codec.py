@@ -216,7 +216,7 @@ class Codec(Config, Types):
         if decoded["info"] and self.K_USER_META in decoded["info"]:
             decoded["meta"] = decoded["info"][self.K_USER_META]
             del decoded["info"][self.K_USER_META]
-        return Dict4(**decoded).decode_hex()
+        return Dict4.V2(**decoded).recode_hash()
 
     def decode_item(self, item, opts={}):
         """decode scalar or compound item"""
