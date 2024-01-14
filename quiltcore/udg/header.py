@@ -27,6 +27,7 @@ class Header(Codec):
             name=cls.HEADER_NAME,
             place=cls.HEADER_NAME,
             size=cls.SIZE,
+            hash=b"",
             multihash=cls.MULTIHASH,
             info={
                 cls.K_VERSION: version,

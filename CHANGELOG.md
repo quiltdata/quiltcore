@@ -2,7 +2,7 @@
 
 ## 0.7.0 (2024-01-12)
 
-- Binary hash format
+- Un-hexed multihash in Dict4.hash
 
 ## 0.6.2 (2023-10-22)
 

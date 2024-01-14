@@ -130,4 +130,4 @@ def test_man_relax(man: Manifest, domain: Domain):
     assert isinstance(local_man, Manifest)
     assert local_man.path.exists()
     assert domain.store in local_man.path.parents
-    assert local_man.hash() == man.hash()  # TODO: force recalculation
+    assert local_man.hashify() == man.hashify()  # TODO: force recalculation

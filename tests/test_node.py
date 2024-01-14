@@ -176,6 +176,7 @@ def test_node_dict4_to_dict3(node):
     dict4 = Dict4(
         name="name",
         place="s3://place/is here",
+        hash=b"12201234",
         multihash="12201234",
         size=123,
         info={},

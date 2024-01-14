@@ -42,4 +42,4 @@ class FolderBuilder(Folder):
         if user_meta:
             setattr(self.header, self.K_USER_META, user_meta)
         self.update()
-        return self.hash()
+        return self.hashify()

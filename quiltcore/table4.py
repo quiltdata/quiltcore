@@ -40,4 +40,4 @@ class Table4(Tabular):
         """Return the dict4 for a child resource."""
         row = self.get_row(key)
         assert row, f"Missing row for {key}"
-        return Dict4(**row)
+        return Dict4(**row).decode_hex()
