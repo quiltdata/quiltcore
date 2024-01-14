@@ -34,20 +34,20 @@ def test_ver_raise(ver: Verifiable):
     with raises(ValueError):
         ver.to_bytes()
     with raises(ValueError):
-        ver.hash()
+        ver.hashify()
 
 
 def test_ver_dict(ver: Verifiable):
     OLD_DICT = Verifiable.DEFAULT_DICT
     Verifiable.DEFAULT_DICT = Verify.TEST_DICT
-    assert ver.hash() == Verify.HASH_DICT
+    assert ver.hashify() == Verify.HASH_DICT
     Verifiable.DEFAULT_DICT = OLD_DICT
 
 
 def test_ver_cache(ver: Verifiable):
     ver["hash"] = Verify()
     assert ver.to_bytes() == Verify.HASH_BYTES.encode("utf-8")
-    assert ver.hash() == Verify.HASH_HASH
+    assert ver.hashify() == Verify.HASH_HASH
 
 
 def test_ver_path(ver: Verifiable):
@@ -55,14 +55,14 @@ def test_ver_path(ver: Verifiable):
         path = Path(tmpdirname) / "test.txt"
         path.write_bytes(Verify.TEST_BYTES)
         ver.path = path  # type: ignore
-        assert ver.hash() == Verify.HASH_BYTES
+        assert ver.hashify() == Verify.HASH_BYTES
 
 
 def test_verify():
     verify = Verify()
     assert verify is not None
 
-    assert verify.hash() == Verify.HASH_BYTES
+    assert verify.hashify() == Verify.HASH_BYTES
     assert verify.q3hash() == Verify.HASH_BYTES[4:]
     assert verify.hashable() == b"{}"
     assert verify.verify(b"") is False

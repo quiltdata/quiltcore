@@ -55,7 +55,7 @@ class Verifiable(Keyed):
 
     def hashable_values(self) -> str:
         """Concatenate the hashes of each Verifiable in values()."""
-        hashes = [v.hash() for v in self.values() if isinstance(v, Verifiable)]
+        hashes = [v.hashify() for v in self.values() if isinstance(v, Verifiable)]
         return "".join(hashes)
 
     def to_bytes(self) -> bytes:
@@ -84,17 +84,19 @@ class Verifiable(Keyed):
         return self.digest_bytes(self.to_bytes())
 
     def dict4_from_path(self, path: Path) -> Dict4:
+        raw_hash = self.cf.digest_raw(path.read_bytes())
         base = Dict4(
             name=path.name,
             place="",
             size=0,
-            multihash=self.digest_bytes(path.read_bytes()),
+            hash=raw_hash,
+            multihash=raw_hash.hex(),
             info={},
             meta={},
         )
         return self.UpdateDict4(base, path)
 
-    def hash(self) -> Multihash:
+    def hashify(self) -> Multihash:
         """Return (or calculate) the multihash of the contents."""
         if self._hash is None or self.is_dirty():
             self._hash = self._multihash_contents()
@@ -106,7 +108,7 @@ class Verifiable(Keyed):
 
     def q3hash(self) -> str:
         """Return the value portion of the legacy quilt3 hash."""
-        return self.q3hash_from_hash(self.hash())
+        return self.q3hash_from_hash(self.hashify())
 
     #
     # Hash retrieval
@@ -120,7 +122,7 @@ class Verifiable(Keyed):
         """Verify that multihash digest of bytes match the current multihash"""
         digest = self.digest_bytes(contents)
         logging.debug(f"verify.digest: {digest}")
-        return digest == self.hash()
+        return digest == self.hashify()
 
 
 class VerifyDict(Verifiable):

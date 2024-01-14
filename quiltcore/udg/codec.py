@@ -106,10 +106,14 @@ class Codec(Config, Types):
         digest_type = self.hash_config(self.MH_DIG)[ht]
         return multihash.get(digest_type)
 
+    def digest_raw(self, bstring: bytes) -> bytes:
+        """return multihash digest as bytes"""
+        digester = self.digester()
+        return digester.digest(bstring)
+
     def digest(self, bstring: bytes) -> Multihash:
         """return multihash digest as hex"""
-        digester = self.digester()
-        return digester.digest(bstring).hex()
+        return self.digest_raw(bstring).hex()
 
     def decode_q3hash(self, q3hash: str) -> Multihash:
         hash_type = self.config("hash_type")
@@ -212,7 +216,7 @@ class Codec(Config, Types):
         if decoded["info"] and self.K_USER_META in decoded["info"]:
             decoded["meta"] = decoded["info"][self.K_USER_META]
             del decoded["info"][self.K_USER_META]
-        return Dict4(**decoded)
+        return Dict4.V2(**decoded).recode_hash()
 
     def decode_item(self, item, opts={}):
         """decode scalar or compound item"""

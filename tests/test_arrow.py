@@ -115,7 +115,7 @@ def test_arrow_relax():
         assert table4
         meta = table4.head.info
         assert meta
-        assert meta["version"] == "v4"
+        assert meta["version"] == "v2"
         assert "ONLYME.md" in table4.keys()
         entry = table4["ONLYME.md"]
         assert entry

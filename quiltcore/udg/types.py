@@ -13,7 +13,7 @@ from upath import UPath
 class Types:
     HEADER_NAME = "."
     HEADER_V3 = "v0"
-    HEADER_V4 = "v4"
+    HEADER_V4 = "v2"
     MULTIHASH = "1220"
 
     IS_LOCAL = compile(r"file:\/*")
@@ -131,10 +131,20 @@ class Dict4(DataDict):
     name: str
     place: str
     size: int
-    multihash: str
+    hash: bytes | None  # raw binary
+    multihash: str  # hex-encoded
     info: dict  # was (system) metadata
     meta: dict  # was user_meta
     workflow: Optional[str] = None
+
+    @staticmethod
+    def V2(**dict4) -> "Dict4":
+        dict4["hash"] = bytes.fromhex(dict4["multihash"])
+        return Dict4(**dict4)
+
+    def recode_hash(self) -> "Dict4":
+        self.hash = bytes.fromhex(self.multihash)
+        return self
 
     def to_parquet_dict(self) -> dict:
         map = self.to_dict()
@@ -143,6 +153,7 @@ class Dict4(DataDict):
                 json_field = f"{field}.json"
                 map[json_field] = json_dumps(map[field], default=str)
                 del map[field]
+
         return map
 
 

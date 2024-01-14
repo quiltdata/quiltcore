@@ -14,7 +14,7 @@ class Table4(Tabular):
 
     def _get_head(self) -> pa.Table:
         """Extract header values into attributes."""
-        return Dict4(**self.first())
+        return Dict4.V2(**self.first())
 
     def _get_body(self) -> pa.Table:
         """
@@ -40,4 +40,4 @@ class Table4(Tabular):
         """Return the dict4 for a child resource."""
         row = self.get_row(key)
         assert row, f"Missing row for {key}"
-        return Dict4(**row)
+        return Dict4.V2(**row)

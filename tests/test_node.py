@@ -162,7 +162,7 @@ def test_node_dict4_to_meta3(node):
     print(meta3)
     assert isinstance(meta3, dict)
     assert Child.K_USER_META in meta3
-    assert meta3["version"] == "v4"
+    assert meta3["version"] == "v2"
     assert meta3["message"] == TEST_MSG
     assert meta3[Child.K_USER_META] == TEST_META
 
@@ -176,6 +176,7 @@ def test_node_dict4_to_dict3(node):
     dict4 = Dict4(
         name="name",
         place="s3://place/is here",
+        hash=b"12201234",
         multihash="12201234",
         size=123,
         info={},
