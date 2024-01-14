@@ -2,7 +2,9 @@
 
 ## 0.7.0 (2024-01-12)
 
-- Un-hexed multihash in Dict4.hash
+- Store un-hexed multihash in Dict4.hash
+- Use Dict4.V2 to add that hash to the struct
+- Drop version down to "v2" (from "v4")
 
 ## 0.6.2 (2023-10-22)
 
