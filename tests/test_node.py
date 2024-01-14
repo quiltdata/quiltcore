@@ -162,7 +162,7 @@ def test_node_dict4_to_meta3(node):
     print(meta3)
     assert isinstance(meta3, dict)
     assert Child.K_USER_META in meta3
-    assert meta3["version"] == "v4"
+    assert meta3["version"] == "v2"
     assert meta3["message"] == TEST_MSG
     assert meta3[Child.K_USER_META] == TEST_META
 

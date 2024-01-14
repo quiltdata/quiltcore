@@ -14,7 +14,7 @@ class Table4(Tabular):
 
     def _get_head(self) -> pa.Table:
         """Extract header values into attributes."""
-        return Dict4(**self.first())
+        return Dict4.V2(**self.first())
 
     def _get_body(self) -> pa.Table:
         """

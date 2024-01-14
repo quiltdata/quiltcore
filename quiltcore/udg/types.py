@@ -138,7 +138,7 @@ class Dict4(DataDict):
     workflow: Optional[str] = None
 
     @staticmethod
-    def V2(dict4: dict) -> "Dict4":
+    def V2(**dict4) -> "Dict4":
         dict4["hash"] = bytes.fromhex(dict4["multihash"])
         return Dict4(**dict4)
 
