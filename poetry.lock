@@ -1748,14 +1748,13 @@ testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "no
 
 [[package]]
 name = "pytest-codeblocks"
-version = "0.17.0"
+version = "0.18.0"
 description = "Test code blocks in your READMEs"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "pytest_codeblocks-0.17.0-py3-none-any.whl", hash = "sha256:b2aed8e66c3ce65435630783b391e7c7ae46f80b8220d3fa1bb7c689b36e78ad"},
-    {file = "pytest_codeblocks-0.17.0.tar.gz", hash = "sha256:446e1babd182f54b4f113d567737a22f5405cade144c08a0085b2985247943d5"},
+    {file = "pytest_codeblocks-0.18.0-py3-none-any.whl", hash = "sha256:3fe944dc505107421204c83e9232e0155eea1279b9425a10bee327079b272efb"},
 ]
 
 [package.dependencies]
@@ -2621,4 +2620,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "1e4d2f90418644cb4fa2cdad2764efb9feaa52d786492e785c1273ef275655f2"
+content-hash = "d222b435a88032c732c37f3d0c2d7a9ee08c81ffdcd9c076cec6de5b01c9e8f6"
